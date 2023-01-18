@@ -1,1 +1,0 @@
-This file will be deleted once everyone has confirmed they have set up git correctly
