@@ -29,40 +29,28 @@ public class Elevator implements Runnable{
 
     /**
      *
-     * @param currFloor
-     * @param destinationFloor
+     * @param newFloor
      */
-    private void moveElevator(int currFloor, int destinationFloor) {
-        System.out.println("Elevator " + elevatorID + " moving " + this.direction + " to Floor " + currFloor);
-        this.elevatorFloor = currFloor;
+    private void moveElevator(int newFloor) {
+        System.out.println("Elevator " + elevatorID + " moving " + this.direction + " to Floor " + newFloor);
+        this.elevatorFloor = newFloor;
         System.out.println("Elevator " + elevatorID + " reached Floor " + this.elevatorFloor);
         // passengers load/unload
-        System.out.println("Elevator " + elevatorID + " moving " + this.direction + " to Floor " + destinationFloor);
-        this.elevatorFloor = destinationFloor;
-        System.out.println("Elevator " + elevatorID + " reached Floor " + this.elevatorFloor);
-        // passengers load/unload
-
-        /*
-        TODO: Implement elevator movement
-            must add functionality for:
-            - determining direction (continue same direction until final floor request in that direction)
-            - passengers loading/unloading
-         */
     }
 
     /**
      *
-     * @param request
+     * @param destinationFloor
      * @return
      */
-    private RequestData generateResponse(RequestData request) {
+    private RequestData generateResponse(int destinationFloor) {
 
         System.out.println("Elevator " + elevatorID + " generating response...");
         return new RequestData(
                 LocalTime.now(),
                 this.elevatorFloor,
-                request.getDirection(),
-                0
+                this.direction,
+                destinationFloor
         );
     }
 
@@ -75,14 +63,30 @@ public class Elevator implements Runnable{
         while (scheduler.hasRequests()) {
             RequestData request = scheduler.getRequest();
             System.out.println("Elevator " + elevatorID + " received request: " + request);
+            int currentFloor = request.getCurrentFloor();
+            int destinationFloor = request.getDestinationFloor();
 
             // the direction will not always be the same as a request in future iterations
             this.direction = request.getDirection();
-            moveElevator(request.getCurrentFloor(), request.getDestinationFloor());
 
-            RequestData response = generateResponse(request);
+            // go to the floor where the request came from
+            moveElevator(currentFloor);
+            RequestData response = generateResponse(destinationFloor);
+            scheduler.addResponse(response);
+            System.out.println("Elevator " + elevatorID + " sent response: " + response);
+
+            // take the passenger to the destination floor
+            moveElevator(destinationFloor);
+            response = generateResponse(0); // 0 means no destination
             scheduler.addResponse(response);
             System.out.println("Elevator " + elevatorID + " sent response: " + response);
         }
     }
 }
+
+/*
+TODO: must add functionality for:
+    - determining direction (continue same direction until final floor request in that direction)
+    - passengers loading/unloading
+    - handling new requests while the elevator is moving
+ */
