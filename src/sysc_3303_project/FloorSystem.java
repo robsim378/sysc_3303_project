@@ -60,8 +60,8 @@ public class FloorSystem implements Runnable{
     		scheduler.addRequest(data);
     		System.out.println("FloorSystem: Awaiting response from scheduler");
     		
-    		scheduler.getResponse();
-    		System.out.println(String.format("FloorSystem: Recieved request data \"%s\" from scheduler", data.toString()));
+    		RequestData responseData = scheduler.getResponse();
+    		System.out.println(String.format("FloorSystem: Recieved request data \"%s\" from scheduler", responseData.toString()));
     	}
     	System.out.println("All test cases accomplished! Terminating the program.");
     	System.exit(0);
