@@ -16,8 +16,10 @@ public class Main {
 
         String floorFilePath = new File("").getAbsolutePath() + "/resources/testing_examples";
         floorSystem = new Thread(new FloorSystem(scheduler, floorFilePath), "FloorSystem");
+        Thread schedulerThread = new Thread(scheduler, "Scheduler");
 
         elevator.start();
         floorSystem.start();
+        schedulerThread.start();
     }
 }
