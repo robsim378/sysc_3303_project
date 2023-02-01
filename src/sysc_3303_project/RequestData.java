@@ -37,7 +37,7 @@ public class RequestData implements Serializable{
 		return new RequestData(time, currentFloor, direction, destinationFloor);
 	}
 	
-	private RequestData(LocalTime requestTime, int currentFloor, Direction direction, int destinationFloor) {
+	public RequestData(LocalTime requestTime, int currentFloor, Direction direction, int destinationFloor) {
 		this.requestTime=requestTime;
 		this.currentFloor=currentFloor;
 		this.direction=direction;

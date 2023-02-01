@@ -12,7 +12,7 @@ public class FloorSystem implements Runnable{
     
     private String textFileLocation;
 
-    public FloorSystem (Scheduler scheduler, String textFileLocation){
+    private FloorSystem (Scheduler scheduler, String textFileLocation){
         this.scheduler = scheduler;
         this.textFileLocation = textFileLocation;
     }
