@@ -3,8 +3,6 @@
  */
 package sysc_3303_project;
 
-import java.time.LocalTime;
-
 /**
  *
  * @author ianh6
@@ -40,27 +38,11 @@ public class Elevator implements Runnable{
 
     /**
      *
-     * @param destinationFloor
-     * @return
-     */
-    private RequestData generateResponse(int destinationFloor) {
-
-        System.out.println("Elevator " + elevatorID + " generating response...");
-        return new RequestData(
-                LocalTime.now(),
-                this.elevatorFloor,
-                this.direction,
-                destinationFloor
-        );
-    }
-
-    /**
-     *
      */
     public void run() {
         System.out.println("Elevator thread started");
 
-        while (scheduler.hasRequests()) {
+        while (true) {
             RequestData request = scheduler.getRequest();
             System.out.println("Elevator " + elevatorID + " received request: " + request);
             int currentFloor = request.getCurrentFloor();
@@ -71,15 +53,11 @@ public class Elevator implements Runnable{
 
             // go to the floor where the request came from
             moveElevator(currentFloor);
-            RequestData response = generateResponse(destinationFloor);
-            scheduler.addResponse(response);
-            System.out.println("Elevator " + elevatorID + " sent response: " + response);
-
             // take the passenger to the destination floor
             moveElevator(destinationFloor);
-            response = generateResponse(0); // 0 means no destination
-            scheduler.addResponse(response);
-            System.out.println("Elevator " + elevatorID + " sent response: " + response);
+
+            scheduler.addResponse(request);
+            System.out.println("Elevator " + elevatorID + " sent response: " + request);
         }
     }
 }
