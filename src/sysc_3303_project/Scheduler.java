@@ -10,7 +10,7 @@ import java.util.Queue;
  * @author apope
  *
  */
-public class Scheduler {
+public class Scheduler implements Runnable {
 	
 	private Queue<RequestData> incomingRequests;
 	private Queue<RequestData> receivedResponses;
@@ -86,5 +86,11 @@ public class Scheduler {
 		}
 		notifyAll();
 		return receivedResponses.remove();
+	}
+
+	@Override
+	public void run() {
+		// For this iteration, this thread does nothing - the Scheduler acts as a monitor, running on the main thread.
+		
 	}
 }
