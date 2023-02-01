@@ -29,7 +29,7 @@ public class RequestData implements Serializable{
 	public static RequestData of(String line) {
 		String[] requestParameters = line.split(" ");
 		
-		LocalTime time = LocalTime.parse(requestParameters[0], DateTimeFormatter.ofPattern("HH:mm:ss:AAA"));
+		LocalTime time = LocalTime.parse(requestParameters[0], DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
 		int currentFloor = Integer.parseInt(requestParameters[1]);
 		Direction direction = Direction.valueOf(requestParameters[2]);
 		int destinationFloor = Integer.parseInt(requestParameters[3]);
