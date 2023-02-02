@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * @author apope
+ * @author Andrei Popescu
  *
  */
 public class Scheduler implements Runnable {
@@ -34,6 +34,7 @@ public class Scheduler implements Runnable {
 	 */
 	public synchronized void addRequest(RequestData request) {
 		incomingRequests.add(request);
+		System.out.println("Scheduler received request from floor: " + request.toString());
 		notifyAll();
 	}
 	
@@ -68,6 +69,8 @@ public class Scheduler implements Runnable {
 	 */
 	public synchronized void addResponse(RequestData response) {
 		receivedResponses.add(response);
+		System.out.println("Scheduler received response from elevator: " + response.toString());
+
 		notifyAll();
 	}
 	
