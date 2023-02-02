@@ -51,6 +51,7 @@ public class Scheduler implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Scheduler passed a request to elevator.");
 		notifyAll();
 		return incomingRequests.remove();
 	}
@@ -87,6 +88,7 @@ public class Scheduler implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Scheduler passed a response to floor.");
 		notifyAll();
 		return receivedResponses.remove();
 	}
@@ -94,6 +96,6 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		// For this iteration, this thread does nothing - the Scheduler acts as a monitor, running on the main thread.
-		
+		System.out.println("Scheduler thread running");
 	}
 }
