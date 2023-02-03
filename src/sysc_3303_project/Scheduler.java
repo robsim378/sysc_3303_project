@@ -1,5 +1,7 @@
 /**
- * 
+ * SYSC3303 Project
+ * Group 1
+ * @version 1.0
  */
 package sysc_3303_project;
 
@@ -7,14 +9,18 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * @author apope
- *
+ * 	@author Andrei Popescu
+ *	The Scheduler class is responsible for passing requests from the Floor to the Elevator,
+ *	and passing the responses from the Elevator back to the Floor. It acts as a monitor.
  */
 public class Scheduler implements Runnable {
 	
 	private Queue<RequestData> incomingRequests;
 	private Queue<RequestData> receivedResponses;
 	
+	/**
+	 * Creates a Scheduler with no requests or responses.
+	 */
 	public Scheduler() {
 		incomingRequests = new LinkedList<>();
 		receivedResponses = new LinkedList<>();
@@ -34,6 +40,7 @@ public class Scheduler implements Runnable {
 	 */
 	public synchronized void addRequest(RequestData request) {
 		incomingRequests.add(request);
+		System.out.println("Scheduler received request from floor: " + request.toString());
 		notifyAll();
 	}
 	
@@ -50,6 +57,7 @@ public class Scheduler implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Scheduler passed a request to elevator.");
 		notifyAll();
 		return incomingRequests.remove();
 	}
@@ -68,6 +76,8 @@ public class Scheduler implements Runnable {
 	 */
 	public synchronized void addResponse(RequestData response) {
 		receivedResponses.add(response);
+		System.out.println("Scheduler received response from elevator: " + response.toString());
+
 		notifyAll();
 	}
 	
@@ -84,6 +94,7 @@ public class Scheduler implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Scheduler passed a response to floor.");
 		notifyAll();
 		return receivedResponses.remove();
 	}
@@ -91,6 +102,6 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		// For this iteration, this thread does nothing - the Scheduler acts as a monitor, running on the main thread.
-		
+		System.out.println("Scheduler thread running");
 	}
 }

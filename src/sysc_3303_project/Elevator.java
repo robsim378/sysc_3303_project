@@ -3,12 +3,12 @@ SYSC3303 Project
 Group 1
 @version 1.0
 */
+
 package sysc_3303_project;
 
 /**
- *
- *
  * @author Ian Holmes
+ * Represents an Elevator to move between Floors.
  */
 public class Elevator implements Runnable{
 
