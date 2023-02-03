@@ -1,13 +1,14 @@
 /**
- * SYSC3303 Project
- * Group 1
- * @version 1.0
- */
+SYSC3303 Project
+Group 1
+@version 1.0
+*/
+
 package sysc_3303_project;
 
 /**
- *
- * @author ianh6
+ * @author Ian Holmes
+ * Represents an Elevator to move between Floors.
  */
 public class Elevator implements Runnable{
 
@@ -17,9 +18,10 @@ public class Elevator implements Runnable{
     private Direction direction;
 
     /**
+     * Constructor for the Elevator class.
      *
-     * @param scheduler
-     * @param elevatorID
+     * @param scheduler Scheduler, the scheduler to receive requests from
+     * @param elevatorID int, the ID of the Elevator
      */
     public Elevator(Scheduler scheduler, int elevatorID) {
         this.scheduler = scheduler;
@@ -28,8 +30,9 @@ public class Elevator implements Runnable{
     }
 
     /**
+     * Move the elevator to a desired floor.
      *
-     * @param newFloor
+     * @param newFloor int, the floor to move to
      */
     private void moveElevator(int newFloor) {
         System.out.println("Elevator " + elevatorID + " moving " + this.direction + " to Floor " + newFloor);
@@ -39,7 +42,8 @@ public class Elevator implements Runnable{
     }
 
     /**
-     *
+     * The run method for the Elevator thread.
+     * Elevator receives a request, moves, then responds.
      */
     public void run() {
         System.out.println("Elevator thread started");
