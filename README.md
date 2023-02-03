@@ -58,4 +58,8 @@ The Main file contains the main method for running the program.
 
 #### Andrei Popescu
 
+- created the Scheduler class and relevant parts of the UML class diagram
+- created UML sequence diagram
+- wrote Javadocs for RequestData
+
 #### Robert Simionescu
