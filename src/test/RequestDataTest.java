@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 1.0
+ */
 package test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

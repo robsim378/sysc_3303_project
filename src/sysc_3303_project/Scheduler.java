@@ -1,5 +1,7 @@
 /**
- * 
+ * SYSC3303 Project
+ * Group 1
+ * @version 1.0
  */
 package sysc_3303_project;
 
@@ -7,14 +9,18 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * @author Andrei Popescu
- *
+ * 	@author Andrei Popescu
+ *	The Scheduler class is responsible for passing requests from the Floor to the Elevator,
+ *	and passing the responses from the Elevator back to the Floor. It acts as a monitor.
  */
 public class Scheduler implements Runnable {
 	
 	private Queue<RequestData> incomingRequests;
 	private Queue<RequestData> receivedResponses;
 	
+	/**
+	 * Creates a Scheduler with no requests or responses.
+	 */
 	public Scheduler() {
 		incomingRequests = new LinkedList<>();
 		receivedResponses = new LinkedList<>();
