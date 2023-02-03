@@ -47,6 +47,11 @@ The Main file contains the main method for running the program.
 
 #### Liam Gaudet
 
+- Created the FloorSystem class
+- Created the RequestData class
+- Created the Direction Enumeration
+- Generated testing data for the first iteration
+
 #### Ian Holmes
 
 - creating the Elevator class

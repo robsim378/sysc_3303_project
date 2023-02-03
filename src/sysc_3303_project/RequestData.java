@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 	@author Owner
+ * 	@author Liam Gaudet
  *	Represents a request from a Floor to be serviced by an Elevator.
  */
 public class RequestData implements Serializable{
@@ -88,7 +88,6 @@ public class RequestData implements Serializable{
 	public int getDestinationFloor() {
 		return destinationFloor;
 	}
-	
 	
 	@Override
 	public String toString() {
