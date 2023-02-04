@@ -75,3 +75,5 @@ The Main file contains the main method for running the program.
 - wrote Javadocs for RequestData
 
 #### Robert Simionescu
+- Created the Main file
+- Added Javadocs to unit tests
