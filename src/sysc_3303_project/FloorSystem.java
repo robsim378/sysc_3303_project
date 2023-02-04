@@ -37,9 +37,6 @@ public class FloorSystem implements Runnable{
      * @return	ArrayList<RequestData>, a list of requests parsed from the classes text file
      */
     private ArrayList<RequestData> parseData(){
-    	
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-
     	ArrayList<RequestData> data = new ArrayList<RequestData>();
     	
     	BufferedReader br = null;
