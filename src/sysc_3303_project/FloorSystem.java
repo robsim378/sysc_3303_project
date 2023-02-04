@@ -58,10 +58,15 @@ public class FloorSystem implements Runnable{
     			if(line == null)
     				break;
     			
-    			data.add(RequestData.of(line));
+    			// If the provided line is invalid and throws an error during generation, catch and do not add
+    			try {
+        			data.add(RequestData.of(line));
+    			} catch(Exception e) {
+    				e.printStackTrace();
+    			}
     			
     		}
-    	} catch (IOException e) {
+    	} catch (Exception e) {
     		e.printStackTrace();
     	}
     	return data;
