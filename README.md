@@ -42,6 +42,11 @@ The Main file contains the main method for running the program.
 6. Click the run button within Eclipse.
 
 ## Testing
+SchedulerTest.java: The package sysc_3303_project contains the tests for the Scheduler class that make up Testing. Methods like hasRequests, addRequest, hasResponses, and addResponse are examined for correctness. The tests produce data and compare actual results to expected results.
+
+RequestDataTest.java: contains the tests for the RequestData class in the sysc_3303_project package. It tests methods like getRequestTime, getCurrentFloor, getDirection, and getDestinationFloor to make sure they work correctly. The tests produce data and compare actual results to expected results.
+
+In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3303_project package in your workspace. In Eclipse, the tests can be run in the following ways: For the tests to function, the project classpath needs to contain all necessary dependencies, including JUnit and the sysc_3303_project package. When right-clicking a test class file, such as SchedulerTest.java, select "Run As" followed by "JUnit Test" from the context menu. The results of the tests, including any that were incorrect or failed, will be displayed in Eclipse's JUnit view.
 
 ## Contributions
 
@@ -60,6 +65,8 @@ The Main file contains the main method for running the program.
 - constructed README.md
 
 #### Khalid Merai
+-created the JUnit test classes for the Scheduler,requestData and Elevator
+- The testing section of the README.md 
 
 #### Andrei Popescu
 
