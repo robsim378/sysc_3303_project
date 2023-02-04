@@ -76,3 +76,4 @@ The Main file contains the main method for running the program.
 
 #### Robert Simionescu
 - Created the Main file
+- Added Javadocs to unit tests
