@@ -9,6 +9,9 @@
 
 ## Files
 
+All files can be found within the GitHub repository, located at:
+https://github.com/robsim378/sysc_3303_project
+
 ### Scheduler.java
 The Scheduler class is responsible for passing requests from the Floor to 
 the Elevator, and passing the responses from the Elevator back to the Floor.
