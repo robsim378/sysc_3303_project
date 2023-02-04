@@ -16,15 +16,23 @@ import sysc_3303_project.Direction;
 import sysc_3303_project.RequestData;
 import sysc_3303_project.Scheduler;
 
+/**
+ * Test class for Scheduler
+ */
 public class SchedulerTest {
-
     private Scheduler scheduler;
 
+    /**
+     * Initializes the scheduler used for testing.
+     */
     @Before
     public void setUp() {
         scheduler = new Scheduler();
     }
 
+    /**
+     * Tests that the scheduler can correctly determine if it has any pending requests.
+     */
     @Test
     public void testHasRequests() {
         assertFalse(scheduler.hasRequests());
@@ -35,6 +43,9 @@ public class SchedulerTest {
         assertTrue(scheduler.hasRequests());
     }
 
+    /**
+     * Tests that the scheduler can correctly handle having requests added.
+     */
     @Test
     public void testAddRequest() {
         assertFalse(scheduler.hasRequests());
@@ -47,6 +58,9 @@ public class SchedulerTest {
         assertEquals(request, scheduler.getRequest());
     }
 
+    /**
+     * Checks whether the scheduler can correctly determine if it has any pending responses.
+     */
     @Test
     public void testHasResponses() {
         assertFalse(scheduler.hasResponses());
@@ -58,6 +72,9 @@ public class SchedulerTest {
         assertTrue(scheduler.hasResponses());
     }
 
+    /**
+     * Tests that the scheduler can properly have responses added to it.
+     */
     @Test
     public void testAddResponse() {
         assertFalse(scheduler.hasResponses());
