@@ -14,8 +14,13 @@ import org.junit.jupiter.api.Test;
 import sysc_3303_project.Direction;
 import sysc_3303_project.RequestData;
 
+/**
+ * Test class for RequestData
+ */
 public class RequestDataTest {
-
+    /**
+     * Tests that getting the request time returns the correct time.
+     */
     @Test
     public void testGetRequestTime() {
         LocalTime time = LocalTime.of(12, 0, 0);
@@ -23,18 +28,27 @@ public class RequestDataTest {
         assertEquals(time, request.getRequestTime());
     }
 
+    /**
+     * Tests that getting the floor number from which the request was sent returns the correct floor.
+     */
     @Test
     public void testGetCurrentFloor() {
         RequestData request = new RequestData(LocalTime.of(12, 0, 0), 1, Direction.UP, 5);
         assertEquals(1, request.getCurrentFloor());
     }
 
+    /**
+     * Tests that getting the direction of the request returns the correct direction.
+     */
     @Test
     public void testGetDirection() {
         RequestData request = new RequestData(LocalTime.of(12, 0, 0), 1, Direction.UP, 5);
         assertEquals(Direction.UP, request.getDirection());
     }
 
+    /**
+     * Tests that getting the destination floor of the request returns the correct direction.
+     */
     @Test
     public void testGetDestinationFloor() {
         RequestData request = new RequestData(LocalTime.of(12, 0, 0), 1, Direction.UP, 5);

@@ -9,8 +9,13 @@ import java.io.File;
 
 /**
  * @author Robert Simionescu
+ * Main class used to run the elevator program. Initializes elevator, floorsystem, and scheduler threads and starts them.
  */
 public class Main {
+    /**
+     * main function that initializes everything to run the elevator program.
+     * @param args
+     */
     public static void main(String[] args) {
         Thread elevator, floorSystem;
         Scheduler scheduler;
