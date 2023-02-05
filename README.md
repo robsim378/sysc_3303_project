@@ -42,7 +42,8 @@ The Main file contains the main method for running the program.
 3. Select General/Existing Projects into Workspace from the import wizard menu and click "Next".
 4. Click the "Select archive file:" option and click "Browse" or type the filepath into the box.
 5. Click "Finish".
-6. Click the run button within Eclipse.
+6. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_1 -> src -> sysc_3303_project.
+7. Right click on "Main.java" and select "Run As" -> "Java Application".
 
 ## Testing
  SchedulerTest.java: The package sysc_3303_project contains the tests for the Scheduler class that make up Testing. Methods like hasRequests, addRequest, hasResponses, and addResponse are examined for correctness. The tests produce data and compare actual results to expected results.
@@ -68,7 +69,7 @@ The Main file contains the main method for running the program.
 - constructed README.md
 
 #### Khalid Merai
- -created the JUnit test classes for the Scheduler,requestData and Elevator
+ - created the JUnit test classes for the Scheduler,requestData and Elevator
  - The testing section of the README.md 
 
 #### Andrei Popescu
