@@ -12,10 +12,14 @@ package sysc_3303_project;
  */
 public class Elevator implements Runnable{
 
+    private enum ElevatorState {STATIONARY_DOORS_OPEN, STATIONARY_DOORS_CLOSED, DOORS_OPENING, DOORS_CLOSING, MOVING}
     private final Scheduler scheduler;
     private final int elevatorID;
     private int elevatorFloor;
     private Direction direction;
+    private ElevatorState state;
+    private int destinationFloor;
+
 
     /**
      * Constructor for the Elevator class.
@@ -27,43 +31,74 @@ public class Elevator implements Runnable{
         this.scheduler = scheduler;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
+        state = ElevatorState.STATIONARY_DOORS_OPEN;
     }
 
     /**
-     * Move the elevator to a desired floor.
-     *
-     * @param newFloor int, the floor to move to
+     * Move the elevator one floor towards its destination
      */
-    private void moveElevator(int newFloor) {
-        System.out.println("Elevator " + elevatorID + " moving " + this.direction + " to Floor " + newFloor);
-        this.elevatorFloor = newFloor;
-        System.out.println("Elevator " + elevatorID + " reached Floor " + this.elevatorFloor);
-        // passengers load/unload
+    private void moveElevator() {
+        int resultFloor;
+        if (direction == Direction.UP) {
+            resultFloor = elevatorFloor + 1;
+        }
+        else {
+            resultFloor = elevatorFloor - 1;
+        }
+        System.out.println("Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
+        elevatorFloor = resultFloor;
+
+        // Sleep for however long
     }
+
 
     /**
      * The run method for the Elevator thread.
-     * Elevator receives a request, moves, then responds.
+     * Contains the state machine for the Elevator.
      */
     public void run() {
         System.out.println("Elevator thread started");
 
         while (true) {
-            RequestData request = scheduler.getRequest();
-            System.out.println("Elevator " + elevatorID + " received request: " + request);
-            int currentFloor = request.getCurrentFloor();
-            int destinationFloor = request.getDestinationFloor();
+            switch (state) {
+                case STATIONARY_DOORS_OPEN:
+                    System.out.println("Elevator " + elevatorID + " doors open");
+                    // TODO: Wait for scheduler to send "close door" signal
+                    state = ElevatorState.DOORS_CLOSING;
+                    break;
+                case STATIONARY_DOORS_CLOSED:
+                    System.out.println("Elevator " + elevatorID + " doors closed");
+                    // TODO: Wait for scheduler to send "move" or "open door" signal
+                    // if "open door" signal
+                    state = ElevatorState.DOORS_OPENING;
+                    // if "move" signal
+                    state = ElevatorState.MOVING;
+                    break;
+                case DOORS_CLOSING:
+                    System.out.println("Elevator " + elevatorID + " closing doors");
+                    // Wait for doors to finish closing
+                    state = ElevatorState.STATIONARY_DOORS_CLOSED;
+                    break;
+                case DOORS_OPENING:
+                    System.out.println("Elevator " + elevatorID + " opening doors");
+                    // Wait for doors to finish opening
+                    state = ElevatorState.STATIONARY_DOORS_OPEN;
+                    break;
+                case MOVING:
+                    // TODO: get destinationFloor from scheduler
+                    // Check to see if destinationFloor has changed after every floor in case a button is pressed between
+                    // the current floor and the destination floor (e.g. going from floor 2 -> 5 and someone on floor 4
+                    // presses the up button.)
+                    if (elevatorFloor == destinationFloor) {
+                        System.out.println("Elevator " + elevatorID + " reached floor " + elevatorFloor);
+                        state = ElevatorState.STATIONARY_DOORS_CLOSED;
+                    }
+                    else {
+                        moveElevator();
+                    }
 
-            // the direction will not always be the same as a request in future iterations
-            this.direction = request.getDirection();
-
-            // go to the floor where the request came from
-            moveElevator(currentFloor);
-            // take the passenger to the destination floor
-            moveElevator(destinationFloor);
-
-            scheduler.addResponse(request);
-            System.out.println("Elevator " + elevatorID + " sent response: " + request);
+                    break;
+            }
         }
     }
 }
