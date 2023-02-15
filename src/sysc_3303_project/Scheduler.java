@@ -6,6 +6,7 @@
 package sysc_3303_project;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -13,95 +14,138 @@ import java.util.Queue;
  *	The Scheduler class is responsible for passing requests from the Floor to the Elevator,
  *	and passing the responses from the Elevator back to the Floor. It acts as a monitor.
  */
-public class Scheduler implements Runnable {
+public class Scheduler implements Runnable, SchedulerState {
 	
-	private Queue<RequestData> incomingRequests;
-	private Queue<RequestData> receivedResponses;
+	private Queue<RequestData> requestQueue; 
+	private List<RequestData> pendingRequests;
+	private List<RequestData> inProgressRequests;
+	private RequestData activeRequest;
+	private BaseSchedulerState state;
+	private Elevator elevator;
+	private int targetFloor;
 	
 	/**
 	 * Creates a Scheduler with no requests or responses.
 	 */
 	public Scheduler() {
-		incomingRequests = new LinkedList<>();
-		receivedResponses = new LinkedList<>();
+		activeRequest = null;
+		pendingRequests = new LinkedList<>();
+		inProgressRequests = new LinkedList<>();
+		targetFloor = 1;
 	}
 	
-	/**
-	 * Checks whether there are pending requests to elevators for this Scheduler.
-	 * @return true if there is at least one pending request, false otherwise
-	 */
-	public boolean hasRequests() {
-		return !incomingRequests.isEmpty();
+	public Elevator getElevator() {
+		return elevator;
 	}
 	
-	/**
-	 * Adds a request to this Scheduler, that should be sent to the elevators to be served.
-	 * @param request the RequestData to send to the elevators.
-	 */
-	public synchronized void addRequest(RequestData request) {
-		incomingRequests.add(request);
-		System.out.println("Scheduler received request from floor: " + request.toString());
-		notifyAll();
+	public int getTargetFloor() {
+		return targetFloor;
 	}
 	
-	/**
-	 * Gets data for a request that needs to be served. This method waits for
-	 * a request to be created before returning.
-	 * @return RequestData corresponding to a request to serve
-	 */
-	public synchronized RequestData getRequest() {
-		while (!hasRequests()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	private synchronized void setActiveRequest(RequestData request) {
+		activeRequest = request;
+		if (inProgressRequests.contains(request)) {
+			targetFloor = request.getDestinationFloor();
+		} else {
+			targetFloor = request.getCurrentFloor();
 		}
-		System.out.println("Scheduler passed a request to elevator.");
-		notifyAll();
-		return incomingRequests.remove();
 	}
 	
-	/**
-	 * Checks whether the Scheduler has responses from elevators that need to be sent to a Floor.
-	 * @return true if there is at least one pending response, false otherwise
-	 */
-	public boolean hasResponses() {
-		return !receivedResponses.isEmpty();
-	}
-	
-	/**
-	 * Adds a response to this Scheduler that should be passed back to a Floor.
-	 * @param response the RequestData to pass to the floor.
-	 */
-	public synchronized void addResponse(RequestData response) {
-		receivedResponses.add(response);
-		System.out.println("Scheduler received response from elevator: " + response.toString());
-
-		notifyAll();
-	}
-	
-	/**
-	 * Gets data for a response corresponding to a served request. This method waits for
-	 * a request to be served, and a response created, before returning.
-	 * @return RequestData corresponding to a request to serve
-	 */
-	public synchronized RequestData getResponse() {
-		while (!hasResponses()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	public synchronized void setActiveRequest() {
+		if (!requestQueue.isEmpty()) {
+			setActiveRequest(requestQueue.peek());
 		}
-		System.out.println("Scheduler passed a response to floor.");
-		notifyAll();
-		return receivedResponses.remove();
+	}
+	
+	public synchronized void addPendingRequest(RequestData request) {
+		pendingRequests.add(request);
+		if (activeRequest == null) {
+			setActiveRequest();
+		}
+	}
+	
+	public synchronized void markRequestInProgress(RequestData request) {
+		if (!pendingRequests.contains(request)) {
+			return;
+		}
+		pendingRequests.remove(request);
+		inProgressRequests.add(request);
+		if (activeRequest == request) {
+			targetFloor = request.getDestinationFloor();
+		}
+	}
+	
+	public synchronized void completeRequest(RequestData request) {
+		pendingRequests.remove(request);
+		inProgressRequests.remove(request);
+		requestQueue.remove(request);
+		if (activeRequest == request) {
+			setActiveRequest();
+		}
+	}
+	
+	public synchronized List<RequestData> getPendingRequests() {
+		return pendingRequests;
+	}
+	
+	public synchronized List<RequestData> getInProgressRequests() {
+		return inProgressRequests;
+	}
+	
+	public synchronized boolean hasRequests() {
+		return !requestQueue.isEmpty();
+	}
+	
+	public void setState(BaseSchedulerState newState) {
+		state.onExit();
+		state = newState;
+		newState.onEnter();
+		newState.doAction();
 	}
 
 	@Override
 	public void run() {
-		// For this iteration, this thread does nothing - the Scheduler acts as a monitor, running on the main thread.
-		System.out.println("Scheduler thread running");
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleFloorButtonPressed(RequestData requestData) {
+		state.handleFloorButtonPressed(requestData);
+	}
+
+	@Override
+	public void handleElevatorApproachingFloor(Elevator elevator, int floorNumber) {
+		state.handleElevatorApproachingFloor(elevator, floorNumber);
+	}
+
+	@Override
+	public void handleElevatorButtonPressed(Elevator elevator, int buttonNumber) {
+		state.handleElevatorButtonPressed(elevator, buttonNumber);
+	}
+
+	@Override
+	public void handleDoorsClosed() {
+		state.handleDoorsClosed();
+	}
+
+	@Override
+	public void handleDoorsOpened() {
+		state.handleDoorsOpened();
+	}
+
+	@Override
+	public void onEnter() {
+
+	}
+
+	@Override
+	public void onExit() {
+		
+	}
+
+	@Override
+	public void doAction() {
+		
 	}
 }
