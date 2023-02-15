@@ -7,18 +7,17 @@
 package sysc_3303_project;
 
 /**
- * @author Ian Holmes
+ * @author Ian Holmes & Robert Simionescu
  * Represents an Elevator to move between Floors.
+ * Context class for the elevator state machine.
  */
-public class Elevator implements Runnable{
+public class Elevator implements Runnable {
 
-    private enum ElevatorState {STATIONARY_DOORS_OPEN, STATIONARY_DOORS_CLOSED, DOORS_OPENING, DOORS_CLOSING, MOVING}
     private final Scheduler scheduler;
     private final int elevatorID;
     private int elevatorFloor;
     private Direction direction;
     private ElevatorState state;
-    private int destinationFloor;
 
 
     /**
@@ -31,13 +30,38 @@ public class Elevator implements Runnable{
         this.scheduler = scheduler;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
-        state = ElevatorState.STATIONARY_DOORS_OPEN;
+        state = new ElevatorDoorsClosedState();
+    }
+
+    /**
+     * Getter for the elevatorID
+     * @return int, the ID number of this elevator.
+     */
+    public int getElevatorID() {
+        return elevatorID;
+    }
+
+
+    /**
+     * Getter for the elevator's current floor
+     * @return int, the current floor the elevator is on.
+     */
+    public int getFloor() {
+        return elevatorFloor;
+    }
+
+    /**
+     * Setter for the direction
+     * @param direction Direction, the direction to move the elevator.
+     */
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     /**
      * Move the elevator one floor towards its destination
      */
-    private void moveElevator() {
+    public void moveElevator() {    // TODO: This should maybe be moved into ElevatorMovingState, but I'm not sure.
         int resultFloor;
         if (direction == Direction.UP) {
             resultFloor = elevatorFloor + 1;
@@ -59,53 +83,27 @@ public class Elevator implements Runnable{
     public void run() {
         System.out.println("Elevator thread started");
 
-        while (true) {
-            switch (state) {
-                case STATIONARY_DOORS_OPEN:
-                    System.out.println("Elevator " + elevatorID + " doors open");
-                    // TODO: Wait for scheduler to send "close door" signal
-                    state = ElevatorState.DOORS_CLOSING;
-                    break;
-                case STATIONARY_DOORS_CLOSED:
-                    System.out.println("Elevator " + elevatorID + " doors closed");
-                    // TODO: Wait for scheduler to send "move" or "open door" signal
-                    // if "open door" signal
-                    state = ElevatorState.DOORS_OPENING;
-                    // if "move" signal
-                    state = ElevatorState.MOVING;
-                    break;
-                case DOORS_CLOSING:
-                    System.out.println("Elevator " + elevatorID + " closing doors");
-                    // Wait for doors to finish closing
-                    state = ElevatorState.STATIONARY_DOORS_CLOSED;
-                    break;
-                case DOORS_OPENING:
-                    System.out.println("Elevator " + elevatorID + " opening doors");
-                    // Wait for doors to finish opening
-                    state = ElevatorState.STATIONARY_DOORS_OPEN;
-                    break;
-                case MOVING:
-                    // TODO: get destinationFloor from scheduler
-                    // Check to see if destinationFloor has changed after every floor in case a button is pressed between
-                    // the current floor and the destination floor (e.g. going from floor 2 -> 5 and someone on floor 4
-                    // presses the up button.)
-                    if (elevatorFloor == destinationFloor) {
-                        System.out.println("Elevator " + elevatorID + " reached floor " + elevatorFloor);
-                        state = ElevatorState.STATIONARY_DOORS_CLOSED;
-                    }
-                    else {
-                        moveElevator();
-                    }
+        String command; // TODO: Maybe make this an enum
 
+        while (true) {
+            command = ""; // TODO: Get this from the scheduler
+            switch (command.toUpperCase()) {
+                case "OPEN_DOORS":
+                    state = state.openDoors(this);
+                    break;
+                case "CLOSE_DOORS":
+                    state = state.closeDoors(this);
+                    break;
+                case "SET_DIRECTION":
+                    state = state.setDirection(this, Direction.UP); // TODO: Pass the appropriate direction once the command format has been decided upon
+                    break;
+                case "DO_NOT_STOP_AT_NEXT_FLOOR":
+                    state = state.doNotStopAtNextFloor(this);
+                    break;
+                case "STOP_AT_NEXT_FLOOR":
+                    state = state.stopAtNextFloor(this);
                     break;
             }
         }
     }
 }
-
-/*
-TODO: must add functionality for:
-    - determining direction (continue same direction until final floor request in that direction)
-    - passengers loading/unloading
-    - handling new requests while the elevator is moving
- */
