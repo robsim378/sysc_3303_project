@@ -17,13 +17,23 @@ public class Scheduler implements Runnable {
 	
 	private Queue<RequestData> incomingRequests;
 	private Queue<RequestData> receivedResponses;
+	private final EventBuffer<SchedulerEventType> eventBuffer;
+	private final EventBuffer<ElevatorEventType> elevatorBuffer;
+	private final EventBuffer<FloorEventType> floorBuffer;
 	
 	/**
 	 * Creates a Scheduler with no requests or responses.
 	 */
-	public Scheduler() {
+	public Scheduler(EventBuffer<ElevatorEventType> elevatorBuffer, EventBuffer<FloorEventType> floorBuffer) {
 		incomingRequests = new LinkedList<>();
 		receivedResponses = new LinkedList<>();
+		eventBuffer = new EventBuffer<>();
+		this.elevatorBuffer = elevatorBuffer;
+		this.floorBuffer = floorBuffer;
+	}
+	
+	public EventBuffer<SchedulerEventType> getEventBuffer() {
+		return eventBuffer;
 	}
 	
 	/**

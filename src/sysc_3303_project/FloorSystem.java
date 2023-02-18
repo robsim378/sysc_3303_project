@@ -18,18 +18,24 @@ import java.util.ArrayList;
  */
 public class FloorSystem implements Runnable{
 
-    private Scheduler scheduler;
-    
+
     private String textFileLocation;
+    private EventBuffer<FloorEventType> eventBuffer;
+    private EventBuffer<SchedulerEventType> schedulerBuffer;
 
     /**
      * Constructor for the Floor System class.
      * @param scheduler			Scheduler, the scheduler to communicate with
      * @param textFileLocation	String, the text tile to use for parsing
      */
-    public FloorSystem (Scheduler scheduler, String textFileLocation){
-        this.scheduler = scheduler;
+    public FloorSystem (EventBuffer<SchedulerEventType> schedulerBuffer, String textFileLocation){
+        this.schedulerBuffer = schedulerBuffer;
         this.textFileLocation = textFileLocation;
+        eventBuffer = new EventBuffer<>();
+    }
+    
+    public EventBuffer<FloorEventType> getEventBuffer() {
+    	return eventBuffer;
     }
     
     /**
