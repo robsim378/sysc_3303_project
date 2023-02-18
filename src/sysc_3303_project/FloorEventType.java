@@ -8,5 +8,5 @@ package sysc_3303_project;
  *
  */
 public enum FloorEventType {
-	
+	BUTTON_PRESSED
 }
