@@ -6,6 +6,7 @@
 package sysc_3303_project;
 
 import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 
 import java.util.LinkedList;
 import java.util.List;

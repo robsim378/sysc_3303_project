@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import sysc_3303_project.FloorSystem;
 import sysc_3303_project.RequestData;
+import sysc_3303_project.floor_subsystem.FloorSystem;
 
 /**
  * A class for testing the Floor System mechanics
