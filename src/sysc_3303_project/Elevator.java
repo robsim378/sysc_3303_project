@@ -13,13 +13,14 @@ package sysc_3303_project;
 public class Elevator implements Runnable{
 
     private enum ElevatorState {STATIONARY_DOORS_OPEN, STATIONARY_DOORS_CLOSED, DOORS_OPENING, DOORS_CLOSING, MOVING}
-    private final Scheduler scheduler;
+    private final EventBuffer<SchedulerEventType> schedulerBuffer;
     private final int elevatorID;
     private int elevatorFloor;
     private Direction direction;
     private ElevatorState state;
     private int destinationFloor;
-
+    private EventBuffer<ElevatorEventType> eventBuffer;
+    
 
     /**
      * Constructor for the Elevator class.
@@ -27,12 +28,17 @@ public class Elevator implements Runnable{
      * @param scheduler Scheduler, the scheduler to receive requests from
      * @param elevatorID int, the ID of the Elevator
      */
-    public Elevator(Scheduler scheduler, int elevatorID) {
-        this.scheduler = scheduler;
+    public Elevator(EventBuffer<SchedulerEventType> schedulerBuffer, int elevatorID) {
+        this.schedulerBuffer = schedulerBuffer;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
         state = ElevatorState.STATIONARY_DOORS_OPEN;
+        eventBuffer = new EventBuffer<>();
     }
+    
+    public EventBuffer<ElevatorEventType> getEventBuffer() {
+		return eventBuffer;
+	}
 
     /**
      * Move the elevator one floor towards its destination
