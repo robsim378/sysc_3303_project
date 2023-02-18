@@ -3,10 +3,9 @@
  */
 package sysc_3303_project.scheduler_subsystem;
 
-import sysc_3303_project.Elevator;
 import sysc_3303_project.RequestData;
-import sysc_3303_project.Scheduler;
 import sysc_3303_project.State;
+import sysc_3303_project.ElevatorSubsystem.Elevator;
 
 /**
  * @author apope

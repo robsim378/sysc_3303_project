@@ -9,14 +9,10 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 public abstract class FloorState implements State {
 
 	@Override
-	public void doEntry() {
-		Logger.getLogger().logNotification(this.getClass().getName(), "No entry activity");
-	}
+	public void doEntry() {}
 
 	@Override
-	public void doExit() {
-		Logger.getLogger().logNotification(this.getClass().getName(), "No exit activity");
-	}
+	public void doExit() {}
 	
 	public abstract FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> schedulerBuffer);
 	

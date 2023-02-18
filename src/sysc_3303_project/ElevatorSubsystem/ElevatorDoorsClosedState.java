@@ -1,7 +1,6 @@
 package sysc_3303_project.ElevatorSubsystem;
 
 import sysc_3303_project.Direction;
-import sysc_3303_project.Elevator;
 
 /**
  * The state in which the elevator is idle with its doors closed.

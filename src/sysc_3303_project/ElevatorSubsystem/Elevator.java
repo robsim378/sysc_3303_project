@@ -4,12 +4,12 @@
  * @version 1.0
 */
 
-package sysc_3303_project;
+package sysc_3303_project.ElevatorSubsystem;
 
-import sysc_3303_project.ElevatorSubsystem.ElevatorDoorsClosedState;
-import sysc_3303_project.ElevatorSubsystem.ElevatorDoorsOpenState;
-import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
-import sysc_3303_project.ElevatorSubsystem.ElevatorState;
+import logging.Logger;
+import sysc_3303_project.Direction;
+import sysc_3303_project.Event;
+import sysc_3303_project.EventBuffer;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -34,12 +34,12 @@ public class Elevator implements Runnable {
      * @param schedulerBuffer EventBuffer, the scheduler to receive requests from
      * @param elevatorID int, the ID of the Elevator
      */
-    public Elevator(EventBuffer<SchedulerEventType> schedulerBuffer, int elevatorID) {
+    public Elevator(EventBuffer<SchedulerEventType> schedulerBuffer, EventBuffer<ElevatorEventType> eventBuffer, int elevatorID) {
         this.schedulerBuffer = schedulerBuffer;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
-        eventBuffer = new EventBuffer<>();
+        this.eventBuffer = eventBuffer;
     }
 
     public EventBuffer<ElevatorEventType> getEventBuffer() {
@@ -73,6 +73,10 @@ public class Elevator implements Runnable {
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
+    
+    public Direction getDirection() {
+    	return direction;
+    }
 
     /**
      * Move the elevator one floor towards its destination
@@ -85,7 +89,7 @@ public class Elevator implements Runnable {
         else {
             resultFloor = elevatorFloor - 1;
         }
-        System.out.println("Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
+        Logger.getLogger().logNotification(this.getClass().getName(), "Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
         elevatorFloor = resultFloor;
 
         // Sleep for however long
@@ -99,10 +103,16 @@ public class Elevator implements Runnable {
     public void run() {
         System.out.println("Elevator thread started");
         Event<ElevatorEventType> event;
+        
 
         while (true) {
-            state.doExit();
+
             event = eventBuffer.getEvent();
+
+    		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());    		
+
+            state.doExit();
+
             switch (event.getEventType()) {
                 case OPEN_DOORS:
                     state = state.openDoors();
@@ -117,10 +127,11 @@ public class Elevator implements Runnable {
                     state = state.closeDoorsTimer();
                     break;
                 case START_MOVING_IN_DIRECTION:
-                    state = state.setDirection(Direction.UP);
+                    state = state.setDirection((Direction) event.getPayload());
                     break;
                 case MOVING_TIMER:
                     state = state.travelThroughFloorsTimer();
+                    break;
                 case CONTINUE_MOVING:
                     state = state.continueMoving();
                     break;

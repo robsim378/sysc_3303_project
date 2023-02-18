@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import sysc_3303_project.Direction;
 import sysc_3303_project.RequestData;
-import sysc_3303_project.Scheduler;
+import sysc_3303_project.scheduler_subsystem.Scheduler;
 
 /**
  * Test class for Scheduler

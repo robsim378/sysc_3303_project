@@ -9,9 +9,6 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
  */
 public class ElevatorMovingState extends ElevatorState {
 
-    private boolean moving;
-    private Direction direction;
-
     public ElevatorMovingState(Elevator context) {
         super(context);
     }
@@ -25,7 +22,7 @@ public class ElevatorMovingState extends ElevatorState {
     @Override
     public ElevatorState travelThroughFloorsTimer() {
         context.getSchedulerBuffer().addEvent(
-                new Event<>(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR,context,context.getFloor()));
+                new Event<>(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR,context,context.getFloor() + (context.getDirection() == Direction.UP? 1 : -1)));
 
         return new ElevatorApproachingFloorsState(context);
     }
