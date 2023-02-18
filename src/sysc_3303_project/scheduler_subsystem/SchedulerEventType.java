@@ -1,7 +1,7 @@
 /**
  * 
  */
-package sysc_3303_project;
+package sysc_3303_project.scheduler_subsystem;
 
 /**
  * @author apope

@@ -6,6 +6,7 @@
 package sysc_3303_project;
 
 import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+import sysc_3303_project.scheduler_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 
 import java.util.LinkedList;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.Queue;
 
 import logging.Logger;
-import scheduler_subsystem.SchedulerState;
-import scheduler_subsystem.WaitingSchedulerState;
 
 /**
  * 	@author Andrei Popescu

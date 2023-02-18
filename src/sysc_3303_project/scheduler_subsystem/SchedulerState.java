@@ -1,7 +1,7 @@
 /**
  * 
  */
-package scheduler_subsystem;
+package sysc_3303_project.scheduler_subsystem;
 
 import sysc_3303_project.Elevator;
 import sysc_3303_project.RequestData;

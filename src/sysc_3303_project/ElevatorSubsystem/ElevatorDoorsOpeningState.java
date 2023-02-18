@@ -3,7 +3,7 @@ package sysc_3303_project.ElevatorSubsystem;
 import sysc_3303_project.DelayTimerThread;
 import sysc_3303_project.Elevator;
 import sysc_3303_project.Event;
-import sysc_3303_project.SchedulerEventType;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 public class ElevatorDoorsOpeningState extends ElevatorState{
 

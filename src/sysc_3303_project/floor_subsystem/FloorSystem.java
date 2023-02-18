@@ -8,16 +8,14 @@ package sysc_3303_project.floor_subsystem;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import logging.Logger;
 import sysc_3303_project.DelayTimerThread;
 import sysc_3303_project.Event;
 import sysc_3303_project.EventBuffer;
 import sysc_3303_project.RequestData;
-import sysc_3303_project.SchedulerEventType;
 
 /**
  * @author Liam Gaudet

@@ -1,6 +1,7 @@
 package sysc_3303_project.ElevatorSubsystem;
 
 import sysc_3303_project.*;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
  * The state in which the elevator is moving in a direction.
