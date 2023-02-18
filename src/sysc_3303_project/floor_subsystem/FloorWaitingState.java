@@ -4,7 +4,7 @@ import sysc_3303_project.Event;
 import sysc_3303_project.EventBuffer;
 import sysc_3303_project.FloorSystem;
 import sysc_3303_project.RequestData;
-import sysc_3303_project.SchedulerEventType;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 public class FloorWaitingState extends FloorState {
 

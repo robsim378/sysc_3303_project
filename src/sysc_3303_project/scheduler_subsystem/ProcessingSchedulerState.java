@@ -1,12 +1,12 @@
 /**
  * 
  */
-package scheduler_subsystem;
+package sysc_3303_project.scheduler_subsystem;
 
 import logging.Logger;
 import sysc_3303_project.Direction;
 import sysc_3303_project.Elevator;
-import sysc_3303_project.ElevatorEventType;
+import sysc_3303_project.ElevatorSubsystem.*;
 import sysc_3303_project.Event;
 import sysc_3303_project.RequestData;
 import sysc_3303_project.Scheduler;

@@ -10,6 +10,7 @@ import sysc_3303_project.ElevatorSubsystem.ElevatorDoorsClosedState;
 import sysc_3303_project.ElevatorSubsystem.ElevatorDoorsOpenState;
 import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
 import sysc_3303_project.ElevatorSubsystem.ElevatorState;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
  * @author Ian Holmes & Robert Simionescu
