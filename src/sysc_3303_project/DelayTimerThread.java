@@ -1,5 +1,7 @@
 package sysc_3303_project;
 
+import logging.Logger;
+
 public class DelayTimerThread<T> implements Runnable {
 	
 	private int timeDelay;
@@ -17,6 +19,7 @@ public class DelayTimerThread<T> implements Runnable {
 	public void run() {
 		
 		// Wait for a specified amount of time before triggering the event
+		Logger.getLogger().logNotification(this.getClass().getName(), "Timer started: " + timeDelay + " milliseconds to event buffer " + eventBuffer.toString());
 		try {
 			Thread.sleep(timeDelay);
 		} catch (InterruptedException e) {
@@ -24,6 +27,7 @@ public class DelayTimerThread<T> implements Runnable {
 			e.printStackTrace();
 		}
 		
+		Logger.getLogger().logNotification(this.getClass().getName(), "Timer completed: " + timeDelay + " milliseconds to event buffer " + eventBuffer.toString());
 		// Trigger the event and then finish
 		eventBuffer.addEvent(event);
 		
