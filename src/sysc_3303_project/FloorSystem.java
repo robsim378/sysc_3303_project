@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import sysc_3303_project.floor_subsystem.FloorState;
+import sysc_3303_project.floor_subsystem.FloorWaitingState;
 
 /**
  * @author Liam Gaudet
@@ -37,6 +38,7 @@ public class FloorSystem implements Runnable{
         this.schedulerBuffer = schedulerBuffer;
         this.textFileLocation = textFileLocation;
         eventBuffer = new EventBuffer<>();
+        state = new FloorWaitingState(this);
     }
     
     public EventBuffer<FloorEventType> getEventBuffer() {
@@ -103,6 +105,8 @@ public class FloorSystem implements Runnable{
     			throw new IllegalArgumentException();
     		}
     		
+    		this.state.doEntry();
+    		
     		
     	}
     }
@@ -123,7 +127,7 @@ public class FloorSystem implements Runnable{
     	for (RequestData data: requestListFromTextFile){
     		LocalTime requestTime = data.getRequestTime();
     		
-    		int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
+    		int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
     		
     		System.out.println("FloorSystem: Delaying request to queue");
     		Event<FloorEventType> event = new Event<FloorEventType>(FloorEventType.BUTTON_PRESSED, this, data);
