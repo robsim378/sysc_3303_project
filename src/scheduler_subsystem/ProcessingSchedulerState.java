@@ -19,12 +19,16 @@ public class ProcessingSchedulerState extends SchedulerState {
 	public ProcessingSchedulerState(Scheduler context) {
 		super(context);
 	}
+	
+	@Override
 	public SchedulerState handleElevatorDoorsClosed(Elevator e) {
 		Direction moveDirection = (e.getFloor() < context.getTargetFloor()) ? Direction.UP : Direction.DOWN;
 		context.getElevatorBuffer().addEvent(
 				new Event<>(ElevatorEventType.START_MOVING_IN_DIRECTION, context, moveDirection));
 		return null;
 	}
+	
+	@Override
 	public SchedulerState handleElevatorDoorsOpened(Elevator e) {
 		int currentFloor = e.getFloor();
 		for (RequestData request : context.getPendingRequests()) {
@@ -44,10 +48,14 @@ public class ProcessingSchedulerState extends SchedulerState {
 		}
 		
 	}
+	
+	@Override
 	public SchedulerState handleElevatorStopped(Elevator e, int floor) {
 		context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.OPEN_DOORS, context, null));
 		return null;
 	}
+	
+	@Override
 	public SchedulerState handleElevatorApproachingFloor(Elevator e, int floor) {
 		boolean stopping = false;
 		for (RequestData requestData : context.getInProgressRequests()) {
@@ -69,6 +77,8 @@ public class ProcessingSchedulerState extends SchedulerState {
 		}
 		return null;
 	}
+	
+	@Override
 	public SchedulerState handleFloorButtonPressed(RequestData request) {
 		context.addPendingRequest(request);
 		return null;

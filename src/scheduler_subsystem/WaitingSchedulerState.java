@@ -14,22 +14,12 @@ import sysc_3303_project.Scheduler;
  *
  */
 public class WaitingSchedulerState extends SchedulerState {
-
+	
 	public WaitingSchedulerState(Scheduler context) {
 		super(context);
 	}
-	public SchedulerState handleElevatorDoorsClosed(Elevator e) {
-		return null;
-	}
-	public SchedulerState handleElevatorDoorsOpened(Elevator e) {
-		return null;
-	}
-	public SchedulerState handleElevatorStopped(Elevator e, int floor) {
-		return null;
-	}
-	public SchedulerState handleElevatorApproachingFloor(Elevator e, int floor) {
-		return null;
-	}
+	
+	@Override
 	public SchedulerState handleFloorButtonPressed(RequestData request) {
 		context.addPendingRequest(request);
 		//here we would assign the request to an elevator but there's only one elevator

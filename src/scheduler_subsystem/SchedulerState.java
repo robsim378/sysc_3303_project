@@ -20,11 +20,21 @@ public abstract class SchedulerState implements State {
 		this.context = context;
 	}
 	
-	public abstract SchedulerState handleElevatorDoorsClosed(Elevator e);
-	public abstract SchedulerState handleElevatorDoorsOpened(Elevator e);
-	public abstract SchedulerState handleElevatorStopped(Elevator e, int floor);
-	public abstract SchedulerState handleElevatorApproachingFloor(Elevator e, int floor);
-	public abstract SchedulerState handleFloorButtonPressed(RequestData request);
+	public SchedulerState handleElevatorDoorsClosed(Elevator e) {
+		throw new IllegalStateException();
+	}
+	public SchedulerState handleElevatorDoorsOpened(Elevator e) {
+		throw new IllegalStateException();
+	}
+	public SchedulerState handleElevatorStopped(Elevator e, int floor) {
+		throw new IllegalStateException();
+	}
+	public SchedulerState handleElevatorApproachingFloor(Elevator e, int floor) {
+		throw new IllegalStateException();
+	}
+	public SchedulerState handleFloorButtonPressed(RequestData request) {
+		throw new IllegalStateException();
+	}
 	@Override
 	public void doEntry() {}
 	@Override
