@@ -9,11 +9,16 @@ import sysc_3303_project.Event;
 import sysc_3303_project.RequestData;
 
 /**
- * @author apope
- *
+ * @author Andrei Popescu
+ * The SchedulerWaitingState represents a Scheduler state where the Scheduler
+ * has no active request and is waiting for one to process.
  */
 public class SchedulerWaitingState extends SchedulerState {
 	
+	/**
+	 * Creates a new SchedulerWaitingState.
+	 * @param context the Scheduler this state is tied to
+	 */
 	public SchedulerWaitingState(Scheduler context) {
 		super(context);
 	}

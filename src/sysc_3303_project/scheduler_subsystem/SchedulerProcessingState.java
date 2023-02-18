@@ -10,11 +10,16 @@ import sysc_3303_project.Event;
 import sysc_3303_project.RequestData;
 
 /**
- * @author apope
- *
+ * @author Andrei Popescu
+ * The SchedulerProcessingState represents a Scheduler state where the Scheduler
+ * has an active request that it is processing.
  */
 public class SchedulerProcessingState extends SchedulerState {
 
+	/**
+	 * Creates a new SchedulerProcessingState.
+	 * @param context the Scheduler this state is tied to
+	 */
 	public SchedulerProcessingState(Scheduler context) {
 		super(context);
 	}

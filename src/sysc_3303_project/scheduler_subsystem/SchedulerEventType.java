@@ -4,8 +4,9 @@
 package sysc_3303_project.scheduler_subsystem;
 
 /**
- * @author apope
- *
+ * @author Andrei Popescu
+ * The SchedulerEventType enumeration represents the different types of events that
+ * a Scheduler is expected to handle.
  */
 public enum SchedulerEventType {
 	ELEVATOR_DOORS_CLOSED, //no payload
