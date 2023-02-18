@@ -5,19 +5,17 @@ package sysc_3303_project.scheduler_subsystem;
 
 import logging.Logger;
 import sysc_3303_project.Direction;
-import sysc_3303_project.Elevator;
 import sysc_3303_project.ElevatorSubsystem.*;
 import sysc_3303_project.Event;
 import sysc_3303_project.RequestData;
-import sysc_3303_project.Scheduler;
 
 /**
  * @author apope
  *
  */
-public class ProcessingSchedulerState extends SchedulerState {
+public class SchedulerProcessingState extends SchedulerState {
 
-	public ProcessingSchedulerState(Scheduler context) {
+	public SchedulerProcessingState(Scheduler context) {
 		super(context);
 	}
 	
@@ -44,9 +42,10 @@ public class ProcessingSchedulerState extends SchedulerState {
 			}
 		}
 		if (context.hasRequests()) {
+            context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.CLOSE_DOORS, context, null));
 			return null;
 		} else {
-			return new WaitingSchedulerState(context);
+			return new SchedulerWaitingState(context);
 		}
 		
 	}
@@ -77,7 +76,7 @@ public class ProcessingSchedulerState extends SchedulerState {
 			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to stop at next floor " + floor);
 			context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.STOP_AT_NEXT_FLOOR, context, null));
 		} else {
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to NOT stop at next floor" + floor);
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to NOT stop at next floor " + floor);
 			context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.CONTINUE_MOVING, context, null));
 		}
 		return null;

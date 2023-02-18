@@ -36,10 +36,10 @@ public class FloorSystem implements Runnable{
      * @param scheduler			Scheduler, the scheduler to communicate with
      * @param textFileLocation	String, the text tile to use for parsing
      */
-    public FloorSystem (EventBuffer<SchedulerEventType> schedulerBuffer, String textFileLocation){
+    public FloorSystem (EventBuffer<SchedulerEventType> schedulerBuffer, EventBuffer<FloorEventType> eventBuffer, String textFileLocation){
         this.schedulerBuffer = schedulerBuffer;
         this.textFileLocation = textFileLocation;
-        eventBuffer = new EventBuffer<>();
+        this.eventBuffer = eventBuffer;
         state = new FloorWaitingState(this);
     }
     
@@ -56,7 +56,7 @@ public class FloorSystem implements Runnable{
     	
     	BufferedReader br = null;
     	
-    	Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Starting to parse data from the text file");
+    	//Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Starting to parse data from the text file");
     	try {
     		br = new BufferedReader(new FileReader(textFileLocation));
     	} catch (FileNotFoundException e) {
@@ -67,7 +67,7 @@ public class FloorSystem implements Runnable{
     	try {
     		while(true) {
     			
-    			Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Parsing line from text file");
+    			//Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Parsing line from text file");
     			String line = br.readLine();
     			
     			if(line == null)
@@ -97,8 +97,7 @@ public class FloorSystem implements Runnable{
     		
     		FloorEventType eventType = event.getEventType();
     		
-    		Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Received event of type: " + eventType);
-    		
+    		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + eventType + ", State: " + state.getClass().getName());    		
     		switch(eventType) {
     		case BUTTON_PRESSED:
     			this.state = this.state.handleButtonPressed((RequestData) event.getPayload(), schedulerBuffer);
@@ -120,7 +119,7 @@ public class FloorSystem implements Runnable{
      */
     @Override
     public void run() {
-    	Logger.getLogger().logNotification(this.getClass().getName(), "Floor thread started");
+    	//Logger.getLogger().logNotification(this.getClass().getName(), "Floor thread started");
     	
     	ArrayList<RequestData> requestListFromTextFile = new ArrayList<RequestData>();
     	
@@ -131,7 +130,7 @@ public class FloorSystem implements Runnable{
     		
     		int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
     		
-    		Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Delaying request to queue");
+    		//Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Delaying request to queue");
     		Event<FloorEventType> event = new Event<FloorEventType>(FloorEventType.BUTTON_PRESSED, this, data);
     		DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, this.eventBuffer);
     		
@@ -139,10 +138,10 @@ public class FloorSystem implements Runnable{
     		
     	}
     	
-    	Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Beginning state loop");
+    	//Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Beginning state loop");
     	beginLoop();
     	
-    	Logger.getLogger().logNotification(this.getClass().getName(), "Terminating program.");
+    	//Logger.getLogger().logNotification(this.getClass().getName(), "Terminating program.");
     	
     }
 }

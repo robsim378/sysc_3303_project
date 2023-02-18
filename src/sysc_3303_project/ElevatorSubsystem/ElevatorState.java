@@ -1,7 +1,6 @@
 package sysc_3303_project.ElevatorSubsystem;
 
 import sysc_3303_project.Direction;
-import sysc_3303_project.Elevator;
 import sysc_3303_project.State;
 
 /**
@@ -47,7 +46,7 @@ public abstract class ElevatorState implements State {
     }
 
     public ElevatorState continueMoving() {
-        throw new IllegalStateException("doNotStopAtNextFloor() must be called from the ElevatorMovingState.");
+        throw new IllegalStateException("continueMoving() must be called from the ElevatorApproachingState.");
     }
 
     public ElevatorState openDoorsTimer() {
@@ -62,9 +61,7 @@ public abstract class ElevatorState implements State {
         throw new IllegalStateException("travelThroughFloorsTimer() must be called from the _________________.");
     }
 
-    public void doEntry() {
-    }
+    public void doEntry() {}
 
-    public void doExit() {
-    }
+    public void doExit() {}
 }

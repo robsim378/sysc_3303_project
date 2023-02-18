@@ -4,7 +4,7 @@ package test;
 import org.junit.Test;
 
 import sysc_3303_project.Direction;
-import sysc_3303_project.Elevator;
+import sysc_3303_project.ElevatorSubsystem.Elevator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

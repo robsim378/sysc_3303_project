@@ -15,15 +15,12 @@ public class FloorWaitingState extends FloorState {
 	}
 	@Override
 	public FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> schedulerBuffer) {
-		
-		Logger.getLogger().logNotification(this.getClass().getName(), "Floor System event triggered: Button pressed");
+		Logger.getLogger().logNotification(this.getClass().getName(), "Sent request to scheduler: " + requestData.toString());
+
 		Event<SchedulerEventType> event = new Event<SchedulerEventType>(SchedulerEventType.FLOOR_BUTTON_PRESSED, context, requestData);
 		
-		Logger.getLogger().logNotification(this.getClass().getName(), "Floor System notified scheduler of button press");
 		schedulerBuffer.addEvent(event);
 		
-		Logger.getLogger().logNotification(this.getClass().getName(), "Floor System State is now: FloorWaitingState");
-
 		return new FloorWaitingState(this.context);
 	}
 

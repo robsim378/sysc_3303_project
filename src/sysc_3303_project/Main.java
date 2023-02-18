@@ -7,7 +7,12 @@ package sysc_3303_project;
 
 import java.io.File;
 
+import sysc_3303_project.ElevatorSubsystem.Elevator;
+import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
+import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
  * @author Robert Simionescu
@@ -21,13 +26,18 @@ public class Main {
     public static void main(String[] args) {
         Thread elevator, floorSystem;
         Scheduler scheduler;
+        
+        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+        EventBuffer<FloorEventType> floorBuffer = new EventBuffer<>();
 
-        scheduler = new Scheduler();
+        scheduler = new Scheduler(elevatorBuffer, floorBuffer);
 
-        elevator = new Thread(new Elevator(scheduler, 0), "Elevator");
+        elevator = new Thread(new Elevator(scheduler.getEventBuffer(), elevatorBuffer, 0), "Elevator");
 
         String floorFilePath = new File("").getAbsolutePath() + "/resources/testing_examples";
-        floorSystem = new Thread(new FloorSystem(scheduler, floorFilePath), "FloorSystem");
+        
+        floorSystem = new Thread(new FloorSystem(scheduler.getEventBuffer(), floorBuffer, floorFilePath), "FloorSystem");
+        
         Thread schedulerThread = new Thread(scheduler, "Scheduler");
 
         elevator.start();

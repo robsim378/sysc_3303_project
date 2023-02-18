@@ -3,10 +3,13 @@
  * Group 1
  * @version 1.0
  */
-package sysc_3303_project;
+package sysc_3303_project.scheduler_subsystem;
 
+import sysc_3303_project.Event;
+import sysc_3303_project.EventBuffer;
+import sysc_3303_project.RequestData;
+import sysc_3303_project.ElevatorSubsystem.Elevator;
 import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
-import sysc_3303_project.scheduler_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 
 import java.util.LinkedList;
@@ -42,7 +45,7 @@ public class Scheduler implements Runnable {
 		eventBuffer = new EventBuffer<>();
 		this.elevatorBuffer = elevatorBuffer;
 		this.floorBuffer = floorBuffer;
-		state = new WaitingSchedulerState(this);
+		state = new SchedulerWaitingState(this);
 		activeRequest = null;
 		targetFloor = -1;
 	}
@@ -125,9 +128,13 @@ public class Scheduler implements Runnable {
 	
 	public void eventLoop() {
 		while (true) {
-			Logger.getLogger().logNotification(this.getClass().getName(), "Waiting for new event...");
+
 			Event<SchedulerEventType> evt = eventBuffer.getEvent();
 			SchedulerState newState = null;
+
+
+    		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + evt.getEventType() + ", State: " + state.getClass().getName());    		
+
 			
 			switch(evt.getEventType()) {
 				case ELEVATOR_DOORS_CLOSED:
@@ -147,7 +154,7 @@ public class Scheduler implements Runnable {
 					break;
 			}
 			
-			if (state != null) {
+			if (newState != null) {
 				state.doExit();
 				state = newState;
 				state.doEntry();

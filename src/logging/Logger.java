@@ -26,7 +26,7 @@ public class Logger {
 	
 	private void log(String className, String logLevel, String message) {
 		LocalDateTime time = LocalDateTime.now();
-		System.out.println(String.format("[Time: %d] [%s] [Class: %s] [%s] %s", time.toEpochSecond(null), Thread.currentThread().getName(), className, logLevel, message));
+		System.out.println(String.format("[Time: %s] [%s] [Class: %s] [%s] %s", time.toString(), Thread.currentThread().getName(), className, logLevel, message));
 	}
 	
 	public void logNotification(String className, String message) {
