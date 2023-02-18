@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import logging.Logger;
 import scheduler_subsystem.SchedulerState;
 import scheduler_subsystem.WaitingSchedulerState;
 
@@ -23,7 +24,6 @@ public class Scheduler implements Runnable {
 	private List<RequestData> pendingRequests;
 	private List<RequestData> inProgressRequests;
 	private RequestData activeRequest;
-	private Elevator elevator;
 	private int targetFloor;
 	private final EventBuffer<SchedulerEventType> eventBuffer;
 	private final EventBuffer<ElevatorEventType> elevatorBuffer;
@@ -64,6 +64,8 @@ public class Scheduler implements Runnable {
 		} else {
 			targetFloor = request.getCurrentFloor();
 		}
+		Logger.getLogger().logNotification(this.getClass().getName(), "Active request is now: " + request.toString());
+		Logger.getLogger().logNotification(this.getClass().getName(), "Target floor is now " + targetFloor);
 	}
 	
 	public synchronized void setActiveRequest() {
@@ -71,12 +73,14 @@ public class Scheduler implements Runnable {
 			setActiveRequest(requestQueue.peek());
 		} else {
 			activeRequest = null;
+			Logger.getLogger().logNotification(this.getClass().getName(), "No active request");
 		}
 	}
 	
 	public synchronized void addPendingRequest(RequestData request) {
 		pendingRequests.add(request);
 		requestQueue.add(request);
+		Logger.getLogger().logNotification(this.getClass().getName(), "Added new pending request: " + request.toString());
 		if (activeRequest == null) {
 			setActiveRequest();
 		}
@@ -88,8 +92,10 @@ public class Scheduler implements Runnable {
 		}
 		pendingRequests.remove(request);
 		inProgressRequests.add(request);
+		Logger.getLogger().logNotification(this.getClass().getName(), "Picked up passenger for request: " + request.toString());
 		if (activeRequest == request) {
 			targetFloor = request.getDestinationFloor();
+			Logger.getLogger().logNotification(this.getClass().getName(), "Target floor is now " + targetFloor);
 		}
 	}
 	
@@ -97,6 +103,7 @@ public class Scheduler implements Runnable {
 		pendingRequests.remove(request);
 		inProgressRequests.remove(request);
 		requestQueue.remove(request);
+		Logger.getLogger().logNotification(this.getClass().getName(), "Passengers brought to destination for request: " + request.toString());
 		if (activeRequest == request) {
 			setActiveRequest();
 		}
@@ -116,6 +123,7 @@ public class Scheduler implements Runnable {
 	
 	public void eventLoop() {
 		while (true) {
+			Logger.getLogger().logNotification(this.getClass().getName(), "Waiting for new event...");
 			Event<SchedulerEventType> evt = eventBuffer.getEvent();
 			SchedulerState newState = null;
 			
@@ -148,7 +156,12 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		// For this iteration, this thread does nothing - the Scheduler acts as a monitor, running on the main thread.
-		System.out.println("Scheduler thread running");
-		eventLoop();
+		Logger.getLogger().logNotification(this.getClass().getName(), "Scheduler thread running");
+		try {
+			eventLoop();
+		} catch (IllegalStateException e) {
+			Logger.getLogger().logError(this.getClass().getName(), e.toString());
+		}
+		
 	}
 }
