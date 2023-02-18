@@ -9,7 +9,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
+
+import sysc_3303_project.floor_subsystem.FloorState;
+import sysc_3303_project.floor_subsystem.FloorWaitingState;
 
 /**
  * @author Liam Gaudet
@@ -18,6 +22,8 @@ import java.util.ArrayList;
  */
 public class FloorSystem implements Runnable{
 
+	
+	private FloorState state;
 
     private String textFileLocation;
     private EventBuffer<FloorEventType> eventBuffer;
@@ -32,6 +38,7 @@ public class FloorSystem implements Runnable{
         this.schedulerBuffer = schedulerBuffer;
         this.textFileLocation = textFileLocation;
         eventBuffer = new EventBuffer<>();
+        state = new FloorWaitingState(this);
     }
     
     public EventBuffer<FloorEventType> getEventBuffer() {
@@ -77,6 +84,32 @@ public class FloorSystem implements Runnable{
     	}
     	return data;
     }
+    
+    public void beginLoop() {
+    	
+    	while(true) {
+    		
+    		Event<FloorEventType> event = eventBuffer.getEvent();
+    		
+    		this.state.doExit();
+    		
+    		FloorEventType eventType = event.getEventType();
+    		
+    		System.out.println("FloorSystem: Received event of type: " + eventType);
+    		
+    		switch(eventType) {
+    		case BUTTON_PRESSED:
+    			this.state = this.state.handleButtonPressed((RequestData) event.getPayload(), schedulerBuffer);
+    			break;
+    		default:
+    			throw new IllegalArgumentException();
+    		}
+    		
+    		this.state.doEntry();
+    		
+    		
+    	}
+    }
 
     /**
      * Runnable method of the Floor Subsystem. Parses data from the test text file. Then
@@ -92,13 +125,21 @@ public class FloorSystem implements Runnable{
     	requestListFromTextFile = parseData();
     	
     	for (RequestData data: requestListFromTextFile){
-    		System.out.println(String.format("FloorSystem: Sending request data \"%s\" to scheduler", data.toString()));
-    		scheduler.addRequest(data);
-    		System.out.println("FloorSystem: Awaiting response from scheduler");
+    		LocalTime requestTime = data.getRequestTime();
     		
-    		RequestData responseData = scheduler.getResponse();
-    		System.out.println(String.format("FloorSystem: Recieved request data \"%s\" from scheduler", responseData.toString()));
+    		int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
+    		
+    		System.out.println("FloorSystem: Delaying request to queue");
+    		Event<FloorEventType> event = new Event<FloorEventType>(FloorEventType.BUTTON_PRESSED, this, data);
+    		DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, this.eventBuffer);
+    		
+    		new Thread(runnableMethod).start();
+    		
     	}
+    	
+    	System.out.println("FloorSystem: Beginning state loop");
+    	beginLoop();
+    	
     	System.out.println("All test cases accomplished! Terminating program.");
     	System.exit(0);
     	
