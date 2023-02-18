@@ -5,6 +5,8 @@
  */
 package sysc_3303_project;
 
+import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+
 import java.util.LinkedList;
 import java.util.Queue;
 

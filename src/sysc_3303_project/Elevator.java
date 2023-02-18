@@ -6,6 +6,11 @@
 
 package sysc_3303_project;
 
+import sysc_3303_project.ElevatorSubsystem.ElevatorDoorsClosedState;
+import sysc_3303_project.ElevatorSubsystem.ElevatorDoorsOpenState;
+import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+import sysc_3303_project.ElevatorSubsystem.ElevatorState;
+
 /**
  * @author Ian Holmes & Robert Simionescu
  * Represents an Elevator to move between Floors.
@@ -13,24 +18,31 @@ package sysc_3303_project;
  */
 public class Elevator implements Runnable {
 
-    private final Scheduler scheduler;
+    private final EventBuffer<SchedulerEventType> schedulerBuffer;
     private final int elevatorID;
     private int elevatorFloor;
     private Direction direction;
     private ElevatorState state;
+    private int destinationFloor;
+    private EventBuffer<ElevatorEventType> eventBuffer;
 
 
     /**
      * Constructor for the Elevator class.
      *
-     * @param scheduler Scheduler, the scheduler to receive requests from
+     * @param schedulerBuffer EventBuffer, the scheduler to receive requests from
      * @param elevatorID int, the ID of the Elevator
      */
-    public Elevator(Scheduler scheduler, int elevatorID) {
-        this.scheduler = scheduler;
+    public Elevator(EventBuffer<SchedulerEventType> schedulerBuffer, int elevatorID) {
+        this.schedulerBuffer = schedulerBuffer;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
-        state = new ElevatorDoorsClosedState();
+        state = new ElevatorDoorsOpenState(this);
+        eventBuffer = new EventBuffer<>();
+    }
+
+    public EventBuffer<ElevatorEventType> getEventBuffer() {
+        return eventBuffer;
     }
 
     /**
@@ -41,6 +53,9 @@ public class Elevator implements Runnable {
         return elevatorID;
     }
 
+    public EventBuffer<SchedulerEventType> getSchedulerBuffer() {
+        return schedulerBuffer;
+    }
 
     /**
      * Getter for the elevator's current floor
@@ -82,28 +97,37 @@ public class Elevator implements Runnable {
      */
     public void run() {
         System.out.println("Elevator thread started");
-
-        String command; // TODO: Maybe make this an enum
+        Event<ElevatorEventType> event;
 
         while (true) {
-            command = ""; // TODO: Get this from the scheduler
-            switch (command.toUpperCase()) {
-                case "OPEN_DOORS":
-                    state = state.openDoors(this);
+            state.doExit();
+            event = eventBuffer.getEvent();
+            switch (event.getEventType()) {
+                case OPEN_DOORS:
+                    state = state.openDoors();
                     break;
-                case "CLOSE_DOORS":
-                    state = state.closeDoors(this);
+                case OPEN_DOORS_TIMER:
+                    state = state.openDoorsTimer();
                     break;
-                case "SET_DIRECTION":
-                    state = state.setDirection(this, Direction.UP); // TODO: Pass the appropriate direction once the command format has been decided upon
+                case CLOSE_DOORS:
+                    state = state.closeDoors();
                     break;
-                case "DO_NOT_STOP_AT_NEXT_FLOOR":
-                    state = state.doNotStopAtNextFloor(this);
+                case CLOSE_DOORS_TIMER:
+                    state = state.closeDoorsTimer();
                     break;
-                case "STOP_AT_NEXT_FLOOR":
-                    state = state.stopAtNextFloor(this);
+                case START_MOVING_IN_DIRECTION:
+                    state = state.setDirection(Direction.UP);
+                    break;
+                case MOVING_TIMER:
+                    state = state.travelThroughFloorsTimer();
+                case CONTINUE_MOVING:
+                    state = state.continueMoving();
+                    break;
+                case STOP_AT_NEXT_FLOOR:
+                    state = state.stopAtNextFloor();
                     break;
             }
+            state.doEntry();
         }
     }
 }

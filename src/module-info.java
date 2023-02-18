@@ -8,6 +8,7 @@
 module sysc_3303_project {
 	exports test;
 	exports sysc_3303_project;
-	requires junit;
+    exports sysc_3303_project.ElevatorSubsystem;
+    requires junit;
 	requires org.junit.jupiter.api;
 }
