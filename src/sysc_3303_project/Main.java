@@ -7,6 +7,8 @@ package sysc_3303_project;
 
 import java.io.File;
 
+import sysc_3303_project.floor_subsystem.FloorSystem;
+
 /**
  * @author Robert Simionescu
  * Main class used to run the elevator program. Initializes elevator, floorsystem, and scheduler threads and starts them.
