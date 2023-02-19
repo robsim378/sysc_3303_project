@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 1.0
+ * @version 2.0
 */
 
 package sysc_3303_project.elevator_subsystem;
@@ -15,9 +15,10 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
- * @author Ian Holmes & Robert Simionescu
  * Represents an Elevator to move between Floors.
  * Context class for the elevator state machine.
+ *
+ * @author Ian Holmes & Robert Simionescu
  */
 public class Elevator implements Runnable {
 
@@ -26,8 +27,7 @@ public class Elevator implements Runnable {
     private int elevatorFloor;
     private Direction direction;
     private ElevatorState state;
-    private int destinationFloor;
-    private EventBuffer<ElevatorEventType> eventBuffer;
+    private final EventBuffer<ElevatorEventType> eventBuffer;
 
 
     /**
@@ -44,46 +44,59 @@ public class Elevator implements Runnable {
         this.eventBuffer = eventBuffer;
     }
 
+    /**
+     * Getter for the elevator event buffer.
+     *
+     * @return int, the ID number of this elevator.
+     */
     public EventBuffer<ElevatorEventType> getEventBuffer() {
         return eventBuffer;
     }
 
     /**
-     * Getter for the elevatorID
+     * Getter for the elevatorID.
+     *
      * @return int, the ID number of this elevator.
      */
     public int getElevatorID() {
         return elevatorID;
     }
 
+    /**
+     * Getter for the scheduler event buffer.
+     *
+     * @return int, the ID number of this elevator
+     */
     public EventBuffer<SchedulerEventType> getSchedulerBuffer() {
         return schedulerBuffer;
     }
 
     /**
-     * Getter for the elevator's current floor
-     * @return int, the current floor the elevator is on.
+     * Getter for the elevator's current floor.
+     *
+     * @return int, the current floor the elevator is on
      */
     public int getFloor() {
         return elevatorFloor;
     }
 
     /**
-     * Setter for the direction
-     * @param direction Direction, the direction to move the elevator.
+     * Setter for the direction.
+     *
+     * @param direction Direction, the direction to move the elevator
      */
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
     
     public Direction getDirection() {
-    	return direction;
+        return direction;
     }
 
     /**
-     * Move the elevator one floor towards its destination
+     * Move the elevator one floor towards its destination.
      */
-    public void moveElevator() {    // TODO: This should maybe be moved into ElevatorMovingState, but I'm not sure.
+    public void moveElevator() {
         int resultFloor;
         if (direction == Direction.UP) {
             resultFloor = elevatorFloor + 1;
@@ -93,13 +106,12 @@ public class Elevator implements Runnable {
         }
         Logger.getLogger().logNotification(this.getClass().getName(), "Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
         elevatorFloor = resultFloor;
-
-        // Sleep for however long
     }
 
 
     /**
      * The run method for the Elevator thread.
+     *
      * Contains the state machine for the Elevator.
      */
     public void run() {
@@ -111,35 +123,19 @@ public class Elevator implements Runnable {
 
             event = eventBuffer.getEvent();
 
-    		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());    		
+            Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());
 
             state.doExit();
 
             switch (event.getEventType()) {
-                case OPEN_DOORS:
-                    state = state.openDoors();
-                    break;
-                case OPEN_DOORS_TIMER:
-                    state = state.openDoorsTimer();
-                    break;
-                case CLOSE_DOORS:
-                    state = state.closeDoors();
-                    break;
-                case CLOSE_DOORS_TIMER:
-                    state = state.closeDoorsTimer();
-                    break;
-                case START_MOVING_IN_DIRECTION:
-                    state = state.setDirection((Direction) event.getPayload());
-                    break;
-                case MOVING_TIMER:
-                    state = state.travelThroughFloorsTimer();
-                    break;
-                case CONTINUE_MOVING:
-                    state = state.continueMoving();
-                    break;
-                case STOP_AT_NEXT_FLOOR:
-                    state = state.stopAtNextFloor();
-                    break;
+                case OPEN_DOORS -> state = state.openDoors();
+                case OPEN_DOORS_TIMER -> state = state.openDoorsTimer();
+                case CLOSE_DOORS -> state = state.closeDoors();
+                case CLOSE_DOORS_TIMER -> state = state.closeDoorsTimer();
+                case START_MOVING_IN_DIRECTION -> state = state.setDirection((Direction) event.getPayload());
+                case MOVING_TIMER -> state = state.travelThroughFloorsTimer();
+                case CONTINUE_MOVING -> state = state.continueMoving();
+                case STOP_AT_NEXT_FLOOR -> state = state.stopAtNextFloor();
             }
             state.doEntry();
         }
