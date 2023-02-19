@@ -3,8 +3,8 @@ package test;
 
 import org.junit.Test;
 
-import sysc_3303_project.Direction;
-import sysc_3303_project.ElevatorSubsystem.Elevator;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.elevator_subsystem.Elevator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

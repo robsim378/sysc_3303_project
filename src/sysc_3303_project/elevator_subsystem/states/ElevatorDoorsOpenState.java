@@ -1,10 +1,6 @@
-/**
- * SYSC3303 Project
- * Group 1
- * @version 2.0
- */
+package sysc_3303_project.elevator_subsystem.states;
 
-package sysc_3303_project.ElevatorSubsystem;
+import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**
  * The state in which the elevator is idle with its doors open.
@@ -12,11 +8,6 @@ package sysc_3303_project.ElevatorSubsystem;
  */
 public class ElevatorDoorsOpenState extends ElevatorState {
 
-    /**
-     * Constructor for the state.
-     *
-     * @param context, the elevator
-     */
     public ElevatorDoorsOpenState(Elevator context) {
         super(context);
     }

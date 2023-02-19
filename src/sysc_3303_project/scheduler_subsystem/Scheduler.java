@@ -1,16 +1,18 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 1.0
+ * @version 2.0
  */
 package sysc_3303_project.scheduler_subsystem;
 
-import sysc_3303_project.Event;
-import sysc_3303_project.EventBuffer;
-import sysc_3303_project.RequestData;
-import sysc_3303_project.ElevatorSubsystem.Elevator;
-import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+import sysc_3303_project.common.Event;
+import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.RequestData;
+import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
+import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 
 import java.util.LinkedList;
 import java.util.List;

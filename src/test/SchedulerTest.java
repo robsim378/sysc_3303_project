@@ -13,8 +13,8 @@ import java.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import sysc_3303_project.Direction;
-import sysc_3303_project.RequestData;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.RequestData;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 
 /**

@@ -1,18 +1,12 @@
-/**
- * SYSC3303 Project
- * Group 1
- * @version 2.0
- */
+package sysc_3303_project.elevator_subsystem.states;
 
-package sysc_3303_project.ElevatorSubsystem;
-
-import sysc_3303_project.Direction;
-import sysc_3303_project.State;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.State;
+import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**
  * State class for the elevator state machine.
- *
- * @author Robert Simionescu & Ian Holmes
+ * @author Robert Simionescu & Ian Holmes.
  */
 public abstract class ElevatorState implements State {
     /**
@@ -25,6 +19,17 @@ public abstract class ElevatorState implements State {
     public ElevatorState(Elevator context) {
         this.context = context;
     }
+
+    /**
+     * NOTES FOR IAN
+     * -Currently, all states return a new instance of the next state when they finish a method. This doesn't feel right,
+     * but I'm not sure how else to do it.
+     * -I added a few getters/setters in Elevator and made all the state methods take an Elevator as a parameter. This
+     * should work, but I feel like there's a more elegant way of doing this.
+     *      -I also made moveElevator public, which feels wrong but I couldn't think of a better way. Maybe move it to
+     *      ElevatorMovingState and add a getter/setter for floor
+     */
+
     public ElevatorState closeDoors() {
         throw new IllegalStateException("closeDoors() must be called from the ElevatorDoorsOpenState.");
     }
@@ -38,7 +43,7 @@ public abstract class ElevatorState implements State {
     }
 
     public ElevatorState stopAtNextFloor() {
-        throw new IllegalStateException("stopAtNextFloor() must be called from the ElevatorApproachingFloorsState.");
+        throw new IllegalStateException("stopAtNextFloor() must be called from the ElevatorMovingState.");
     }
 
     public ElevatorState continueMoving() {
@@ -46,15 +51,15 @@ public abstract class ElevatorState implements State {
     }
 
     public ElevatorState openDoorsTimer() {
-        throw new IllegalStateException("openDoorsTimer() must be called from the ElevatorDoorsOpeningState.");
+        throw new IllegalStateException("openDoorsTimer() must be called from the _________________.");
     }
 
     public ElevatorState closeDoorsTimer() {
-        throw new IllegalStateException("closeDoorsTimer() must be called from the ElevatorDoorsClosingState.");
+        throw new IllegalStateException("closeDoorsTimer() must be called from the _________________.");
     }
 
     public ElevatorState travelThroughFloorsTimer() {
-        throw new IllegalStateException("travelThroughFloorsTimer() must be called from the ElevatorMovingState.");
+        throw new IllegalStateException("travelThroughFloorsTimer() must be called from the _________________.");
     }
 
     public void doEntry() {}

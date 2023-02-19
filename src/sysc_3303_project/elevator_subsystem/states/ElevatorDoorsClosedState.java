@@ -1,25 +1,14 @@
-/**
- * SYSC3303 Project
- * Group 1
- * @version 2.0
- */
+package sysc_3303_project.elevator_subsystem.states;
 
-package sysc_3303_project.ElevatorSubsystem;
-
-import sysc_3303_project.Direction;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**
  * The state in which the elevator is idle with its doors closed.
- *
  * @author Robert Simionescu & Ian Holmes
  */
 public class ElevatorDoorsClosedState extends ElevatorState {
 
-    /**
-     * Constructor for the state.
-     *
-     * @param context, the elevator
-     */
     public ElevatorDoorsClosedState(Elevator context) {
         super(context);
     }
@@ -35,8 +24,7 @@ public class ElevatorDoorsClosedState extends ElevatorState {
 
     /**
      * Set the direction of the elevator's movement and begin moving by going to the ElevatorMoving state.
-     *
-     * @return ElevatorMovingState, the next state.
+     * @return The next state.
      */
     @Override
     public ElevatorState setDirection(Direction direction) {
