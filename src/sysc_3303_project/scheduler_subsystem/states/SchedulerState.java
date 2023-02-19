@@ -1,11 +1,12 @@
 /**
  * 
  */
-package sysc_3303_project.scheduler_subsystem;
+package sysc_3303_project.scheduler_subsystem.states;
 
-import sysc_3303_project.RequestData;
-import sysc_3303_project.State;
-import sysc_3303_project.ElevatorSubsystem.Elevator;
+import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.State;
+import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.scheduler_subsystem.Scheduler;
 
 /**
  * @author Andrei Popescu

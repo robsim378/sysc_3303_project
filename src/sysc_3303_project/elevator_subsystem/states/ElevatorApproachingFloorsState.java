@@ -1,6 +1,7 @@
-package sysc_3303_project.ElevatorSubsystem;
+package sysc_3303_project.elevator_subsystem.states;
 
-import sysc_3303_project.Event;
+import sysc_3303_project.common.Event;
+import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 public class ElevatorApproachingFloorsState extends ElevatorState {

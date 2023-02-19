@@ -7,8 +7,9 @@ package sysc_3303_project;
 
 import java.io.File;
 
-import sysc_3303_project.ElevatorSubsystem.Elevator;
-import sysc_3303_project.ElevatorSubsystem.ElevatorEventType;
+import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 import sysc_3303_project.scheduler_subsystem.Scheduler;

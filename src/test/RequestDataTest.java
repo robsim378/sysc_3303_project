@@ -12,8 +12,8 @@ import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
 
-import sysc_3303_project.Direction;
-import sysc_3303_project.RequestData;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.RequestData;
 
 /**
  * Test class for RequestData

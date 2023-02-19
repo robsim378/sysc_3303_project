@@ -1,7 +1,7 @@
 /**
  * 
  */
-package sysc_3303_project.ElevatorSubsystem;
+package sysc_3303_project.elevator_subsystem;
 
 /**
  * @author apope
