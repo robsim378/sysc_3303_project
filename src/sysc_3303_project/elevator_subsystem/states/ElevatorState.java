@@ -1,7 +1,8 @@
-package sysc_3303_project.ElevatorSubsystem;
+package sysc_3303_project.elevator_subsystem.states;
 
-import sysc_3303_project.Direction;
-import sysc_3303_project.State;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.State;
+import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**
  * State class for the elevator state machine.

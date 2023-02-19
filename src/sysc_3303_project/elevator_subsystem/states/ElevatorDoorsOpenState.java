@@ -1,4 +1,6 @@
-package sysc_3303_project.ElevatorSubsystem;
+package sysc_3303_project.elevator_subsystem.states;
+
+import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**
  * The state in which the elevator is idle with its doors open.

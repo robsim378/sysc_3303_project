@@ -3,7 +3,7 @@
  * Group 1
  * @version 1.0
  */
-package sysc_3303_project;
+package sysc_3303_project.common;
 
 import java.io.Serializable;
 import java.time.LocalTime;
