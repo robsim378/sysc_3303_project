@@ -1,3 +1,9 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 2.0
+ */
+
 package sysc_3303_project.ElevatorSubsystem;
 
 /**
@@ -6,6 +12,11 @@ package sysc_3303_project.ElevatorSubsystem;
  */
 public class ElevatorDoorsOpenState extends ElevatorState {
 
+    /**
+     * Constructor for the state.
+     *
+     * @param context, the elevator
+     */
     public ElevatorDoorsOpenState(Elevator context) {
         super(context);
     }
