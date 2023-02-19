@@ -1,3 +1,9 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 2.0
+ */
+
 package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
@@ -8,13 +14,19 @@ import sysc_3303_project.elevator_subsystem.Elevator;
  */
 public class ElevatorDoorsOpenState extends ElevatorState {
 
+    /**
+     * Constructor for the elevator state.
+     *
+     * @param context Elevator, the elevator
+     */
     public ElevatorDoorsOpenState(Elevator context) {
         super(context);
     }
 
     /**
      * Close the elevator doors and move to the ElevatorDoorsClosed state.
-     * @return The next state.
+     *
+     * @return ElevatorDoorsClosingState, the next state
      */
     @Override
     public ElevatorState closeDoors() {

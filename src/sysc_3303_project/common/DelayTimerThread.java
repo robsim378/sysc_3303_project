@@ -6,8 +6,6 @@
 
 package sysc_3303_project.common;
 
-import logging.Logger;
-
 /**
  * 
  * @author Liam Gaudet
