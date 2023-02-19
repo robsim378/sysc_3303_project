@@ -3,3 +3,6 @@
 /bin/
 classes
 out
+# draw.io temp files
+*.bkp
+*.dtmp
