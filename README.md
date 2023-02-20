@@ -12,19 +12,33 @@
 All files can be found within the GitHub repository, located at:
 https://github.com/robsim378/sysc_3303_project
 
+### /elevator_subsystem
+
+- contains all Elevator Subsystem related files.
+
+    #### /elevator_subsystem/states
+
+    - contains all Elevator state classes
+
+    #### Elevator.java
+
+  - The Elevator is responsible for receiving requests from the Scheduler, moving
+    to the appropriate floor, and then sending a response back to the Scheduler.
+  
+  #### ElevatorEventType.java
+
+  - an enumeration for the Elevator event types.
+
+
 ### Scheduler.java
-The Scheduler class is responsible for passing requests from the Floor to 
+The Scheduler class is responsible for passing requests from the Floor to
 the Elevator, and passing the responses from the Elevator back to the Floor.
 It acts as a monitor for Iteration 1.
 
 ### FloorSystem.java
-The Floor system is responsible for parsing requests from a text file, 
+The Floor system is responsible for parsing requests from a text file,
 returning them as a list of Requests, and sending the requests to the Scheduler.
 The Floor system also receives responses back from the Scheduler.
-
-### Elevator.java
-The Elevator is responsible for receiving requests from the Scheduler, moving
-to the appropriate floor, and then sending a response back to the Scheduler.
 
 ### RequestData.java
 RequestData objects represent the individual requests parsed by the Floor
@@ -32,7 +46,6 @@ system which are passed between the Floor, Scheduler, and Elevator.
 
 ### Direction.java
 The Direction enumeration specifies Elevator directions, UP or DOWN.
-
 ### Main.java
 The Main file contains the main method for running the program.
 
@@ -63,10 +76,9 @@ The Main file contains the main method for running the program.
 
 #### Ian Holmes
 
-- creating the Elevator class
-- helped with functional testing
-- contributed to UML class diagram
-- constructed README.md
+- Designed and implemented Elevator state machine
+- Helped with functional testing
+- Contributed to UML class diagram
 
 #### Khalid Merai
  - created the JUnit test classes for the Scheduler,requestData and Elevator
@@ -79,5 +91,5 @@ The Main file contains the main method for running the program.
 - wrote Javadocs for RequestData
 
 #### Robert Simionescu
-- Created the Main file
-- Added Javadocs to unit tests
+- Designed and implemented Elevator state machine
+- Added Javadocs
