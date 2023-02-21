@@ -12,7 +12,34 @@
 All files can be found within the GitHub repository, located at:
 https://github.com/robsim378/sysc_3303_project
 
-### /elevator_subsystem
+### logging
+
+#### Logger.java
+
+Provides basic logging functionality to make messages consistent.
+
+### ./common
+
+#### DelayTimerThread.java
+The DelayTimerThread is used to create threads to pass events to a buffer after a given delay.
+
+#### Direction.java
+The Direction enumeration specifies Elevator directions, UP or DOWN.
+
+#### Event.java
+The Event class represents a simple event object to be used in event buffers. Provides ways to get the event type, sender and payload of the event.
+
+#### EventBuffer.java
+The EventBuffer class provides a way to queue up events of a given type for a subsystem to respond to. This allows threads to synchronize correctly.
+
+#### RequestData.java
+RequestData objects represent the individual requests parsed by the Floor
+system which are passed between the Floor, Scheduler, and Elevator.
+
+#### State.java
+The State interface is implemented by all state classes for each subsystem. It provides only methods to implement entry/exit actions.
+
+### ./elevator_subsystem
 
 - contains all Elevator Subsystem related files.
 
@@ -29,23 +56,30 @@ https://github.com/robsim378/sysc_3303_project
 
   - an enumeration for the Elevator event types.
 
+### ./scheduler_subsystem
 
-### Scheduler.java
-The Scheduler class is responsible for passing requests from the Floor to
-the Elevator, and passing the responses from the Elevator back to the Floor.
-It acts as a monitor for Iteration 1.
+This package contains the classes for the Scheduler subsystem.
 
-### FloorSystem.java
+#### Scheduler.java
+
+The Scheduler class is the core of the Scheduler subsystem. It maintains a state machine, and is responsible for routing the elevator, including ordering it to open/close its doors, as well as whether to stop at a floor or not. It also keeps track of all pending and in-progress requests.
+
+
+#### ./scheduler_subsystem/states
+
+This package contains all the classes for the Scheduler class's state machine.
+
+#### SchedulerEventType.java
+
+This file contains an enumeration which defines the different kinds of events that the Scheduler subsystem is expected to act on.
+
+### ./floor_subsystem
+
+#### FloorSystem.java
 The Floor system is responsible for parsing requests from a text file,
 returning them as a list of Requests, and sending the requests to the Scheduler.
 The Floor system also receives responses back from the Scheduler.
 
-### RequestData.java
-RequestData objects represent the individual requests parsed by the Floor
-system which are passed between the Floor, Scheduler, and Elevator.
-
-### Direction.java
-The Direction enumeration specifies Elevator directions, UP or DOWN.
 ### Main.java
 The Main file contains the main method for running the program.
 
@@ -86,9 +120,16 @@ The Main file contains the main method for running the program.
 
 #### Andrei Popescu
 
+Iteration 1:
 - created the Scheduler class and relevant parts of the UML class diagram
 - created UML sequence diagram
 - wrote Javadocs for RequestData
+
+Iteration 2:
+- created the new Scheduler class and state machine
+- participated in the design of program architecture
+- created the Logger class
+- created UML state diagrams
 
 #### Robert Simionescu
 - Designed and implemented Elevator state machine
