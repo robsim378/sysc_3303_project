@@ -1,4 +1,4 @@
-# L2G1_milestone_1
+# L2G1_milestone_2
 
 ## Group 1 
 - Liam Gaudet
@@ -43,11 +43,11 @@ The State interface is implemented by all state classes for each subsystem. It p
 
 - contains all Elevator Subsystem related files.
 
-    #### /elevator_subsystem/states
+#### /elevator_subsystem/states
 
-    - contains all Elevator state classes
+   - contains all Elevator state classes
 
-    #### Elevator.java
+#### Elevator.java
 
   - The Elevator is responsible for receiving requests from the Scheduler, moving
     to the appropriate floor, and then sending a response back to the Scheduler.
@@ -75,10 +75,21 @@ This file contains an enumeration which defines the different kinds of events th
 
 ### ./floor_subsystem
 
+- contains all Floor Subsystem related files.
+
+#### ./scheduler_subsystem/states
+
+This package contains all the classes for the FloorSystem class's state machine. It contains two states
+- FloorState: An abstract state used for any floor states
+- FloorIdleState: The only state the floor system takes part in, handles IO operations.
+
 #### FloorSystem.java
 The Floor system is responsible for parsing requests from a text file,
 returning them as a list of Requests, and sending the requests to the Scheduler.
 The Floor system also receives responses back from the Scheduler.
+
+#### FloorEventType
+An enum class for determining request types for the FloorSystem to process
 
 ### Main.java
 The Main file contains the main method for running the program.
@@ -89,7 +100,7 @@ The Main file contains the main method for running the program.
 3. Select General/Existing Projects into Workspace from the import wizard menu and click "Next".
 4. Click the "Select archive file:" option and click "Browse" or type the filepath into the box.
 5. Click "Finish".
-6. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_1 -> src -> sysc_3303_project.
+6. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_2 -> src -> sysc_3303_project.
 7. Right click on "Main.java" and select "Run As" -> "Java Application".
 
 ## Testing
@@ -103,10 +114,16 @@ The Main file contains the main method for running the program.
 
 #### Liam Gaudet
 
+Iteration 1:
 - Created the FloorSystem class
 - Created the RequestData class
 - Created the Direction Enumeration
 - Generated testing data for the first iteration
+
+Iteration 2:
+- Generated the Sequence Diagram
+- Created and implemented the FloorSystem state machine
+- Participated in the design of program architecture 
 
 #### Ian Holmes
 
