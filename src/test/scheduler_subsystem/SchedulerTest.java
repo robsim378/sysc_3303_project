@@ -5,7 +5,7 @@
  * @version 1.0
  */
 
-package test;
+package test.scheduler_subsystem;
 
 
 import org.junit.Before;

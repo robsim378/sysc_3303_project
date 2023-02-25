@@ -4,7 +4,7 @@
  * @version 1.0
  */
 
-package test;
+package test.floor_subsystem;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +28,7 @@ class FloorSystemTest {
 	void testSingularEntry() {
 		
         String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testSingularEntry.txt";
-		FloorSystem newFloorSystem = new FloorSystem(null, floorFilePath);
+		FloorSystem newFloorSystem = new FloorSystem(null, null, floorFilePath);
 		ArrayList<RequestData> requestData = null;
 
 		// Fixing the visibility of the method and calling it
@@ -59,7 +59,7 @@ class FloorSystemTest {
 	void testMultipleEntry() {
 		
         String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testMultipleEntries.txt";
-		FloorSystem newFloorSystem = new FloorSystem(null, floorFilePath);
+		FloorSystem newFloorSystem = new FloorSystem(null, null, floorFilePath);
 		ArrayList<RequestData> requestData = null;
 
 		// Fixing the visibility of the method and calling it
@@ -93,7 +93,7 @@ class FloorSystemTest {
 	void testInvalidEntries() {
 		
         String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testInvalidEntries.txt";
-		FloorSystem newFloorSystem = new FloorSystem(null, floorFilePath);
+		FloorSystem newFloorSystem = new FloorSystem(null, null, floorFilePath);
 		ArrayList<RequestData> requestData = null;
 		
 		// Fixing the visibility of the method and calling it
