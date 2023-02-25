@@ -1,5 +1,5 @@
 
-package test;
+package test.elevator_subsystem;
 
 import org.junit.Before;
 import org.junit.Test;

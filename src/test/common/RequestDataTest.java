@@ -4,7 +4,7 @@
  * @author khalid merai 101159203
  * @version 1.0
  */
-package test;
+package test.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
