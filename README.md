@@ -128,10 +128,20 @@ Iteration 2:
 - Generated the Sequence Diagram
 - Created and implemented the FloorSystem state machine
 - Participated in the design of program architecture 
+- Created unit tests for Elevator states
+
 
 #### Ian Holmes
 
+Iteration 1:
+- creating the Elevator class
+- helped with functional testing
+- contributed to UML class diagram
+- constructed README.md
+
+Iteration 2:
 - Designed and implemented Elevator state machine
+- Created unit tests for Elevator and Scheduler states
 - Helped with functional testing
 - Contributed to UML class diagram
 
@@ -159,5 +169,11 @@ Iteration 2:
 - created UML state diagrams
 
 #### Robert Simionescu
+
+Iteration 1:
+- Created the Main file
+- Added Javadocs to unit tests
+
+Iteration 2:
 - Designed and implemented Elevator state machine
 - Added Javadocs
