@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 2.0
+ */
 package test.elevator_subsystem.states;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +21,10 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpeningState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
+/**
+ * @author Liam Gaudet and Ian Holmes
+ *
+ */
 public class ElevatorDoorsOpeningStateTest {
 
 	/**
