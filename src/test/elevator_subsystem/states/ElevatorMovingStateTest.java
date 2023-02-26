@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 2.0
+ */
 package test.elevator_subsystem.states;
 
 import org.junit.jupiter.api.Test;
@@ -11,6 +16,10 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Liam Gaudet and Ian Holmes
+ *
+ */
 public class ElevatorMovingStateTest {
 
     /**
@@ -41,7 +50,7 @@ public class ElevatorMovingStateTest {
      */
     @Test
     public void testCloseDoorsEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
+        ElevatorState testState = new ElevatorMovingState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::closeDoors);
 
@@ -55,7 +64,7 @@ public class ElevatorMovingStateTest {
      */
     @Test
     public void testOpenDoorsEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
+        ElevatorState testState = new ElevatorMovingState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::openDoors);
 
@@ -69,7 +78,7 @@ public class ElevatorMovingStateTest {
      */
     @Test
     public void testSetDirectionEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
+        ElevatorState testState = new ElevatorMovingState(null);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
             testState.setDirection(null);
@@ -85,7 +94,7 @@ public class ElevatorMovingStateTest {
      */
     @Test
     public void testStopAtNextFloorEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
+        ElevatorState testState = new ElevatorMovingState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::stopAtNextFloor);
 
@@ -99,7 +108,7 @@ public class ElevatorMovingStateTest {
      */
     @Test
     public void testContinueMovingEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
+        ElevatorState testState = new ElevatorMovingState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::continueMoving);
 
@@ -113,11 +122,25 @@ public class ElevatorMovingStateTest {
      */
     @Test
     public void testOpenDoorsTimer() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
+        ElevatorState testState = new ElevatorMovingState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::openDoorsTimer);
 
         String expectedMessage = "openDoorsTimer() must be called from the ElevatorDoorsOpeningState.";
+
+        assertEquals(expectedMessage, e.getMessage());
+    }
+
+    /**
+     * Tests reaction when the invalid event "openDoorsTimer" is triggered
+     */
+    @Test
+    public void testCloseDoorsTimer() {
+        ElevatorState testState = new ElevatorMovingState(null);
+
+        Exception e = assertThrows(IllegalStateException.class, testState::closeDoorsTimer);
+
+        String expectedMessage = "closeDoorsTimer() must be called from the ElevatorDoorsClosingState.";
 
         assertEquals(expectedMessage, e.getMessage());
     }
@@ -129,7 +152,7 @@ public class ElevatorMovingStateTest {
     public void testOnEntry() {
         EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
         Elevator context = new Elevator(null, contextBuffer, 0);
-        ElevatorState testState = new ElevatorDoorsClosingState(context);
+        ElevatorState testState = new ElevatorMovingState(context);
 
         testState.doEntry();
 

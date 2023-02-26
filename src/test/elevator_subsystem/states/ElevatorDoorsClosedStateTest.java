@@ -15,6 +15,10 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Liam Gaudet and Ian Holmes
+ *
+ */
 public class ElevatorDoorsClosedStateTest {
 
 
