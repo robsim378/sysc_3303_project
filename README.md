@@ -12,6 +12,12 @@
 All files can be found within the GitHub repository, located at:
 https://github.com/robsim378/sysc_3303_project
 
+### test
+
+The test package and its subpackages contain unit tests for all classes. State machines are tested in the class using them (for example, the tests for the Scheduler subsystem's state machine are included in the file `SchedulerTest.java`).
+
+In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3303_project package in your workspace. In Eclipse, the tests can be run in the following ways: For the tests to function, the project classpath needs to contain all necessary dependencies, including JUnit and the sysc_3303_project package. When right-clicking a test class file, such as SchedulerTest.java, select "Run As" followed by "JUnit Test" from the context menu. The results of the tests, including any that were incorrect or failed, will be displayed in Eclipse's JUnit view.
+
 ### logging
 
 #### Logger.java
@@ -77,7 +83,7 @@ This file contains an enumeration which defines the different kinds of events th
 
 - contains all Floor Subsystem related files.
 
-#### ./scheduler_subsystem/states
+#### ./floor_subsystem/states
 
 This package contains all the classes for the FloorSystem class's state machine. It contains two states
 - FloorState: An abstract state used for any floor states
@@ -104,15 +110,9 @@ The Main file contains the main method for running the program.
 7. Right click on "Main.java" and select "Run As" -> "Java Application".
 
 ## Testing
- SchedulerTest.java: The package sysc_3303_project contains the tests for the Scheduler class that make up Testing. Methods like hasRequests, addRequest, hasResponses, and addResponse are examined for correctness. The tests produce data and compare actual results to expected results.
+The `test` package includes the unit tests for all classes. To run multiple unit tests in Eclipse, right-click any of the `test` subpackages (such as `test.common`) in the Package Explorer or Packages window, then select "Run As" > "JUnit Test". Some tests may take longer to run than others.
 
- RequestDataTest.java: contains the tests for the RequestData class in the sysc_3303_project package. It tests methods like getRequestTime, getCurrentFloor, getDirection, and getDestinationFloor to make sure they work correctly. The tests produce data and compare actual results to expected results.
- 
-EventBufferTest: Is a generic class that provides a buffer for storing and retrieving Event objects. The tests cover the basic functionality of the EventBuffer, including adding and retrieving events, as well as handling cases where the buffer is empty.
-
-DelayTimerThreadTest:The test checks whether the run() method of the DelayTimerThread class correctly adds an event to an event buffer after a specified delay. The test creates an event buffer, an event, and a DelayTimerThread instance with a 100-millisecond delay. It then starts the thread and waits for it to complete, and checks that the event was correctly added to the buffer after the delay. This test ensures that the delay timer thread works as expected and adds events to the buffer after the specified delay.
-
- In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3303_project package in your workspace. In Eclipse, the tests can be run in the following ways: For the tests to function, the project classpath needs to contain all necessary dependencies, including JUnit and the sysc_3303_project package. When right-clicking a test class file, such as SchedulerTest.java, select "Run As" followed by "JUnit Test" from the context menu. The results of the tests, including any that were incorrect or failed, will be displayed in Eclipse's JUnit view.
+In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3303_project package in your workspace. In Eclipse, the tests can be run in the following ways: For the tests to function, the project classpath needs to contain all necessary dependencies, including JUnit and the sysc_3303_project package. When right-clicking a test class file, such as SchedulerTest.java, select "Run As" followed by "JUnit Test" from the context menu. The results of the tests, including any that were incorrect or failed, will be displayed in Eclipse's JUnit view.
 
 ## Contributions
 
