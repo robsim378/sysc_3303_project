@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 2.0
+ */
 package test.floor_subsystem.states;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,6 +19,10 @@ import sysc_3303_project.floor_subsystem.states.FloorIdleState;
 import sysc_3303_project.floor_subsystem.states.FloorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
+/**
+ * A class for testing the Floor System state machine
+ * @author Liam Gaudet
+ */
 public class FloorIdleStateTest {
 	
 	/**
@@ -29,10 +38,12 @@ public class FloorIdleStateTest {
 		
 		FloorState newState = testState.handleButtonPressed(testInput, buffer);
 		
-		assertEquals(LocalTime.NOON, ((RequestData)buffer.getEvent().getPayload()).getRequestTime());
-		assertEquals(2, ((RequestData)buffer.getEvent().getPayload()).getCurrentFloor());
-		assertEquals(Direction.DOWN, ((RequestData)buffer.getEvent().getPayload()).getDirection());
-		assertEquals(4, ((RequestData)buffer.getEvent().getPayload()).getDestinationFloor());
+		RequestData testOutput = (RequestData )buffer.getEvent().getPayload();
+		
+		assertEquals(LocalTime.NOON, testOutput.getRequestTime());
+		assertEquals(2, testOutput.getCurrentFloor());
+		assertEquals(Direction.DOWN, testOutput.getDirection());
+		assertEquals(4, testOutput.getDestinationFloor());
 		assertTrue(newState instanceof FloorIdleState);
 	}
 }
