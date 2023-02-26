@@ -22,7 +22,12 @@ import sysc_3303_project.floor_subsystem.FloorSystem;
  * @author Liam Gaudet
  */
 class FloorSystemTest {
-
+	
+	/**
+	 * Test method to check parsing of a file with a single valid entry.
+	 * Parses the file using the private method "parseData" through reflection,
+	 * and checks if the parsed data matches the expected output.
+	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	void testSingularEntry() {
@@ -53,7 +58,11 @@ class FloorSystemTest {
 		
 	}
 	
-	
+	/**
+	 * Test method to check parsing of a file with multiple valid entries.
+	 * Parses the file using the private method "parseData" through reflection,
+	 * and checks if the parsed data matches the expected output.
+	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	void testMultipleEntry() {
@@ -87,7 +96,11 @@ class FloorSystemTest {
 		assertEquals("00:00:02.001 3 DOWN 2", current.toString());
 		
 	}
-	
+	/**
+	 * Test method to check parsing of a file with a mix of valid and invalid entries.
+	 * Parses the file using the private method "parseData" through reflection,
+	 * and checks if the parsed data matches the expected output.
+	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	void testInvalidEntries() {
