@@ -6,6 +6,7 @@
 
 package sysc_3303_project.scheduler_subsystem;
 
+import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
 import sysc_3303_project.common.RequestData;
@@ -15,6 +16,7 @@ import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
