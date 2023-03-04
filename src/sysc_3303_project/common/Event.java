@@ -1,56 +1,46 @@
-/**
- * SYSC3303 Project
- * Group 1
- * @version 2.0
- */
 package sysc_3303_project.common;
 
+import java.io.Serializable;
 
-/**
- * @author Andrei Popescu
- *
- * An event class that holds the nessesary information to send events to
- *   other threads
- */
-public class Event<T> {
+public class Event<T> implements Serializable {
 	
+	private Subsystem destinationSubsystem;
+	private int destinationID;
+	private Subsystem sourceSubsystem;
+	private int sourceID;
 	private T eventType;
-	private Object senderObject;
-	private Object payloadObject;
+	private Serializable payload;
 	
-	/**
-	 * Creates an event with a given event type, source, and payload
-	 * @param type		T, enum for the type of request
-	 * @param sender	Object, the sender
-	 * @param payload	Object, payload to send
-	 */
-	public Event(T type, Object sender, Object payload) {
+	public Event(Subsystem dest, int destID, Subsystem src, int srcID, T type, Serializable payload) {
+		this.destinationSubsystem = dest;
+		this.destinationID = destID;
+		this.sourceSubsystem = src;
+		this.sourceID = srcID;
 		this.eventType = type;
-		this.senderObject = sender;
-		this.payloadObject = payload;
+		this.payload = payload;
 	}
 	
-	/**
-	 * Getter for the event type
-	 * @return	T, enum for the request type
-	 */
+	public Subsystem getDestinationSubsystem() {
+		return destinationSubsystem;
+	}
+	
+	public Subsystem getSourceSubsystem() {
+		return sourceSubsystem;
+	}
+	
+	public int getDestinationID() {
+		return destinationID;
+	}
+	
+	public int getSourceID() {
+		return sourceID;
+	}
+	
 	public T getEventType() {
 		return eventType;
 	}
 	
-	/**
-	 * Getter for the sender
-	 * @return	Object, the thing that sends the event
-	 */
-	public Object getSender() {
-		return senderObject;
-	}
-	
-	/**
-	 * Getter for the payload
-	 * @return	Object, a payload object
-	 */
-	public Object getPayload() {
-		return payloadObject;
+	public Serializable getPayload() {
+		return payload;
 	}
 }
