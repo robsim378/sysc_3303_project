@@ -2,7 +2,12 @@ package sysc_3303_project.common;
 
 import java.io.Serializable;
 
-public class Event<T> implements Serializable {
+public class Event<T extends Enum<?>> implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4717946647791314554L;
 	
 	private Subsystem destinationSubsystem;
 	private int destinationID;
@@ -42,5 +47,26 @@ public class Event<T> implements Serializable {
 	
 	public Serializable getPayload() {
 		return payload;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("{Destination: [");
+		builder.append(destinationSubsystem.name());
+		builder.append(",");
+		builder.append(destinationID);
+		builder.append("], Source: [");
+		builder.append(sourceSubsystem.name());
+		builder.append(",");
+		builder.append(sourceID);
+		builder.append("], EventType: ");
+		builder.append(eventType.name());
+		builder.append(", payload: ");
+		builder.append(payload==null? "null": payload.toString());
+		builder.append("}");
+		return builder.toString();
+
 	}
 }
