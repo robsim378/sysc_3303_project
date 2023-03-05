@@ -35,9 +35,8 @@ public class Scheduler implements Runnable {
 	private List<RequestData> inProgressRequests; //requests where the passenger needs to be brought to a destination
 	private RequestData activeRequest; //request currently being handled
 	private int targetFloor;
-	private final EventBuffer<SchedulerEventType> eventBuffer;
-	private final EventBuffer<ElevatorEventType> elevatorBuffer;
-	private final EventBuffer<FloorEventType> floorBuffer;
+	private final EventBuffer<SchedulerEventType> inputBuffer;
+	private final EventBuffer<Enum<?>> outputBuffer; 
 	private SchedulerState state;
 	
 	/**
@@ -45,32 +44,31 @@ public class Scheduler implements Runnable {
 	 * @param elevatorBuffer event buffer to send events to an Elevator
 	 * @param floorBuffer event buffer to send events to a Floor
 	 */
-	public Scheduler(EventBuffer<ElevatorEventType> elevatorBuffer, EventBuffer<FloorEventType> floorBuffer) {
+	public Scheduler(EventBuffer<SchedulerEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
 		requestQueue = new LinkedList<>();
 		pendingRequests = new LinkedList<>();
 		inProgressRequests = new LinkedList<>();
-		eventBuffer = new EventBuffer<>();
-		this.elevatorBuffer = elevatorBuffer;
-		this.floorBuffer = floorBuffer;
+		this.inputBuffer = inputBuffer;
+		this.outputBuffer = outputBuffer;
 		state = new SchedulerWaitingState(this);
 		activeRequest = null;
 		targetFloor = -1;
 	}
 	
 	/**
-	 * Gets this Scheduler's event buffer.
+	 * Gets this Scheduler's input event buffer.
 	 * @return this Scheduler's EventBuffer
 	 */
-	public EventBuffer<SchedulerEventType> getEventBuffer() {
-		return eventBuffer;
+	public EventBuffer<SchedulerEventType> getInputBuffer() {
+		return inputBuffer;
 	}
 	
 	/**
-	 * Gets the event buffer of the Elevator associated with this Scheduler.
-	 * @return the Elevator's EventBuffer
+	 * Gets this Scheduler's output event buffer.
+	 * @return this Scheduler's EventBuffer
 	 */
-	public EventBuffer<ElevatorEventType> getElevatorBuffer() {
-		return elevatorBuffer;
+	public EventBuffer<Enum<?>> getOutputBuffer() {
+		return outputBuffer;
 	}
 	
 	/**
@@ -188,7 +186,7 @@ public class Scheduler implements Runnable {
 	public void eventLoop() {
 		while (true) {
 
-			Event<SchedulerEventType> evt = eventBuffer.getEvent();
+			Event<SchedulerEventType> evt = inputBuffer.getEvent();
 			SchedulerState newState = null;
 
 

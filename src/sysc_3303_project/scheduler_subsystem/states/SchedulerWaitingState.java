@@ -8,8 +8,10 @@ package sysc_3303_project.scheduler_subsystem.states;
 
 import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.elevator_subsystem.*;
 
 /**
@@ -28,11 +30,16 @@ public class SchedulerWaitingState extends SchedulerState {
 	}
 	
 	@Override
-	public SchedulerState handleFloorButtonPressed(RequestData request) {
-		context.addPendingRequest(request);
-		//here we would assign the request to an elevator but there's only one elevator
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to close doors");
-		context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.CLOSE_DOORS, context, null));
+	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
+		// assign request and get assigned elevator ID
+//		int elevatorId = assigner.addRequest(floorNumber, direction); // assign task and get the elevator ID back
+//		boolean wasIdle = assigner.hasRequests(elevatorId);
+		int elevatorId = 0;
+		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to close doors");
+		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+				Subsystem.ELEVATOR, elevatorId, 
+				Subsystem.SCHEDULER, 0, 
+				ElevatorEventType.CLOSE_DOORS, null));
 		return new SchedulerProcessingState(context);
 	}
 }

@@ -34,11 +34,11 @@ public class Main {
 
         scheduler = new Scheduler(elevatorBuffer, floorBuffer);
 
-        elevator = new Thread(new Elevator(scheduler.getEventBuffer(), elevatorBuffer, 0), "Elevator");
+        elevator = new Thread(new Elevator(scheduler.getInputBuffer(), elevatorBuffer, 0), "Elevator");
 
         String floorFilePath = new File("").getAbsolutePath() + "/resources/testing_examples";
         
-        floorSystem = new Thread(new FloorSystem(scheduler.getEventBuffer(), floorBuffer, floorFilePath), "FloorSystem");
+        floorSystem = new Thread(new FloorSystem(scheduler.getInputBuffer(), floorBuffer, floorFilePath), "FloorSystem");
         
         Thread schedulerThread = new Thread(scheduler, "Scheduler");
 
