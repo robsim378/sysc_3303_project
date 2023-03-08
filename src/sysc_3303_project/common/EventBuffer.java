@@ -13,7 +13,7 @@ import java.util.Queue;
  *
  * An event buffer to hold all of the requests to a thread
  */
-public class EventBuffer<T> {
+public class EventBuffer<T extends Enum<?>> {
 	
 	private Queue<Event<T>> buffer;
 	
