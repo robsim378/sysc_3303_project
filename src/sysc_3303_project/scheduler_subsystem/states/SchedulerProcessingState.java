@@ -13,6 +13,7 @@ import sysc_3303_project.common.Event;
 import sysc_3303_project.common.RequestData;
 import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.elevator_subsystem.*;
+import sysc_3303_project.floor_subsystem.FloorSystem;
 
 /**
  * @author Andrei Popescu
@@ -31,7 +32,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorDoorsClosed(int elevatorId, int floorNumber) {
-		Direction moveDirection = (floorNumber < context.getTargetFloor()) ? Direction.UP : Direction.DOWN;
+		Direction moveDirection = context.directionToMove(elevatorId);
 		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to start moving");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, elevatorId, 
@@ -43,17 +44,9 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorDoorsOpened(int elevatorId, int floorNumber) {
-		for (RequestData request : context.getPendingRequests()) {
-			if (request.getCurrentFloor() == floorNumber) {
-				context.markRequestInProgress(request);
-			}
-		}
-		for (RequestData request : context.getInProgressRequests()) {
-			if (request.getDestinationFloor() == floorNumber) {
-				context.completeRequest(request);
-			}
-		}
-		if (context.hasRequests()) {
+		contextTracker.unloadElevator(elevatorId, floorNumber);
+		contextTracker.loadElevator(elevatorId, floorNumber);
+		if (context.getTracker().hasRequests(elevatorId)) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
@@ -77,19 +70,12 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
-		boolean stopping = false;
-		for (RequestData requestData : context.getInProgressRequests()) {
-			if (requestData.getDestinationFloor() == floorNumber) {
-				stopping = true;
-				break;
-			}
-		}
-		for (RequestData requestData : context.getPendingRequests()) {
-			if (requestData.getCurrentFloor() == floorNumber) {
-				stopping = true;
-				break;
-			}
-		}
+		//stop if there is a request (load in correct direction or unload) at the floor
+		boolean stopping = contextTracker.hasLoadRequest(elevatorId, floorNumber) || (contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0);
+		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
+		stopping = stopping ||
+				(floorNumber == FloorSystem.MAX_FLOOR_NUMBER && contextTracker.getElevatorDirection(elevatorId)== Direction.DOWN) ||
+				(floorNumber == 0 && contextTracker.getElevatorDirection(elevatorId)== Direction.UP);
 		if (stopping) {
 			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to stop at next floor " + floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
@@ -108,7 +94,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
-		// assign new request
+		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
 		return null;
 	}
 

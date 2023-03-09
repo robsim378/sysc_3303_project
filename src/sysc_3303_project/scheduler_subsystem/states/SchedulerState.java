@@ -10,6 +10,7 @@ import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.RequestData;
 import sysc_3303_project.common.State;
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 
 /**
@@ -21,6 +22,7 @@ import sysc_3303_project.scheduler_subsystem.Scheduler;
 public abstract class SchedulerState implements State {
 	
 	protected Scheduler context;
+	protected ElevatorTracker contextTracker;
 	
 	/**
 	 * Creates a new SchedulerState.
@@ -28,6 +30,7 @@ public abstract class SchedulerState implements State {
 	 */
 	public SchedulerState(Scheduler context) {
 		this.context = context;
+		this.contextTracker = context.getTracker();
 	}
 	
 	/**

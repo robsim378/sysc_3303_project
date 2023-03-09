@@ -21,11 +21,11 @@ public class SchedulerMain {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-		EventBuffer<?> outgoingBuffer = new EventBuffer<>();
+		EventBuffer<Enum<?>> outgoingBuffer = new EventBuffer<>();
 		EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();
 		Scheduler scheduler = new Scheduler(schedulerBuffer, outgoingBuffer);
 		UDPMessagerOutgoing out = new UDPMessagerOutgoing(outgoingBuffer);
-		UDPMessagerIncoming<SchedulerEventType> in = new UDPMessagerIncoming<SchedulerEventType>(new LinkedList<>() {{add(schedulerBuffer);}});
+		UDPMessagerIncoming<SchedulerEventType> in = new UDPMessagerIncoming<SchedulerEventType>(new LinkedList<>() {{add(schedulerBuffer);}}, 8000);
 		
 		//create threads
 		Thread schedulerThread = new Thread(scheduler);

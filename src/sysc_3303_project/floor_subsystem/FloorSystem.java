@@ -26,7 +26,8 @@ import sysc_3303_project.floor_subsystem.states.FloorIdleState;
  *   sending request information to the Scheduler and receiving requests from the scheduler.
  */
 public class FloorSystem implements Runnable{
-
+	
+	public static final int MAX_FLOOR_NUMBER = 10;
 	/**
 	 * Current state of the floor
 	 */

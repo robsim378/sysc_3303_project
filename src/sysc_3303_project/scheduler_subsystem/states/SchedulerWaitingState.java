@@ -34,10 +34,10 @@ public class SchedulerWaitingState extends SchedulerState {
 		// assign request and get assigned elevator ID
 //		int elevatorId = assigner.addRequest(floorNumber, direction); // assign task and get the elevator ID back
 //		boolean wasIdle = assigner.hasRequests(elevatorId);
-		int elevatorId = 0;
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to close doors");
+		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + assignedElevator + " to close doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
-				Subsystem.ELEVATOR, elevatorId, 
+				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.CLOSE_DOORS, null));
 		return new SchedulerProcessingState(context);
