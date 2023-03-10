@@ -9,19 +9,15 @@ package sysc_3303_project.scheduler_subsystem;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.RequestData;
-import sysc_3303_project.elevator_subsystem.Elevator;
-import sysc_3303_project.elevator_subsystem.ElevatorEventType;
-import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
+import logging.Logger;
 
-import java.io.Serializable;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-
-import logging.Logger;
+import java.util.stream.IntStream;
 
 /**
  * 	@author Andrei Popescu
@@ -30,156 +26,93 @@ import logging.Logger;
  */
 public class Scheduler implements Runnable {
 	
-	private Queue<RequestData> requestQueue; //represents the ordered queue of all requests, determines the next active request
-	private List<RequestData> pendingRequests; //requests where the passenger needs to be picked up
-	private List<RequestData> inProgressRequests; //requests where the passenger needs to be brought to a destination
-	private RequestData activeRequest; //request currently being handled
-	private int targetFloor;
-	private final EventBuffer<SchedulerEventType> eventBuffer;
-	private final EventBuffer<ElevatorEventType> elevatorBuffer;
-	private final EventBuffer<FloorEventType> floorBuffer;
+	private final EventBuffer<SchedulerEventType> inputBuffer;
+	private final EventBuffer<Enum<?>> outputBuffer; 
 	private SchedulerState state;
+	private ElevatorTracker tracker;
 	
 	/**
 	 * Creates a new Scheduler with no requests, which interacts with an Elevator and a FloorSystem via buffers.
 	 * @param elevatorBuffer event buffer to send events to an Elevator
 	 * @param floorBuffer event buffer to send events to a Floor
 	 */
-	public Scheduler(EventBuffer<ElevatorEventType> elevatorBuffer, EventBuffer<FloorEventType> floorBuffer) {
-		requestQueue = new LinkedList<>();
-		pendingRequests = new LinkedList<>();
-		inProgressRequests = new LinkedList<>();
-		eventBuffer = new EventBuffer<>();
-		this.elevatorBuffer = elevatorBuffer;
-		this.floorBuffer = floorBuffer;
+	public Scheduler(EventBuffer<SchedulerEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
+		this.inputBuffer = inputBuffer;
+		this.outputBuffer = outputBuffer;
 		state = new SchedulerWaitingState(this);
-		activeRequest = null;
-		targetFloor = -1;
+		tracker = new ElevatorTracker(SystemProperties.MAX_ELEVATOR_NUMBER);
 	}
 	
 	/**
-	 * Gets this Scheduler's event buffer.
+	 * Gets this Scheduler's input event buffer.
 	 * @return this Scheduler's EventBuffer
 	 */
-	public EventBuffer<SchedulerEventType> getEventBuffer() {
-		return eventBuffer;
+	public EventBuffer<SchedulerEventType> getInputBuffer() {
+		return inputBuffer;
 	}
 	
 	/**
-	 * Gets the event buffer of the Elevator associated with this Scheduler.
-	 * @return the Elevator's EventBuffer
+	 * Gets this Scheduler's output event buffer.
+	 * @return this Scheduler's EventBuffer
 	 */
-	public EventBuffer<ElevatorEventType> getElevatorBuffer() {
-		return elevatorBuffer;
+	public EventBuffer<Enum<?>> getOutputBuffer() {
+		return outputBuffer;
 	}
 	
-	/**
-	 * Gets the floor where this Scheduler is currently trying to
-	 * route the Elevator.
-	 * @return the target floor's number
-	 */
-	public int getTargetFloor() {
-		return targetFloor;
+	public Direction directionToMove(int elevatorId) {
+		if (!tracker.hasRequests(elevatorId)) {
+			return null;
+		}
+		boolean hasFurtherRequests = false;
+		for (int floor : getFurtherFloors(elevatorId)) {
+			hasFurtherRequests = hasFurtherRequests || tracker.hasLoadRequest(elevatorId, floor) || tracker.countUnloadRequests(elevatorId, floor) > 0;
+		}
+		return null;
 	}
 	
-	/**
-	 * Sets an existing request as active, indicating that it should be served as soon as possible.
-	 * @param request the RequestData for the request to activate
-	 */
-	private synchronized void setActiveRequest(RequestData request) {
-		activeRequest = request;
-		if (inProgressRequests.contains(request)) {
-			targetFloor = request.getDestinationFloor();
+	private int[] getFurtherFloors(int elevatorId) {
+		if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
+			return IntStream.range(tracker.getElevatorFloor(elevatorId), SystemProperties.MAX_FLOOR_NUMBER).toArray();
+		} else if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
+			return IntStream.rangeClosed(tracker.getElevatorFloor(elevatorId), 0).toArray();
 		} else {
-			targetFloor = request.getCurrentFloor();
-		}
-		Logger.getLogger().logNotification(this.getClass().getName(), "Active request is now: " + request.toString());
-		Logger.getLogger().logNotification(this.getClass().getName(), "Target floor is now " + targetFloor);
-	}
-	
-	/**
-	 * Sets a new request as active, indicating that it should be served as soon as possible.
-	 * Chooses requests in FIFO order, i.e. oldest first.
-	 */
-	public synchronized void setActiveRequest() {
-		if (!requestQueue.isEmpty()) {
-			setActiveRequest(requestQueue.peek());
-		} else {
-			activeRequest = null;
-			Logger.getLogger().logNotification(this.getClass().getName(), "No active request");
+			return new int[0];
 		}
 	}
 	
-	/**
-	 * Adds a pending request to be served by this Scheduler.
-	 * @param request the RequestData for the request to add
-	 */
-	public synchronized void addPendingRequest(RequestData request) {
-		pendingRequests.add(request);
-		requestQueue.add(request);
-		Logger.getLogger().logNotification(this.getClass().getName(), "Added new pending request: " + request.toString());
-		if (activeRequest == null) {
-			setActiveRequest();
+	public int assignLoadRequest(int floor, Direction direction) {
+		int[] ids = IntStream.range(0, SystemProperties.MAX_ELEVATOR_NUMBER).toArray();
+		List<Integer> onTheWay = new LinkedList<>();
+		List<Integer> notOnTheWay = new LinkedList<>();
+		List<Integer> priorityList = new LinkedList<>();
+		for (int id : ids) {
+			boolean elevatorOnTheWay = false;
+			for (int f : getFurtherFloors(id)) {
+				if (f == floor) {
+					elevatorOnTheWay = true;
+				}
+			}
+			if (elevatorOnTheWay) {
+				onTheWay.add(id);
+			} else {
+				notOnTheWay.add(id);
+			}
 		}
+		Comparator<Integer> assignPriority = (id, id2) -> tracker.getElevatorRequestCount(id) - tracker.getElevatorRequestCount(id2);
+		//sort each set by fewest requests first
+		onTheWay.sort(assignPriority);
+		notOnTheWay.sort(assignPriority);
+		//combine the 2 so elevators that are on the way are always considered first
+		priorityList.addAll(onTheWay);
+		priorityList.addAll(notOnTheWay);
+		//due to how the onTheWay/notOnTheWay lists are generated, ties are broken by lowest ID number first
+		int elevatorId = onTheWay.get(0);
+		tracker.addLoadRequest(elevatorId, floor, direction);
+		return elevatorId;
 	}
 	
-	/**
-	 * Marks a pending request as "in progress", indicating that the passengers have been
-	 * picked up.
-	 * @param request the RequestData for the request to mark as in progress
-	 */
-	public synchronized void markRequestInProgress(RequestData request) {
-		if (!pendingRequests.contains(request)) {
-			return;
-		}
-		pendingRequests.remove(request);
-		inProgressRequests.add(request);
-		Logger.getLogger().logNotification(this.getClass().getName(), "Picked up passenger for request: " + request.toString());
-		if (activeRequest == request) {
-			targetFloor = request.getDestinationFloor();
-			Logger.getLogger().logNotification(this.getClass().getName(), "Target floor is now " + targetFloor);
-		}
-	}
-	
-	/**
-	 * Completes an in-progress request, indicating that passengers have been delivered to the
-	 * destination and there is nothing more to do for the request.
-	 * @param request the RequestData for the request to complete
-	 */
-	public synchronized void completeRequest(RequestData request) {
-		pendingRequests.remove(request);
-		inProgressRequests.remove(request);
-		requestQueue.remove(request);
-		Logger.getLogger().logNotification(this.getClass().getName(), "Passengers brought to destination for request: " + request.toString());
-		if (activeRequest == request) {
-			setActiveRequest();
-		}
-	}
-	
-	/**
-	 * Gets all pending requests managed by this Scheduler.
-	 * @return the List of RequestData for pending requests
-	 */
-	public synchronized List<RequestData> getPendingRequests() {
-		return pendingRequests;
-	}
-	
-	/**
-	 * Gets all in-progress requests managed by this Scheduler.
-	 * @return the List of RequestData for in-progress requests
-	 */
-	public synchronized List<RequestData> getInProgressRequests() {
-		return inProgressRequests;
-	}
-	
-	/**
-	 * Checks whether this Scheduler is currently serving any requests
-	 * (pending or in-progress).
-	 * @return true if there is at least one in-progress or pending request,
-	 * false otherwise.
-	 */
-	public synchronized boolean hasRequests() {
-		return !requestQueue.isEmpty();
+	public ElevatorTracker getTracker() {
+		return tracker;
 	}
 	
 	/**
@@ -188,7 +121,7 @@ public class Scheduler implements Runnable {
 	public void eventLoop() {
 		while (true) {
 
-			Event<SchedulerEventType> evt = eventBuffer.getEvent();
+			Event<SchedulerEventType> evt = inputBuffer.getEvent();
 			SchedulerState newState = null;
 
 
@@ -197,19 +130,22 @@ public class Scheduler implements Runnable {
 			
 			switch(evt.getEventType()) {
 				case ELEVATOR_DOORS_CLOSED:
-					newState = state.handleElevatorDoorsClosed((Elevator) evt.getSender());
+					newState = state.handleElevatorDoorsClosed(evt.getSourceID(), (int) evt.getPayload());
 					break;
 				case ELEVATOR_DOORS_OPENED:
-					newState = state.handleElevatorDoorsOpened((Elevator) evt.getSender());
+					newState = state.handleElevatorDoorsOpened(evt.getSourceID(), (int) evt.getPayload());
 					break;
 				case ELEVATOR_APPROACHING_FLOOR:
-					newState = state.handleElevatorApproachingFloor((Elevator) evt.getSender(), (int) evt.getPayload());
+					newState = state.handleElevatorApproachingFloor(evt.getSourceID(), (int) evt.getPayload());
 					break;
 				case ELEVATOR_STOPPED:
-					newState = state.handleElevatorStopped((Elevator) evt.getSender(), (int) evt.getPayload());
+					newState = state.handleElevatorStopped(evt.getSourceID(), (int) evt.getPayload());
 					break;
 				case FLOOR_BUTTON_PRESSED:
-					newState = state.handleFloorButtonPressed((RequestData) evt.getPayload());
+					newState = state.handleFloorButtonPressed(evt.getSourceID(), (Direction) evt.getPayload());
+					break;
+				case ELEVATOR_BUTTON_PRESSED:
+					newState = state.handleElevatorButtonPressed(evt.getSourceID(), (int) evt.getPayload());
 					break;
 			}
 			

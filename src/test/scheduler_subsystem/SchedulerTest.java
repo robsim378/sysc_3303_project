@@ -44,7 +44,7 @@ public class SchedulerTest {
     public void setUp() {
     	elevatorBuffer = new EventBuffer<ElevatorEventType>();
         scheduler = new Scheduler(elevatorBuffer, new EventBuffer<FloorEventType>());
-        schedulerBuffer = scheduler.getEventBuffer();
+        schedulerBuffer = scheduler.getInputBuffer();
     }
 
     /**

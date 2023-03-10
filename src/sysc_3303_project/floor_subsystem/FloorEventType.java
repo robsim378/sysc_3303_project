@@ -13,5 +13,6 @@ package sysc_3303_project.floor_subsystem;
  *
  */
 public enum FloorEventType {
-	BUTTON_PRESSED
+	BUTTON_PRESSED, //
+	PASSENGERS_LOADED // direction payload for lamp
 }

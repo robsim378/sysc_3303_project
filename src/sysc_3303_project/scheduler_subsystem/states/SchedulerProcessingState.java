@@ -11,7 +11,11 @@ import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.Subsystem;
+import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.elevator_subsystem.*;
+import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.floor_subsystem.FloorSystem;
 
 /**
  * @author Andrei Popescu
@@ -29,72 +33,99 @@ public class SchedulerProcessingState extends SchedulerState {
 	}
 	
 	@Override
-	public SchedulerState handleElevatorDoorsClosed(Elevator e) {
-		Direction moveDirection = (e.getFloor() < context.getTargetFloor()) ? Direction.UP : Direction.DOWN;
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to start moving");
-		context.getElevatorBuffer().addEvent(
-				new Event<>(ElevatorEventType.START_MOVING_IN_DIRECTION, context, moveDirection));
+	public SchedulerState handleElevatorDoorsClosed(int elevatorId, int floorNumber) {
+		Direction moveDirection = context.directionToMove(elevatorId);
+		if (moveDirection != null) { // if there are no requests: shouldn't happen but don't break the system if it does
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to start moving");
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
+		} else { //failsafe, idle the elevator (if there are no requests)
+			Logger.getLogger().logError(context.getClass().getName(), "Unexpectedly no requests for " + elevatorId + ", open doors again");
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.OPEN_DOORS, null));
+		}
 		return null;
 	}
 	
 	@Override
-	public SchedulerState handleElevatorDoorsOpened(Elevator e) {
-		int currentFloor = e.getFloor();
-		for (RequestData request : context.getPendingRequests()) {
-			if (request.getCurrentFloor() == currentFloor) {
-				context.markRequestInProgress(request);
-			}
+	public SchedulerState handleElevatorDoorsOpened(int elevatorId, int floorNumber) {
+		int unloadCount = contextTracker.unloadElevator(elevatorId, floorNumber);
+		boolean loaded = contextTracker.loadElevator(elevatorId, floorNumber);
+		for (int i = 0; i < unloadCount; i++) {
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.PASSENGERS_UNLOADED, floorNumber));
+			return null;
 		}
-		for (RequestData request : context.getInProgressRequests()) {
-			if (request.getDestinationFloor() == currentFloor) {
-				context.completeRequest(request);
-			}
+		if (loaded) {
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.FLOOR, floorNumber, 
+					Subsystem.SCHEDULER, 0, 
+					FloorEventType.PASSENGERS_LOADED, contextTracker.getElevatorDirection(elevatorId)));
 		}
-		if (context.hasRequests()) {
-            context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.CLOSE_DOORS, context, null));
+		if (loaded || unloadCount > 0) { //if we expect more requests close doors (the requests will not have come in yet)
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.CLOSE_DOORS, null));
 			return null;
 		} else {
+			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
+				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
+			}
 			return new SchedulerWaitingState(context);
 		}
-		
 	}
 	
 	@Override
-	public SchedulerState handleElevatorStopped(Elevator e, int floor) {
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to open doors");
-		context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.OPEN_DOORS, context, null));
+	public SchedulerState handleElevatorStopped(int elevatorId, int floorNumber) {
+		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
+		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+				Subsystem.ELEVATOR, elevatorId, 
+				Subsystem.SCHEDULER, 0, 
+				ElevatorEventType.OPEN_DOORS, null));
 		return null;
 	}
 	
 	@Override
-	public SchedulerState handleElevatorApproachingFloor(Elevator e, int floor) {
-		boolean stopping = false;
-		for (RequestData requestData : context.getInProgressRequests()) {
-			if (requestData.getDestinationFloor() == floor) {
-				stopping = true;
-				break;
-			}
-		}
-		for (RequestData requestData : context.getPendingRequests()) {
-			if (requestData.getCurrentFloor() == floor) {
-				stopping = true;
-				break;
-			}
-		}
+	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
+		//stop if there is a request (load in correct direction or unload) at the floor
+		boolean stopping = contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId))
+				|| (contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0);
+		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
+		stopping = stopping ||
+				(floorNumber == FloorSystem.MAX_FLOOR_NUMBER && contextTracker.getElevatorDirection(elevatorId)== Direction.DOWN) ||
+				(floorNumber == 0 && contextTracker.getElevatorDirection(elevatorId)== Direction.UP);
 		if (stopping) {
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to stop at next floor " + floor);
-			context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.STOP_AT_NEXT_FLOOR, context, null));
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to stop at next floor " + floorNumber);
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.STOP_AT_NEXT_FLOOR, null));
 		} else {
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator to NOT stop at next floor " + floor);
-			context.getElevatorBuffer().addEvent(new Event<>(ElevatorEventType.CONTINUE_MOVING, context, null));
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to NOT stop at next floor " + floorNumber);
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.CONTINUE_MOVING, null));
 		}
 		return null;
 	}
 	
 	@Override
-	public SchedulerState handleFloorButtonPressed(RequestData request) {
-		context.addPendingRequest(request);
+	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
+		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
 		return null;
 	}
 
+	@Override
+	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
+		contextTracker.addUnloadRequest(elevatorId, floorNumber);
+		return null;
+	}
 }
