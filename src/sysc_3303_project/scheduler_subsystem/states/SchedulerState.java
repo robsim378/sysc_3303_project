@@ -87,5 +87,15 @@ public abstract class SchedulerState implements State {
 	public void doEntry() {}
 	@Override
 	public void doExit() {}
+	
+	/**
+	 * 
+	 * @param elevatorId
+	 * @param floorNumber
+	 * @return
+	 */
+	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
+		throw new IllegalStateException();
+	}
 
 }

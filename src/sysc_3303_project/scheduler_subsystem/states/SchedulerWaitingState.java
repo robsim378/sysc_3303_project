@@ -32,14 +32,18 @@ public class SchedulerWaitingState extends SchedulerState {
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		// assign request and get assigned elevator ID
-//		int elevatorId = assigner.addRequest(floorNumber, direction); // assign task and get the elevator ID back
-//		boolean wasIdle = assigner.hasRequests(elevatorId);
 		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
 		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + assignedElevator + " to close doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.CLOSE_DOORS, null));
+		return new SchedulerProcessingState(context);
+	}
+	
+	@Override
+	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
+		contextTracker.addUnloadRequest(elevatorId, floorNumber);
 		return new SchedulerProcessingState(context);
 	}
 }

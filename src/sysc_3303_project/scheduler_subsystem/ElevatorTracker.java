@@ -45,8 +45,11 @@ public class ElevatorTracker {
 	
 	private HashMap<Integer, ElevatorInfo> elevatorTrackingInfo;
 	
-	public ElevatorTracker() {
+	public ElevatorTracker(int elevatorCount) {
 		elevatorTrackingInfo = new HashMap<>();
+		for (int i = 0; i < elevatorCount; i++) {
+			registerElevator(i, 0); //all elevators start at the ground floor
+		}
 	}
 	
 	public void registerElevator(int elevatorId, int floor) {
@@ -59,8 +62,17 @@ public class ElevatorTracker {
 		}
 	}
 	
+	public int getElevatorFloor(int elevatorId) {
+		return elevatorTrackingInfo.get(elevatorId).floor;
+	}
+	
 	public Direction getElevatorDirection(int elevatorId) {
 		return elevatorTrackingInfo.get(elevatorId).direction;
+	}
+	
+	public int getElevatorRequestCount(int elevatorId) {
+		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
+		return info.loadRequests.size() + info.unloadRequests.size();
 	}
 	
 	public void updateElevatorFloor(int elevatorId, int floor) {
@@ -107,7 +119,7 @@ public class ElevatorTracker {
 		return unloadCount;
 	}
 	
-	private boolean hasLoadRequestInDirection(int elevatorId, int floor, Direction direction) {
+	public boolean hasLoadRequestInDirection(int elevatorId, int floor, Direction direction) {
 		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
 		for (LoadRequest lr : info.loadRequests) {
 			if (lr.floor == floor && lr.direction == direction) {
@@ -118,7 +130,13 @@ public class ElevatorTracker {
 	}
 	
 	public boolean hasLoadRequest(int elevatorId, int floor) {
-		return hasLoadRequestInDirection(elevatorId, floor, getElevatorDirection(elevatorId));
+		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
+		for (LoadRequest lr : info.loadRequests) {
+			if (lr.floor == floor) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public int countUnloadRequests(int elevatorId, int floor) {

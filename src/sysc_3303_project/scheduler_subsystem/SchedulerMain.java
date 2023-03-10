@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.messaging.UDPMessagerIncoming;
 import sysc_3303_project.messaging.UDPMessagerOutgoing;
 
@@ -25,7 +26,7 @@ public class SchedulerMain {
 		EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();
 		Scheduler scheduler = new Scheduler(schedulerBuffer, outgoingBuffer);
 		UDPMessagerOutgoing out = new UDPMessagerOutgoing(outgoingBuffer);
-		UDPMessagerIncoming<SchedulerEventType> in = new UDPMessagerIncoming<SchedulerEventType>(new LinkedList<>() {{add(schedulerBuffer);}}, 8000);
+		UDPMessagerIncoming<SchedulerEventType> in = new UDPMessagerIncoming<SchedulerEventType>(new LinkedList<>() {{add(schedulerBuffer);}}, SystemProperties.SCHEDULER_PORT);
 		
 		//create threads
 		Thread schedulerThread = new Thread(scheduler);

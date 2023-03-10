@@ -71,7 +71,8 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
 		//stop if there is a request (load in correct direction or unload) at the floor
-		boolean stopping = contextTracker.hasLoadRequest(elevatorId, floorNumber) || (contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0);
+		boolean stopping = contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId))
+				|| (contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0);
 		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
 		stopping = stopping ||
 				(floorNumber == FloorSystem.MAX_FLOOR_NUMBER && contextTracker.getElevatorDirection(elevatorId)== Direction.DOWN) ||
@@ -98,4 +99,9 @@ public class SchedulerProcessingState extends SchedulerState {
 		return null;
 	}
 
+	@Override
+	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
+		contextTracker.addUnloadRequest(elevatorId, floorNumber);
+		return null;
+	}
 }
