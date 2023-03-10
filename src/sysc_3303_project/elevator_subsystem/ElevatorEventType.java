@@ -18,6 +18,7 @@ public enum ElevatorEventType {
 	START_MOVING_IN_DIRECTION, //Direction payload
 	STOP_AT_NEXT_FLOOR, //no payload
 	CONTINUE_MOVING, //no payload
-	MOVING_TIMER //no payload
+	MOVING_TIMER, //no payload
+	PASSENGERS_UNLOADED //floor (int) payload, for lamps
 
 }

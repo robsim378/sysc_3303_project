@@ -12,7 +12,9 @@ import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.RequestData;
 import sysc_3303_project.common.Subsystem;
+import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.elevator_subsystem.*;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 
 /**
@@ -33,29 +35,51 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleElevatorDoorsClosed(int elevatorId, int floorNumber) {
 		Direction moveDirection = context.directionToMove(elevatorId);
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to start moving");
-		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
-				Subsystem.ELEVATOR, elevatorId, 
-				Subsystem.SCHEDULER, 0, 
-				ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
-
+		if (moveDirection != null) { // if there are no requests: shouldn't happen but don't break the system if it does
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to start moving");
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
+		} else { //failsafe, idle the elevator (if there are no requests)
+			Logger.getLogger().logError(context.getClass().getName(), "Unexpectedly no requests for " + elevatorId + ", open doors again");
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.OPEN_DOORS, null));
+		}
 		return null;
 	}
 	
 	@Override
 	public SchedulerState handleElevatorDoorsOpened(int elevatorId, int floorNumber) {
-		contextTracker.unloadElevator(elevatorId, floorNumber);
-		contextTracker.loadElevator(elevatorId, floorNumber);
-		if (context.getTracker().hasRequests(elevatorId)) {
+		int unloadCount = contextTracker.unloadElevator(elevatorId, floorNumber);
+		boolean loaded = contextTracker.loadElevator(elevatorId, floorNumber);
+		for (int i = 0; i < unloadCount; i++) {
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.PASSENGERS_UNLOADED, floorNumber));
+			return null;
+		}
+		if (loaded) {
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.FLOOR, floorNumber, 
+					Subsystem.SCHEDULER, 0, 
+					FloorEventType.PASSENGERS_LOADED, contextTracker.getElevatorDirection(elevatorId)));
+		}
+		if (loaded || unloadCount > 0) { //if we expect more requests close doors (the requests will not have come in yet)
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
 			return null;
 		} else {
+			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
+				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
+			}
 			return new SchedulerWaitingState(context);
 		}
-		
 	}
 	
 	@Override

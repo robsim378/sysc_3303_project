@@ -9,26 +9,15 @@ package sysc_3303_project.scheduler_subsystem;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.RequestData;
 import sysc_3303_project.common.SystemProperties;
-import sysc_3303_project.elevator_subsystem.Elevator;
-import sysc_3303_project.elevator_subsystem.ElevatorEventType;
-import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
+import logging.Logger;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
-
-import logging.Logger;
 
 /**
  * 	@author Andrei Popescu
