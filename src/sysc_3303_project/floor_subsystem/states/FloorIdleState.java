@@ -7,9 +7,11 @@
 package sysc_3303_project.floor_subsystem.states;
 
 import logging.Logger;
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
-import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
+import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
@@ -30,16 +32,59 @@ public class FloorIdleState extends FloorState {
 	public FloorIdleState(FloorSystem context) {
 		this.context = context;
 	}
-	
-	
+
+	/**
+	 * Handles pressing a button a floor
+	 * @param requestData		RequestData, the data for the button request
+	 * @param outputBuffer		EventBuffer, the location to send the data to.
+	 * @return					FloorState, the next state
+	 */
 	@Override
-	public FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> outputBuffer) {
+	public FloorState handleButtonPressed(RequestData requestData) {
 		Logger.getLogger().logNotification(this.getClass().getName(), "Sent request to scheduler: " + requestData.toString());
 
-		Event<SchedulerEventType> event = new Event<SchedulerEventType>(SchedulerEventType.FLOOR_BUTTON_PRESSED, context, requestData);
+		// Send an event to the scheduler requesting an elevator.
+		Event<Enum<?>> event = new Event<>(
+				Subsystem.SCHEDULER,
+				0,
+				Subsystem.FLOOR,
+				context.getFloorID(),
+				SchedulerEventType.FLOOR_BUTTON_PRESSED,
+				requestData.getDirection());
+		context.getOutputBuffer().addEvent(event);
+
+		// Adds the destination request to the list of requests waiting, which will be sent to an elevator when it arrives.
+		context.getElevatorRequests().add(requestData.getDestinationFloor());
 		
-		outputBuffer.addEvent(event);
-		
+		return new FloorIdleState(this.context);
+	}
+
+	/**
+	 * Handles an elevator arriving at a floor
+	 * @param direction 		Direction, the direction the elevator will be going.
+	 * @param outputBuffer		EventBuffer, the location too send data to.
+	 * @return					FloorState, the next state
+	 */
+	@Override
+	public FloorState handleElevatorArrived(Direction direction, int elevatorID) {
+		// Go through all the requests on the current floor, sending a button request to all the floors in the direction
+		// the elevator is heading and removing them from the list.
+		for (int destination : context.getElevatorRequests()) {
+			// Check if the request is in the elevator's path.
+			if (direction == Direction.DOWN && destination <= context.getFloorID() || direction == Direction.UP && destination >= context.getFloorID()) {
+				// Generate and send a button press request to the elevator
+				Event<Enum<?>> event = new Event<>(
+						Subsystem.ELEVATOR,
+						elevatorID,
+						Subsystem.FLOOR,
+						context.getFloorID(),
+						ElevatorEventType.ELEVATOR_BUTTON_PRESSED,
+						destination);
+				context.getOutputBuffer().addEvent(event);
+				// Remove this request from the list.
+				context.removeElevatorRequest(destination);
+			}
+		}
 		return new FloorIdleState(this.context);
 	}
 

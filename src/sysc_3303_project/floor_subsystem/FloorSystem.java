@@ -6,15 +6,10 @@
 
 package sysc_3303_project.floor_subsystem;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import logging.Logger;
 import sysc_3303_project.floor_subsystem.states.FloorState;
-import sysc_3303_project.common.events.DelayedEvent;
+import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
@@ -26,8 +21,7 @@ import sysc_3303_project.floor_subsystem.states.FloorIdleState;
  *   sending request information to the Scheduler and receiving requests from the scheduler.
  */
 public class FloorSystem implements Runnable{
-	
-	public static final int MAX_FLOOR_NUMBER = 10;
+
 	/**
 	 * Current state of the floor
 	 */
@@ -46,17 +40,17 @@ public class FloorSystem implements Runnable{
 	/**
 	 * The list of currently pending requests at this floor.
 	 */
-	private ArrayList<int> elevatorRequests;
+	private ArrayList<Integer> elevatorRequests;
 
     /**
      * Event buffer for incoming messages to the floor system
      */
-    private EventBuffer<FloorEventType> outputBuffer;
+    private EventBuffer<Enum<?>> outputBuffer;
     
     /**
      * Event buffer for submitting actions to the scheduler
      */
-    private EventBuffer<Enum<?>> inputBuffer;
+    private EventBuffer<FloorEventType> inputBuffer;
 
     /**
      * Constructor for the Floor System class.
@@ -65,42 +59,75 @@ public class FloorSystem implements Runnable{
      */
     public FloorSystem (int floorID, EventBuffer<FloorEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
         this.inputBuffer = inputBuffer;
-        this.textFileLocation = textFileLocation;
-        this.outputBuffer = this.outputBuffer;
+        this.outputBuffer = outputBuffer;
 		this.floorID = floorID;
+		elevatorRequests = new ArrayList<>();
+		lamps = new Lamps();
         state = new FloorIdleState(this);
     }
 
-	/**
-	 *
-	 * @param data
-	 */
-	public void addRequest(RequestData data) {
-		// Generate the event to send to the scheduler
-		event = new Event<SchedulerEventType>(
-				Subsystem.SCHEDULER,
-				schedulerid,
-				Subsystem.FLOOR,
-				floorID,
-				SchedulerEventType.FLOOR_BUTTON_PRESSED,
-				data.getDirection();
-		)
-
-		// Get the time to send the request
-		LocalTime requestTime = data.getRequestTime();
-		requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
-
-		// Create a thread to send the request at the specified time.
-		DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, this.outputBuffer);
-		new Thread(runnableMethod).start();
-
-		// Add the elevator buttons to press to the list.
-		elevatorRequests.add(data.getDestinationFloor);
+	public void addElevatorRequest(int destinationFloor) {
+		elevatorRequests.add(destinationFloor);
 	}
 
-    /**
-     * Repetitively processes the floor system state pattern
-     */
+	public ArrayList<Integer> getElevatorRequests() {
+		return elevatorRequests;
+	}
+
+	public void removeElevatorRequest(int destinationFloor) {
+		elevatorRequests.remove(destinationFloor);
+	}
+	
+	public EventBuffer<FloorEventType> getInputBuffer() {
+		return inputBuffer;
+	}
+	
+	public EventBuffer<Enum<?>> getOutputBuffer() {
+		return outputBuffer;
+	}
+
+	/**
+	 * Get the ID of this floor
+	 * @return	int, the floorID of this floor.
+	 */
+	public int getFloorID() {
+		return floorID;
+	}
+
+	/**
+	 * Gets the status of the up lamp.
+	 * @return  Boolean, true if the up lamp is on, false if it is off.
+	 */
+	public boolean getUpLampStatus() {
+		return lamps.getUpLampStatus();
+	}
+
+	/**
+	 * Gets the status of the down lamp.
+	 * @return  Boolean, true if the down lamp is on, false if it is off.
+	 */
+	public boolean getDownLampStatus() {
+		return lamps.getDownLampStatus();
+	}
+
+	/**
+	 * Lights the directional lamp for the given direction
+	 * @param direction     Direction, the directional lamp to light.
+	 */
+	public void lightLamp(Direction direction) {
+		lamps.lightLamp(direction);
+	}
+
+	/**
+	 * Turns off all lamps.
+	 */
+
+	public void clearLamps() {
+		lamps.clearLamps();
+	}
+		/**
+         * Repetitively processes the floor system state pattern
+         */
     public void beginLoop() {
     	
     	// Infinitely looping
@@ -116,10 +143,12 @@ public class FloorSystem implements Runnable{
     		    		
     		switch(event.getEventType()) {
     			case BUTTON_PRESSED:
-    				this.state = this.state.handleButtonPressed((RequestData) event.getPayload(), inputBuffer);
+    				this.state = this.state.handleButtonPressed((RequestData) event.getPayload());
     				break;
 				case PASSENGERS_LOADED:
-					lamps.clearLamps();
+					// For a PASSENGERS_LOADED message, the sourceID is the ID of the elevator that has arrived,
+					// not the scheduler that sent the message.
+					this.state = this.state.handleElevatorArrived((Direction) event.getPayload(), event.getSourceID());
     			default:
     				throw new IllegalArgumentException();
     			}
