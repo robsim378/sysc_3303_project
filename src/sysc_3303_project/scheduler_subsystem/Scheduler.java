@@ -99,7 +99,7 @@ public class Scheduler implements Runnable {
 				|| (tracker.countUnloadRequests(elevatorId, floor) > 0);
 		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
 		stopping = stopping ||
-				(floor == FloorSystem.MAX_FLOOR_NUMBER && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
+				(floor == ResourceManager.getResourceManager().getInt("count.floors") && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
 				(floor == 0 && tracker.getElevatorDirection(elevatorId)== Direction.DOWN);
 		
 		int[] furtherFloors = getFurtherFloors(elevatorId);
@@ -166,6 +166,7 @@ public class Scheduler implements Runnable {
 		//due to how the onTheWay/notOnTheWay lists are generated, ties are broken by lowest ID number first
 		int elevatorId = priorityList.get(0);
 		tracker.addLoadRequest(elevatorId, floor, direction);
+		Logger.getLogger().logNotification("Scheduler", "Assigned load request to elevator " + elevatorId + ": " + floor + " " + direction);
 		return elevatorId;
 	}
 	

@@ -6,6 +6,9 @@
 
 package sysc_3303_project.floor_subsystem.states;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import logging.Logger;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
@@ -69,6 +72,8 @@ public class FloorIdleState extends FloorState {
 	public FloorState handleElevatorArrived(Direction direction, int elevatorID) {
 		// Go through all the requests on the current floor, sending a button request to all the floors in the direction
 		// the elevator is heading and removing them from the list.
+		Logger.getLogger().logNotification("FloorIdleState", "Elevator " + elevatorID + " arrived at floor in direction " + direction);
+		List<Integer> handledRequests = new LinkedList<>();
 		for (int destination : context.getElevatorRequests()) {
 			// Check if the request is in the elevator's path.
 			if (direction == Direction.DOWN && destination <= context.getFloorID() || direction == Direction.UP && destination >= context.getFloorID()) {
@@ -82,8 +87,11 @@ public class FloorIdleState extends FloorState {
 						destination);
 				context.getOutputBuffer().addEvent(event);
 				// Remove this request from the list.
-				context.removeElevatorRequest(destination);
+				handledRequests.add(destination);
 			}
+		}
+		for (int destination : handledRequests) {
+			context.removeElevatorRequest(destination);
 		}
 		return new FloorIdleState(this.context);
 	}

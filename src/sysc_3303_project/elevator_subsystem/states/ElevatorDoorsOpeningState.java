@@ -31,7 +31,7 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
     @Override
     public void doEntry() {
 
-        new Thread(new DelayTimerThread<>(2000,
+        new Thread(new DelayTimerThread<>(1000,
                 new Event<>(
                         Subsystem.ELEVATOR,
                         context.getElevatorID(),
@@ -55,7 +55,7 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
                 Subsystem.ELEVATOR,
                 context.getElevatorID(),
                 SchedulerEventType.ELEVATOR_DOORS_OPENED,
-                null));
+                context.getFloor()));
         return new ElevatorDoorsOpenState(context);
     }
 }

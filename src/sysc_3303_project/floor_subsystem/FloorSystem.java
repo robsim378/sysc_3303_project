@@ -74,7 +74,7 @@ public class FloorSystem implements Runnable{
 		return elevatorRequests;
 	}
 
-	public void removeElevatorRequest(int destinationFloor) {
+	public void removeElevatorRequest(Integer destinationFloor) {
 		elevatorRequests.remove(destinationFloor);
 	}
 	
@@ -149,6 +149,7 @@ public class FloorSystem implements Runnable{
 					// For a PASSENGERS_LOADED message, the sourceID is the ID of the elevator that has arrived,
 					// not the scheduler that sent the message.
 					this.state = this.state.handleElevatorArrived((Direction) event.getPayload(), event.getSourceID());
+					break;
     			default:
     				throw new IllegalArgumentException();
     			}
