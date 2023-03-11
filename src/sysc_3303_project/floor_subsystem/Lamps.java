@@ -3,20 +3,18 @@
  * Group 1
  * @version 3.0
  */
-
-import sysc_3303_project.common.Direction;
-
-
 package sysc_3303_project.floor_subsystem;
 
-static final boolean ON = true;
-static final boolean OFF = false;
+import sysc_3303_project.common.Direction;
 
 /**
  * @author Robert Simionescu
  * Represents all the directional lamps on the current floor and their current status.
  */
 public class Lamps {
+	
+	private static final boolean ON = true;
+	private static final boolean OFF = false;
     /**
      * Lamp indicating that an elevator going up has arrived
      */
@@ -45,9 +43,10 @@ public class Lamps {
     /**
      * Lights the directional lamp for the given direction
      * @param direction     Direction, the directional lamp to light.
+     * @return 
      */
-    public lightLamp(Direction direction) {
-        if (direction == UP) {
+    public void lightLamp(Direction direction) {
+        if (direction == Direction.UP) {
             upLamp = ON;
         }
         else {
@@ -58,7 +57,7 @@ public class Lamps {
     /**
      * Turns off all lamps.
      */
-    public clearLamps() {
+    public void clearLamps() {
         upLamp = OFF;
         downLamp = OFF;
     }

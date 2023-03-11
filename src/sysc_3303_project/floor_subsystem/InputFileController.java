@@ -4,20 +4,25 @@
  * @version 3.0
  */
 
+package sysc_3303_project.floor_subsystem;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.time.LocalTime;
+import java.util.ArrayList;
+
+import logging.Logger;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.DelayTimerThread;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.RequestData;
+
 /**
  * @author Robert Simionescu, Liam Gaudet
  * Reads the input file and sends its contents as events to their destinations.
  */
-public class FloorMessageController implements Runnable {
-    /**
-     * The buffer to receive messages from
-     */
-    private EventBuffer<FloorEventType> inputBuffer;
-
-    /**
-     * The buffer to send messages to
-     */
-    private EventBuffer<Enum<?>> outputBuffer;
+public class InputFileController implements Runnable {
 
     /**
      * Filepath to get request data from
@@ -36,9 +41,7 @@ public class FloorMessageController implements Runnable {
      * @param textFileLocation  String, the location of the input file.
      * @param floors    ArrayList<FloorSystem>, the floors in the system.
      */
-    public FloorMessageController(EventBuffer<FloorEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer, String textFileLocation, ArrayList<FloorSystem> floors) {
-        this.inputBuffer = inputBuffer;
-        this.outputBuffer = outputBuffer;
+    public InputFileController(String textFileLocation, ArrayList<FloorSystem> floors) {
         this.textFileLocation = textFileLocation;
         this.floors = floors;
     }
@@ -100,21 +103,21 @@ public class FloorMessageController implements Runnable {
 
 
             // Generate the event to send to the floor
-            event = new Event<FloorEventType>(
+            Event<FloorEventType> event = new Event<FloorEventType>(
                     Subsystem.FLOOR,
                     -1, // This event is being sent from the input file, so it does not have a real source. This is just a placeholder since it will never actually be read.
                     Subsystem.FLOOR,
                     data.getCurrentFloor(),
                     FloorEventType.BUTTON_PRESSED,
-                    data;
-		    )
+                    data
+		    );
 
             // Get the time to send the request
             LocalTime requestTime = data.getRequestTime();
-            requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
+            int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
 
             // Create a thread to send the request at the specified time.
-            DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, floors[data.getCurrentFloor()]);
+            DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, floors.get(data.getCurrentFloor()).getInputBuffer());
             new Thread(runnableMethod).start();
         }
     }
