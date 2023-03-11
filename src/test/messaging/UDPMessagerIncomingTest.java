@@ -39,7 +39,7 @@ public class UDPMessagerIncomingTest {
             eventBuffers.add(new EventBuffer<TestEnum>());
 
         }
-        udpMessagerIncoming = new UDPMessagerIncoming<>(eventBuffers, listeningPort);
+        udpMessagerIncoming = new UDPMessagerIncoming<>(eventBuffers, Subsystem.FLOOR);
     }
 
     @Test
