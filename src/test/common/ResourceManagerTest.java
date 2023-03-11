@@ -11,16 +11,16 @@ public class ResourceManagerTest {
 	@Test
 	public void testGet() {
 		ResourceManager manager = ResourceManager.getResourceManager();
-		assertNotNull(manager.get("floorSys.hostname"));
-		assertNotNull(manager.get("schedSys.hostname"));
+		assertNotNull(manager.get("test.value1"));
+		assertNotNull(manager.get("test.value2"));
 	}
 	
 	
 	@Test
 	public void testGetInt() {
 		ResourceManager manager = ResourceManager.getResourceManager();
-		assertNotNull(manager.getInt("floorSys.port"));
-		assertNotNull(manager.getInt("schedSys.port"));
+		assertNotNull(manager.getInt("test.int1"));
+		assertNotNull(manager.getInt("test.int2"));
 
 	}
 	

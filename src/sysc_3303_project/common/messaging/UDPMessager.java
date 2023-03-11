@@ -34,13 +34,17 @@ public abstract class UDPMessager {
 	}
 	
 	/**
-	 * Determines host from destination
+	 * Determines host from destination. Defaults to local address if not configured
 	 * @param destination	Subsystem, system to send to
 	 * @return				InetAddress, host to send to
 	 */
 	public InetAddress getHost(Subsystem destination) {
 		try {
-			return InetAddress.getByName(resourceManager.get(destination.toString() + ".hostname"));
+			InetAddress returnValue = InetAddress.getByName(resourceManager.get(destination.toString() + ".hostname"));
+			if(returnValue != null) {
+				return returnValue;
+			}
+			return InetAddress.getLocalHost();
 		} catch (Exception e) {
 			return null;
 		}
