@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
+ */
 package sysc_3303_project.common.messaging;
 
 import java.io.ByteArrayInputStream;
@@ -13,12 +18,23 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 
+/**
+ * Handles incoming UDP connections
+ * @author Liam
+ *
+ * @param <T> type of input to process
+ */
 public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implements Runnable{
 	
 	private List<EventBuffer<T>> eventBuffers;
 		
 	DatagramSocket sendRecieveSocket = null;
 	
+	/**
+	 * Constructor. Uses a list of event buffers and identifies its subsystem
+	 * @param eventBuffers
+	 * @param sys
+	 */
 	public UDPMessagerIncoming(List<EventBuffer<T>> eventBuffers, Subsystem sys) {
 		this.eventBuffers = eventBuffers;
 		try {
