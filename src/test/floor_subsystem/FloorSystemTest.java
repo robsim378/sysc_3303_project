@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 
 /**

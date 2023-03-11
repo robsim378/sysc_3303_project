@@ -7,8 +7,8 @@
 package sysc_3303_project.scheduler_subsystem.states;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.RequestData;
-import sysc_3303_project.common.State;
+import sysc_3303_project.common.events.RequestData;
+import sysc_3303_project.common.state.State;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
 import sysc_3303_project.scheduler_subsystem.Scheduler;

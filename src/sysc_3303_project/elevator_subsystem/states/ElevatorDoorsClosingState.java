@@ -6,9 +6,10 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
-import sysc_3303_project.common.DelayTimerThread;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.Subsystem;
+import sysc_3303_project.common.events.DelayTimerThread;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.configuration.Subsystem;
+
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;

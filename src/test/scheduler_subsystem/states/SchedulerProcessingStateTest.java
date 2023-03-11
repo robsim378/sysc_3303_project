@@ -8,9 +8,9 @@ package test.scheduler_subsystem.states;
 
 import org.junit.jupiter.api.Test;
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;

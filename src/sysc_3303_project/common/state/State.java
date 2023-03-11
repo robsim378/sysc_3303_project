@@ -3,7 +3,7 @@
  * Group 1
  * @version 2.0
  */
-package sysc_3303_project.common;
+package sysc_3303_project.common.state;
 
 /**
  * @author Andrei Popescu

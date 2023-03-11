@@ -2,10 +2,11 @@ package test.common;
 
 
 import org.junit.Test;
-import sysc_3303_project.common.DelayTimerThread;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.Subsystem;
+
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.DelayTimerThread;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
 
 import static org.junit.Assert.*;
 

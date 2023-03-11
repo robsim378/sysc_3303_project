@@ -3,11 +3,13 @@
  * Group 1
  * @version 2.0
  */
-package sysc_3303_project.common;
+package sysc_3303_project.common.events;
 
 import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+
+import sysc_3303_project.common.Direction;
 
 /**
  * 	@author Liam Gaudet
