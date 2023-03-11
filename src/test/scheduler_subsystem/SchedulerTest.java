@@ -14,9 +14,11 @@ import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
 import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
@@ -34,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SchedulerTest {
     private Scheduler scheduler;
     private EventBuffer<SchedulerEventType> schedulerBuffer;
-    private EventBuffer<ElevatorEventType> elevatorBuffer;
+    private EventBuffer<Enum<?>> outputBuffer;
 
     /**
      * Initializes the scheduler used for testing.
@@ -42,100 +44,67 @@ public class SchedulerTest {
 
     @Before
     public void setUp() {
-    	elevatorBuffer = new EventBuffer<ElevatorEventType>();
-        scheduler = new Scheduler(elevatorBuffer, new EventBuffer<FloorEventType>());
+    	outputBuffer = new EventBuffer<Enum<?>>();
+        scheduler = new Scheduler(schedulerBuffer, outputBuffer);
         schedulerBuffer = scheduler.getInputBuffer();
     }
 
     /**
-     * Tests that the scheduler can correctly determine if it has any pending requests.
+     * Tests that the scheduler can return its elevator tracker.
      */
 
     @Test
-    public void testHasRequests() {
-        assertFalse(scheduler.hasRequests());
-
-        LocalTime time = LocalTime.now();
-        scheduler.addPendingRequest(new RequestData(time, 1, Direction.UP, 3));
-
-        assertTrue(scheduler.hasRequests());
-    }
-
-    /**
-     * Checks whether the scheduler can correctly determine if it has any pending responses.
-     */
-
-    @Test
-    public void testHasResponses() {
-        assertFalse(scheduler.hasRequests());
-
-        LocalTime time = LocalTime.now();
-        RequestData response = new RequestData(time, 1, Direction.UP, 3);
-        scheduler.addPendingRequest(response);
-
-        assertTrue(scheduler.hasRequests());
+    public void testGetTracker() {
+        assertTrue(scheduler.getTracker() instanceof ElevatorTracker);
     }
 
 
     /**
-     * Tests that the scheduler can correctly handle having requests added.
+     * Tests that the scheduler can correctly assign a request to idle elevators.
      */
 
     @Test
-    public void testAddResponse() {
-        assertFalse(scheduler.hasRequests());
+    public void testAssignRequest() {
 
-        LocalTime time = LocalTime.now();
-        RequestData response = new RequestData(time, 1, Direction.UP, 3);
-        scheduler.addPendingRequest(response);
-
-        assertTrue(scheduler.hasRequests());
-        assertEquals(response, scheduler.getPendingRequests().get(0));
+        int elevatorId = scheduler.assignLoadRequest(8, Direction.DOWN);
+        //tiebreakers dictate that elevator 0 must be selected
+        assertEquals(0, elevatorId);
+        Event<Enum<?>> evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        schedulerBuffer.addEvent(new Event<SchedulerEventType>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 0));
+        evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
+        assertEquals(Direction.UP, (Direction) evt.getPayload());
     }
     /**
      * Test case to check if multiple requests can be added to the scheduler.
      */
     @Test
-    public void testAddMultipleRequests() {
-        // Check that the scheduler initially has no pending requests.
-        assertFalse(scheduler.hasRequests());
-
-        // Add two requests with different properties to the scheduler.
-        LocalTime time1 = LocalTime.now();
-        RequestData request1 = new RequestData(time1, 1, Direction.UP, 3);
-        scheduler.addPendingRequest(request1);
-
-        LocalTime time2 = LocalTime.now();
-        RequestData request2 = new RequestData(time2, 2, Direction.DOWN, 1);
-        scheduler.addPendingRequest(request2);
-
-        // Check that the scheduler now has the two requests in its pending list and in the correct order.
-        assertTrue(scheduler.hasRequests());
-        assertEquals(request1, scheduler.getPendingRequests().get(0));
-        assertEquals(request2, scheduler.getPendingRequests().get(1));
-    }
-
-    /**
-     * Test case to check if multiple responses can be added to the scheduler.
-     */
-    @Test
-    public void testAddMultipleResponses() {
-        // Check that the scheduler initially has no pending requests.
-        assertFalse(scheduler.hasRequests());
-
-        // Add two responses with different properties to the scheduler.
-        LocalTime time1 = LocalTime.now();
-        RequestData response1 = new RequestData(time1, 1, Direction.UP, 3);
-        scheduler.addPendingRequest(response1);
-
-        LocalTime time2 = LocalTime.now();
-        RequestData response2 = new RequestData(time2, 2, Direction.DOWN, 1);
-        scheduler.addPendingRequest(response2);
-
-        // Check that the scheduler now has the two responses in its pending list and in the correct order.
-        assertTrue(scheduler.hasRequests());
-        assertEquals(response1, scheduler.getPendingRequests().get(0));
-        assertEquals(response2, scheduler.getPendingRequests().get(1));
+    public void testAddMultipleRequests() throws Exception {
+    	int elevatorId = scheduler.assignLoadRequest(8, Direction.DOWN);
+        //tiebreakers dictate that elevator 0 must be selected
+        assertEquals(0, elevatorId);
+        Event<Enum<?>> evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        schedulerBuffer.addEvent(new Event<SchedulerEventType>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 0));
+        evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
+        assertEquals(Direction.UP, (Direction) evt.getPayload());
+        
+        Field elevatorTrackerField = Scheduler.class.getDeclaredField("tracker");
+        elevatorTrackerField.setAccessible(true);
+        ElevatorTracker tracker = (ElevatorTracker) elevatorTrackerField.get(scheduler);
+        tracker.updateElevatorDirection(0, Direction.UP);
+        tracker.updateElevatorFloor(0, 4);
+        
+        elevatorId = scheduler.assignLoadRequest(6, Direction.UP);
+        assertEquals(0, elevatorId);
+        elevatorId = scheduler.assignLoadRequest(4, Direction.UP);
+        assertEquals(1, elevatorId);
     }
 
     @Test
@@ -143,11 +112,10 @@ public class SchedulerTest {
     	Thread schedulerThread = new Thread(scheduler);
     	schedulerThread.start();
     	
-    	RequestData requestData = new RequestData(LocalTime.NOON, 1, Direction.UP, 3);
-    	Elevator dummyElevator = new Elevator(new EventBuffer<>(), new EventBuffer<>(), 0);
-    	Field elevatorFloorField = dummyElevator.getClass().getDeclaredField("elevatorFloor");
-    	elevatorFloorField.setAccessible(true);
-    	elevatorFloorField.set(dummyElevator, 0);
+    	Field elevatorTrackerField = Scheduler.class.getDeclaredField("tracker");
+        elevatorTrackerField.setAccessible(true);
+        ElevatorTracker tracker = (ElevatorTracker) elevatorTrackerField.get(scheduler);
+        
     	//floor button is pressed in waiting state (default): expect to order elevator to close doors
     	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.FLOOR_BUTTON_PRESSED, this, requestData));
     	TimeUnit.MILLISECONDS.sleep(500);

@@ -34,7 +34,9 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorDoorsClosed(int elevatorId, int floorNumber) {
+		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		Direction moveDirection = context.directionToMove(elevatorId);
+		contextTracker.updateElevatorDirection(elevatorId, moveDirection);
 		if (moveDirection != null) { // if there are no requests: shouldn't happen but don't break the system if it does
 			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to start moving");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
@@ -53,6 +55,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorDoorsOpened(int elevatorId, int floorNumber) {
+		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		int unloadCount = contextTracker.unloadElevator(elevatorId, floorNumber);
 		boolean loaded = contextTracker.loadElevator(elevatorId, floorNumber);
 		for (int i = 0; i < unloadCount; i++) {
@@ -75,6 +78,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.CLOSE_DOORS, null));
 			return null;
 		} else {
+			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
 			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
 			}
@@ -84,6 +88,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorStopped(int elevatorId, int floorNumber) {
+		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, elevatorId, 
@@ -94,6 +99,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
+		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		//stop if there is a request (load in correct direction or unload) at the floor
 		boolean stopping = contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId))
 				|| (contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0);
@@ -120,6 +126,13 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + assignedElevator + " to close doors");
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, assignedElevator, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.CLOSE_DOORS, null));
+		}
 		return null;
 	}
 
