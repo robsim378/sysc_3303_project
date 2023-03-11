@@ -62,7 +62,7 @@ public class FloorIdleState extends FloorState {
 	/**
 	 * Handles an elevator arriving at a floor
 	 * @param direction 		Direction, the direction the elevator will be going.
-	 * @param outputBuffer		EventBuffer, the location too send data to.
+	 * @param elevatorID		int, the ID of the elevator that has arrived.
 	 * @return					FloorState, the next state
 	 */
 	@Override

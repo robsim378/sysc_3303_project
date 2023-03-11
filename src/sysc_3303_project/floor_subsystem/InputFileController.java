@@ -36,8 +36,6 @@ public class InputFileController implements Runnable {
 
     /**
      * Constructor for the FloorMessageController
-     * @param inputBuffer   EventBuffer<FloorEventType>, the EventBuffer to receive messages from.
-     * @param outputBuffer  EventBuffer<Enum<?>>, the EventBuffer to send messages to.
      * @param textFileLocation  String, the location of the input file.
      * @param floors    ArrayList<FloorSystem>, the floors in the system.
      */
