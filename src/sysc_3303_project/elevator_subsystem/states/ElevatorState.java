@@ -64,7 +64,7 @@ public abstract class ElevatorState implements State {
     }
 
     public ElevatorState handlePassengersUnloaded() {
-        throw new IllegalStateException("handlePassengersUnloaded must be called from the _____________");
+        throw new IllegalStateException("handlePassengersUnloaded must be called from the ElevatorDoorsOpenState.");
     }
 
     /**

@@ -27,7 +27,7 @@ public class ElevatorMovingStateTest extends ElevatorStateTest{
      */
     @Test
     public void testTravelThroughFloorsTimerEvent() {
-        EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
         EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
 
         Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
@@ -38,7 +38,7 @@ public class ElevatorMovingStateTest extends ElevatorStateTest{
 
         ElevatorState newState = testState.travelThroughFloorsTimer();
 
-        Event<SchedulerEventType> testEvent = testContext.getOutputBuffer().getEvent();
+        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
 
         assertEquals(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, testEvent.getEventType());
         assertEquals(1, testEvent.getPayload());

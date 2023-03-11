@@ -28,13 +28,13 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
 
     
-	/**
-	 * Tests reaction when the valid event "openDoorsTimer" is triggered
-	 */
+    /**
+     * Tests reaction when the valid event "openDoorsTimer" is triggered
+     */
     @Test
     public void testOpenDoorsTimer() {
-    	EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<SchedulerEventType>();
-    	Elevator context = new Elevator(schedulerBuffer, null, 0);
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        Elevator context = new Elevator(schedulerBuffer, null, 0);
         ElevatorState testState = new ElevatorDoorsOpeningState(context);
         
         ElevatorState newState = testState.openDoorsTimer();
@@ -42,20 +42,19 @@ public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
         assertTrue(newState instanceof ElevatorDoorsOpenState);
         
         @SuppressWarnings("rawtypes")
-		Event addedEvent = (schedulerBuffer.getEvent());
+        Event addedEvent = (schedulerBuffer.getEvent());
         
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_OPENED, addedEvent.getEventType());
         assertNull(addedEvent.getPayload());
-
     }
-        
+
     /**
      * Tests on entry for state
      */
     @Test
     public void testOnEntry() {
-    	EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<ElevatorEventType>();
-    	Elevator context = new Elevator(null, contextBuffer, 0);
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<ElevatorEventType>();
+        Elevator context = new Elevator(null, contextBuffer, 0);
         ElevatorState testState = new ElevatorDoorsOpeningState(context);
         
         testState.doEntry();
@@ -65,6 +64,5 @@ public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
         assertEquals(ElevatorEventType.OPEN_DOORS_TIMER, newEvent.getEventType());
         
         assertNull(newEvent.getPayload());
-
     }
 }
