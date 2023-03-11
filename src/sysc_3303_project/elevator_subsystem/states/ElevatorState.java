@@ -7,7 +7,7 @@
 package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.State;
+import sysc_3303_project.common.state.State;
 import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**

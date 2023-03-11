@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import logging.Logger;
 import sysc_3303_project.floor_subsystem.states.FloorState;
-import sysc_3303_project.common.DelayTimerThread;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.events.DelayedEvent;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.floor_subsystem.states.FloorIdleState;
 
 /**
@@ -149,7 +149,7 @@ public class FloorSystem implements Runnable{
     		int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
     		
     		Event<FloorEventType> event = new Event<FloorEventType>(FloorEventType.BUTTON_PRESSED, this, data);
-    		DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, this.eventBuffer);
+    		DelayedEvent<FloorEventType> runnableMethod = new DelayedEvent<FloorEventType>(time, event, this.eventBuffer);
     		
     		new Thread(runnableMethod).start();
     		

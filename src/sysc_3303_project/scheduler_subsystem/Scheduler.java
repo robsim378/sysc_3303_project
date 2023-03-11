@@ -7,9 +7,9 @@
 package sysc_3303_project.scheduler_subsystem;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.SystemProperties;
+import sysc_3303_project.common.configuration.SystemProperties;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 import logging.Logger;

@@ -13,8 +13,8 @@ import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.RequestData;
+import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.floor_subsystem.states.FloorIdleState;
 import sysc_3303_project.floor_subsystem.states.FloorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;

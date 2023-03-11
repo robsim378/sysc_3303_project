@@ -1,4 +1,4 @@
-package sysc_3303_project.messaging;
+package sysc_3303_project.common.messaging;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,10 +9,11 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
 
-public class UDPMessagerIncoming<T extends Enum<?>> implements Runnable{
+public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implements Runnable{
 	
 	private List<EventBuffer<T>> eventBuffers;
 	
@@ -20,7 +21,7 @@ public class UDPMessagerIncoming<T extends Enum<?>> implements Runnable{
 	
 	DatagramSocket sendRecieveSocket = null;
 	
-	public UDPMessagerIncoming(List<EventBuffer<T>> eventBuffers, int listeningPort) {
+	public UDPMessagerIncoming(List<EventBuffer<T>> eventBuffers, Subsystem sys) {
 		this.eventBuffers = eventBuffers;
 		this.listeningPort = listeningPort;
 		try {

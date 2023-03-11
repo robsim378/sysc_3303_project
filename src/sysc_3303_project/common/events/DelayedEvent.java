@@ -4,7 +4,7 @@
  * @version 2.0
  */
 
-package sysc_3303_project.common;
+package sysc_3303_project.common.events;
 
 /**
  * 
@@ -15,7 +15,7 @@ package sysc_3303_project.common;
  * A thread process that administers a delayed event trigger for various purposes. For
  *   example, delaying the time before an elevator request is made or delaying the time between floors
  */
-public class DelayTimerThread<T extends Enum<?>> implements Runnable {
+public class DelayedEvent<T extends Enum<?>> implements Runnable {
 	
 	private int timeDelay;
 	private Event<T> event;
@@ -27,7 +27,7 @@ public class DelayTimerThread<T extends Enum<?>> implements Runnable {
 	 * @param event			Event, event to send
 	 * @param buffer		EventBuffer, the buffer to send the event to
 	 */
-	public DelayTimerThread(int timeDelay, Event<T> event, EventBuffer<T> buffer) {
+	public DelayedEvent(int timeDelay, Event<T> event, EventBuffer<T> buffer) {
 		this.timeDelay = timeDelay;
 		this.event = event;
 		this.eventBuffer = buffer;

@@ -1,6 +1,8 @@
-package sysc_3303_project.common;
+package sysc_3303_project.common.events;
 
 import java.io.Serializable;
+
+import sysc_3303_project.common.configuration.Subsystem;
 
 public class Event<T extends Enum<?>> implements Serializable {
 	

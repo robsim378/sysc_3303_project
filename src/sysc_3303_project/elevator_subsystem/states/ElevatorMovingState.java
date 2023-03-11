@@ -6,9 +6,9 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
-import sysc_3303_project.common.DelayTimerThread;
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.Event;
+import sysc_3303_project.common.events.DelayedEvent;
+import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -33,7 +33,7 @@ public class ElevatorMovingState extends ElevatorState {
      */
     @Override
     public void doEntry() {
-        new Thread(new DelayTimerThread<>(2000,
+        new Thread(new DelayedEvent<>(2000,
                 new Event<>(ElevatorEventType.MOVING_TIMER,context,null),context.getEventBuffer())).start();
     }
 

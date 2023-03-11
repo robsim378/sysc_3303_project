@@ -6,10 +6,10 @@ package sysc_3303_project.scheduler_subsystem;
 import java.util.LinkedList;
 import java.util.List;
 
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.SystemProperties;
-import sysc_3303_project.messaging.UDPMessagerIncoming;
-import sysc_3303_project.messaging.UDPMessagerOutgoing;
+import sysc_3303_project.common.configuration.SystemProperties;
+import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.common.messaging.UDPMessagerIncoming;
+import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
 
 /**
  * @author Andrei Popescu
