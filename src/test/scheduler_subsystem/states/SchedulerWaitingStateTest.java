@@ -25,26 +25,42 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Ian Holmes
  *
  */
-public class SchedulerWaitingStateTest extends SchedulerStateTest{
+public class SchedulerWaitingStateTest extends SchedulerStateTest {
 
 	@Override
     @Test
-    public void handleFloorButtonPressed() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+    public void handleFloorButtonPressedTest() {
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
+		Scheduler context = new Scheduler(null, outputBuffer);
+
         SchedulerState testState = new SchedulerWaitingState(context);
 
-        RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.DOWN, 4);
+        SchedulerState newState = testState.handleFloorButtonPressed(8, Direction.DOWN);
 
-        SchedulerState newState = testState.handleFloorButtonPressed(testInput);
-
-        assertTrue(context.getPendingRequests().contains(testInput));
-
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
-
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
         assertTrue(newState instanceof SchedulerProcessingState);
+        assertTrue(context.getTracker().hasRequests(0));
+    }
+	
+	/**
+     * Tests reaction when the valid event "handleElevatorButtonPressed" is triggered
+     */
+	@Override
+    @Test
+    public void handleElevatorButtonPressedTest() {
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
+
+		Scheduler context = new Scheduler(null, outputBuffer);
+		assertFalse(context.getTracker().hasRequests(0));
+
+        SchedulerState testState = new SchedulerWaitingState(context);
+
+        SchedulerState newState = testState.handleElevatorButtonPressed(0, 6);
+
+        assertTrue(newState instanceof SchedulerProcessingState);
+        assertTrue(context.getTracker().hasRequests(0));
     }
 }

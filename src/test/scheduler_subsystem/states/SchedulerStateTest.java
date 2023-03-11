@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import sysc_3303_project.common.Direction;
+import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 
@@ -15,7 +17,7 @@ public class SchedulerStateTest {
      */
     @Test
     public void handleElevatorDoorsClosedTest() {
-    	testState = new SchedulerWaitingState(null);
+    	testState = new SchedulerWaitingState(new Scheduler(null, null));
 
         assertThrows(IllegalStateException.class, () -> {
             testState.handleElevatorDoorsClosed(0,0);
@@ -27,7 +29,7 @@ public class SchedulerStateTest {
      */
     @Test
     public void handleElevatorDoorsOpenTest() {
-        testState = new SchedulerWaitingState(null);
+        testState = new SchedulerWaitingState(new Scheduler(null, null));
 
         assertThrows(IllegalStateException.class, () -> {
             testState.handleElevatorDoorsClosed(0,0);
@@ -39,7 +41,7 @@ public class SchedulerStateTest {
      */
     @Test
     public void handleElevatorStoppedTest() {
-        testState = new SchedulerWaitingState(null);
+        testState = new SchedulerWaitingState(new Scheduler(null, null));
 
         assertThrows(IllegalStateException.class, () -> {
             testState.handleElevatorDoorsClosed(0,0);
@@ -51,7 +53,7 @@ public class SchedulerStateTest {
      */
     @Test
     public void handleElevatorApproachingFloorTest() {
-        testState = new SchedulerWaitingState(null);
+        testState = new SchedulerWaitingState(new Scheduler(null, null));
 
         assertThrows(IllegalStateException.class, () -> {
             testState.handleElevatorDoorsClosed(0,0);
@@ -62,12 +64,23 @@ public class SchedulerStateTest {
      * Tests reaction when the valid event "handleFloorButtonPressed" is triggered
      */
     @Test
-    public void handleFloorButtonPressed() {
-        testState = new SchedulerWaitingState(null);
+    public void handleFloorButtonPressedTest() {
+        testState = new SchedulerWaitingState(new Scheduler(null, null));
 
         assertThrows(IllegalStateException.class, () -> {
-            testState.handleFloorButtonPressed(0, null);
+            testState.handleFloorButtonPressed(0, Direction.UP);
         });
     }
+    
+    /**
+     * Tests reaction when the valid event "handleFloorButtonPressed" is triggered
+     */
+    @Test
+    public void handleElevatorButtonPressedTest() {
+        testState = new SchedulerWaitingState(new Scheduler(null, null));
 
+        assertThrows(IllegalStateException.class, () -> {
+            testState.handleElevatorButtonPressed(0, 0);
+        });
+    }
 }
