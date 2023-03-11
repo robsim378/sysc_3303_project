@@ -74,8 +74,17 @@ public class Scheduler implements Runnable {
 		if (!tracker.hasRequests(elevatorId)) { //if idle, don't move
 			return null;
 		}
+		if (tracker.getElevatorDirection(elevatorId) == null) {
+			if (tracker.getElevatorFloor(elevatorId) > 0) {
+				tracker.updateElevatorDirection(elevatorId, Direction.DOWN); //give idle elevator a temporary direction
+			} else { 
+				tracker.updateElevatorDirection(elevatorId, Direction.UP);
+			}
+		}
+		if (tracker.hasLoadRequest(elevatorId, tracker.getElevatorFloor(elevatorId))) {
+			return tracker.getElevatorDirection(elevatorId);
+		}
 		boolean hasFurtherRequests = false;
-		if (tracker.getElevatorDirection(elevatorId) == null) tracker.updateElevatorDirection(elevatorId, Direction.DOWN); //give idle elevator a temporary direction
 		for (int floor : getFurtherFloors(elevatorId)) {
 			hasFurtherRequests = hasFurtherRequests || tracker.hasLoadRequest(elevatorId, floor) || tracker.countUnloadRequests(elevatorId, floor) > 0;
 		}
