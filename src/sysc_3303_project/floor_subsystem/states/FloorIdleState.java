@@ -83,6 +83,7 @@ public class FloorIdleState extends FloorState {
 				context.removeRequest(destination);
 			}
 		}
+		return new FloorIdleState(this.context);
 	}
 
 }
