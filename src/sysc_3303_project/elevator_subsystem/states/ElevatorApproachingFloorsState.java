@@ -7,6 +7,7 @@
 package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.common.Event;
+import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
@@ -34,7 +35,12 @@ public class ElevatorApproachingFloorsState extends ElevatorState {
     @Override
     public ElevatorState stopAtNextFloor() {
         context.moveElevator();
-        context.getSchedulerBuffer().addEvent(new Event<>(SchedulerEventType.ELEVATOR_STOPPED,context, context.getFloor()));
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.SCHEDULER, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                SchedulerEventType.ELEVATOR_STOPPED,
+                context.getFloor()
+        ));
         return new ElevatorDoorsClosedState(context);
     }
 

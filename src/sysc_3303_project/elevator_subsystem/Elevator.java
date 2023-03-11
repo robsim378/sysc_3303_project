@@ -22,26 +22,26 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
  */
 public class Elevator implements Runnable {
 
-    private final EventBuffer<SchedulerEventType> schedulerBuffer;
+    private final EventBuffer<Enum<?>> outputBuffer;
     private final int elevatorID;
     private int elevatorFloor;
     private Direction direction;
     private ElevatorState state;
-    private final EventBuffer<ElevatorEventType> eventBuffer;
+    private final EventBuffer<ElevatorEventType> inputBuffer;
 
 
     /**
      * Constructor for the Elevator class.
      *
-     * @param schedulerBuffer EventBuffer, the scheduler to receive requests from
+     * @param outputBuffer EventBuffer, the scheduler to receive requests from
      * @param elevatorID int, the ID of the Elevator
      */
-    public Elevator(EventBuffer<SchedulerEventType> schedulerBuffer, EventBuffer<ElevatorEventType> eventBuffer, int elevatorID) {
-        this.schedulerBuffer = schedulerBuffer;
+    public Elevator(EventBuffer<Enum<?>> outputBuffer, EventBuffer<ElevatorEventType> inputBuffer, int elevatorID) {
+        this.outputBuffer = outputBuffer;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
-        this.eventBuffer = eventBuffer;
+        this.inputBuffer = inputBuffer;
     }
 
     /**
@@ -49,8 +49,8 @@ public class Elevator implements Runnable {
      *
      * @return int, the ID number of this elevator.
      */
-    public EventBuffer<ElevatorEventType> getEventBuffer() {
-        return eventBuffer;
+    public EventBuffer<ElevatorEventType> getInputBuffer() {
+        return inputBuffer;
     }
 
     /**
@@ -67,8 +67,8 @@ public class Elevator implements Runnable {
      *
      * @return int, the ID number of this elevator
      */
-    public EventBuffer<SchedulerEventType> getSchedulerBuffer() {
-        return schedulerBuffer;
+    public EventBuffer<Enum<?>> getOutputBuffer() {
+        return outputBuffer;
     }
 
     /**
@@ -121,7 +121,7 @@ public class Elevator implements Runnable {
 
         while (true) {
 
-            event = eventBuffer.getEvent();
+            event = inputBuffer.getEvent();
 
             Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());
 

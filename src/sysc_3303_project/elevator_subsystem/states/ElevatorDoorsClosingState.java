@@ -8,6 +8,7 @@ package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.common.DelayTimerThread;
 import sysc_3303_project.common.Event;
+import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -34,7 +35,13 @@ public class ElevatorDoorsClosingState extends ElevatorState {
     @Override
     public void doEntry() {
         new Thread(new DelayTimerThread<>(2000,
-                new Event<>(ElevatorEventType.CLOSE_DOORS_TIMER,context,null),context.getEventBuffer())).start();
+                new Event<>(Subsystem.ELEVATOR,
+                        context.getElevatorID(),
+                        Subsystem.ELEVATOR,
+                        context.getElevatorID(),
+                        ElevatorEventType.CLOSE_DOORS_TIMER,
+                        null),
+                context.getInputBuffer())).start();
     }
 
     /**
@@ -44,7 +51,13 @@ public class ElevatorDoorsClosingState extends ElevatorState {
      */
     @Override
     public ElevatorState closeDoorsTimer() {
-        context.getSchedulerBuffer().addEvent(new Event<>(SchedulerEventType.ELEVATOR_DOORS_CLOSED,context,null));
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.SCHEDULER,
+                0,
+                Subsystem.ELEVATOR,
+                context.getElevatorID(),
+                SchedulerEventType.ELEVATOR_DOORS_CLOSED,
+                null));
         return new ElevatorDoorsClosedState(context);
     }
 }
