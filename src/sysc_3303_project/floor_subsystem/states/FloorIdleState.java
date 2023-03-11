@@ -33,12 +33,12 @@ public class FloorIdleState extends FloorState {
 	
 	
 	@Override
-	public FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> schedulerBuffer) {
+	public FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> outputBuffer) {
 		Logger.getLogger().logNotification(this.getClass().getName(), "Sent request to scheduler: " + requestData.toString());
 
 		Event<SchedulerEventType> event = new Event<SchedulerEventType>(SchedulerEventType.FLOOR_BUTTON_PRESSED, context, requestData);
 		
-		schedulerBuffer.addEvent(event);
+		outputBuffer.addEvent(event);
 		
 		return new FloorIdleState(this.context);
 	}
