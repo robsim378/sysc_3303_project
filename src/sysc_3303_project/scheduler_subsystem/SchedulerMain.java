@@ -6,10 +6,12 @@ package sysc_3303_project.scheduler_subsystem;
 import java.util.LinkedList;
 import java.util.List;
 
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.SystemProperties;
-import sysc_3303_project.messaging.UDPMessagerIncoming;
-import sysc_3303_project.messaging.UDPMessagerOutgoing;
+import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.configuration.SystemProperties;
+import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.common.messaging.UDPMessagerIncoming;
+import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
 
 /**
  * @author Andrei Popescu
@@ -26,7 +28,7 @@ public class SchedulerMain {
 		EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();
 		Scheduler scheduler = new Scheduler(schedulerBuffer, outgoingBuffer);
 		UDPMessagerOutgoing out = new UDPMessagerOutgoing(outgoingBuffer);
-		UDPMessagerIncoming<SchedulerEventType> in = new UDPMessagerIncoming<SchedulerEventType>(new LinkedList<>() {{add(schedulerBuffer);}}, SystemProperties.SCHEDULER_PORT);
+		UDPMessagerIncoming<SchedulerEventType> in = new UDPMessagerIncoming<SchedulerEventType>(new LinkedList<>() {{add(schedulerBuffer);}}, Subsystem.SCHEDULER);
 		
 		//create threads
 		Thread schedulerThread = new Thread(scheduler);

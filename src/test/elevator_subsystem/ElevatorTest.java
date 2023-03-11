@@ -5,10 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
-import sysc_3303_project.common.Event;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;

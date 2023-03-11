@@ -9,9 +9,9 @@ package sysc_3303_project.scheduler_subsystem.states;
 import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.Subsystem;
-import sysc_3303_project.common.SystemProperties;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.configuration.SystemProperties;
+import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 

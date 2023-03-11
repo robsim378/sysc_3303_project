@@ -1,4 +1,4 @@
-package sysc_3303_project.common;
+package sysc_3303_project.common.configuration;
 
 public class SystemProperties {
 	

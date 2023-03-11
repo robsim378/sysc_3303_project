@@ -8,9 +8,10 @@ package sysc_3303_project.elevator_subsystem;
 
 import logging.Logger;
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.SystemProperties;
+import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
+
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -46,7 +47,7 @@ public class Elevator implements Runnable {
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
         this.inputBuffer = inputBuffer;
-        this.floorLamps = new boolean[SystemProperties.MAX_FLOOR_NUMBER];
+        this.floorLamps = new boolean[ResourceManager.getResourceManager().getInt("count.floors")];
     }
 
     /**

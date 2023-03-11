@@ -16,10 +16,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.Subsystem;
-import sysc_3303_project.messaging.UDPMessagerIncoming;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.common.messaging.UDPMessagerIncoming;
 
 public class UDPMessagerIncomingTest {
 
@@ -39,7 +39,7 @@ public class UDPMessagerIncomingTest {
             eventBuffers.add(new EventBuffer<TestEnum>());
 
         }
-        udpMessagerIncoming = new UDPMessagerIncoming<>(eventBuffers, listeningPort);
+        udpMessagerIncoming = new UDPMessagerIncoming<>(eventBuffers, Subsystem.FLOOR);
     }
 
     @Test

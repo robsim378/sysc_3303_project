@@ -7,10 +7,12 @@
 package sysc_3303_project.scheduler_subsystem;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
-import sysc_3303_project.common.SystemProperties;
+import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
+
 import sysc_3303_project.floor_subsystem.FloorSystem;
+
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 import logging.Logger;
@@ -42,7 +44,8 @@ public class Scheduler implements Runnable {
 		this.inputBuffer = inputBuffer;
 		this.outputBuffer = outputBuffer;
 		state = new SchedulerWaitingState(this);
-		tracker = new ElevatorTracker(SystemProperties.MAX_ELEVATOR_NUMBER);
+
+		tracker = new ElevatorTracker(ResourceManager.getResourceManager().getInt("count.elevators"));
 	}
 	
 	/**
@@ -119,7 +122,8 @@ public class Scheduler implements Runnable {
 	 */
 	private int[] getFurtherFloors(int elevatorId) {
 		if (tracker.getElevatorDirection(elevatorId) == Direction.UP) {
-			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, SystemProperties.MAX_FLOOR_NUMBER).toArray();
+			
+			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, ResourceManager.getResourceManager().getInt("count.floors")).toArray();
 		} else if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
 			return IntStream.rangeClosed(tracker.getElevatorFloor(elevatorId) - 1, 0).toArray();
 		} else {
@@ -137,7 +141,7 @@ public class Scheduler implements Runnable {
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();
-		for (int id = 0; id < SystemProperties.MAX_ELEVATOR_NUMBER; id++) {
+		for (int id = 0; id < ResourceManager.getResourceManager().getInt("count.elevators"); id++) {
 			boolean elevatorOnTheWay = false;
 			for (int f : getFurtherFloors(id)) {
 				if (f == floor) {
