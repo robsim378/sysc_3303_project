@@ -1,15 +1,17 @@
 package test.common;
 
+
 import org.junit.Before;
 import org.junit.Test;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.Subsystem;
 
 import static org.junit.Assert.*;
 
 public class EventBufferTest {
 
-    private EventBuffer<String> buffer;
+    private EventBuffer<EventTypes> buffer;
 
     @Before
     public void setUp() {
@@ -18,7 +20,7 @@ public class EventBufferTest {
 
     @Test
     public void testGetEvent() {
-        Event<String> event1 = new Event<>("Event 1", this, "Payload 1");
+        Event<EventTypes> event1 = new Event<>(Subsystem.FLOOR, 1, Subsystem.SCHEDULER, 1, EventTypes.FLOOR_REQUEST, "Payload 1");
         buffer.addEvent(event1);
         assertEquals(event1, buffer.getEvent());
     }
@@ -28,17 +30,26 @@ public class EventBufferTest {
         Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(500);
-                buffer.addEvent(new Event<>("Event 1", this, "Payload 1"));
+                Event<EventTypes> event2 = new Event<>(Subsystem.FLOOR, 2, Subsystem.SCHEDULER, 2, EventTypes.FLOOR_REQUEST, "Payload 2");
+                buffer.addEvent(event2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });
         thread.start();
-        Event<String> retrievedEvent = buffer.getEvent();
+        Event<EventTypes> retrievedEvent = buffer.getEvent();
         assertNotNull(retrievedEvent);
-        assertEquals("Event 1", retrievedEvent.getEventType());
-        assertEquals(this, retrievedEvent.getSender());
-        assertEquals("Payload 1", retrievedEvent.getPayload());
+        assertEquals(Subsystem.FLOOR, retrievedEvent.getDestinationSubsystem());
+        assertEquals(1, retrievedEvent.getDestinationID());
+        assertEquals(Subsystem.SCHEDULER, retrievedEvent.getSourceSubsystem());
+        assertEquals(1, retrievedEvent.getSourceID());
+        assertEquals(EventTypes.FLOOR_REQUEST, retrievedEvent.getEventType());
+        assertEquals("Payload 2", retrievedEvent.getPayload());
     }
 
+    private enum EventTypes {
+        FLOOR_REQUEST,
+        ELEVATOR_REQUEST,
+        ELEVATOR_STATUS_UPDATE
+    }
 }
