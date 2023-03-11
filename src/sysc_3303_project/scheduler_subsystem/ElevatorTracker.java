@@ -1,9 +1,13 @@
 /**
- * 
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
  */
+
 package sysc_3303_project.scheduler_subsystem;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import sysc_3303_project.common.Direction;
@@ -40,7 +44,11 @@ public class ElevatorTracker {
 		public int floor;
 		public Direction direction = null;
 		
-		public ElevatorInfo() {}
+		public ElevatorInfo() {
+			loadRequests = new LinkedList<>();
+			unloadRequests = new LinkedList<>();
+			floor = 0;
+		}
 	}
 	
 	private HashMap<Integer, ElevatorInfo> elevatorTrackingInfo;
@@ -58,7 +66,6 @@ public class ElevatorTracker {
 			newElevatorInfo.floor = floor;
 			newElevatorInfo.direction = null;
 			elevatorTrackingInfo.put(elevatorId, newElevatorInfo);
-			elevatorTrackingInfo.get(elevatorId).floor = floor;
 		}
 	}
 	
@@ -115,7 +122,6 @@ public class ElevatorTracker {
 		while (info.unloadRequests.remove((Integer) floor)) { //remove all matching unload requests
 			
 		}
-		
 		return unloadCount;
 	}
 	
