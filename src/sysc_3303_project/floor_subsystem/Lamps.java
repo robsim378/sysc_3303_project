@@ -14,7 +14,7 @@ static final boolean OFF = false;
 
 /**
  * @author Robert Simionescu
- * Represents all the lamps on the current floor and their current status.
+ * Represents all the directional lamps on the current floor and their current status.
  */
 public class Lamps {
     /**
@@ -25,6 +25,22 @@ public class Lamps {
      * Lamp indicating that an elevator going down has arrived
      */
     private boolean downLamp = OFF;
+
+    /**
+     * Gets the status of the up lamp.
+     * @return  Boolean, true if the up lamp is on, false if it is off.
+     */
+    public boolean getUpLampStatus() {
+        return upLamp;
+    }
+
+    /**
+     * Gets the status of the down lamp.
+     * @return  Boolean, true if the down lamp is on, false if it is off.
+     */
+    public boolean getDownLampStatus() {
+        return downLamp;
+    }
 
     /**
      * Lights the directional lamp for the given direction

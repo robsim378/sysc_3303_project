@@ -100,11 +100,11 @@ public class FloorMessageController implements Runnable {
 
 
             // Generate the event to send to the floor
-            event = new Event<SchedulerEventType>(
+            event = new Event<FloorEventType>(
                     Subsystem.FLOOR,
-                    -1, // This event is being sent from the input file, so it does not have a real source,
+                    -1, // This event is being sent from the input file, so it does not have a real source. This is just a placeholder since it will never actually be read.
                     Subsystem.FLOOR,
-                    floorID,
+                    data.getCurrentFloor(),
                     FloorEventType.BUTTON_PRESSED,
                     data;
 		    )

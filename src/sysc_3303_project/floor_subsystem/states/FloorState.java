@@ -30,9 +30,16 @@ public abstract class FloorState implements State {
 	/**
 	 * Handles pressing a button a floor
 	 * @param requestData		RequestData, the data for the button request
-	 * @param schedulerBuffer	EventBuffer, the location to send the data to.
+	 * @param outputBuffer		EventBuffer, the location to send the data to.
 	 * @return					FloorState, the next state
 	 */
-	public abstract FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> schedulerBuffer);
-	
+	public abstract FloorState handleButtonPressed(RequestData requestData, EventBuffer<SchedulerEventType> outputBuffer);
+
+	/**
+	 * Handles an elevator arriving at a floor
+	 * @param direction 		Direction, the direction the elevator will be going.
+	 * @param outputBuffer		EventBuffer, the location too send data to.
+	 * @return					FloorState, the next state
+	 */
+	public abstract FloorState handleElevatorArrived(Direction direction, int elevatorID, EventBuffer<ElevatorEventType> outputBuffer);
 }
