@@ -19,6 +19,6 @@ public enum ElevatorEventType {
 	STOP_AT_NEXT_FLOOR, //no payload
 	CONTINUE_MOVING, //no payload
 	MOVING_TIMER, //no payload
-	PASSENGERS_UNLOADED //floor (int) payload, for lamps
-
+	PASSENGERS_UNLOADED, //floor (int) payload, for lamps
+	ELEVATOR_BUTTON_PRESSED
 }

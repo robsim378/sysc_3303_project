@@ -32,4 +32,14 @@ public class ElevatorDoorsOpenState extends ElevatorState {
     public ElevatorState closeDoors() {
         return new ElevatorDoorsClosingState(context);
     }
+
+    /**
+     * handle the unloading of passengers. ******PLACEHOLDER
+     *
+     * @return null
+     */
+    @Override
+    public ElevatorState handlePassengersUnloaded() {
+        return null;
+    }
 }

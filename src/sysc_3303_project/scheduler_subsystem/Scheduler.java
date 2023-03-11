@@ -7,9 +7,12 @@
 package sysc_3303_project.scheduler_subsystem;
 
 import sysc_3303_project.common.Direction;
-import sysc_3303_project.common.configuration.SystemProperties;
+
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
+
+import sysc_3303_project.floor_subsystem.FloorSystem;
+
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 import logging.Logger;
@@ -60,8 +63,14 @@ public class Scheduler implements Runnable {
 		return outputBuffer;
 	}
 	
+	/**
+	 * Returns the Direction that an elevator should move in from a stopped position.
+	 * A return value of null indicates that the elevator should not resume its movement and instead stay stopped.
+	 * @param elevatorId the ID of the elevator
+	 * @return the Direction for the elevator to move in, can be null
+	 */
 	public Direction directionToMove(int elevatorId) {
-		if (!tracker.hasRequests(elevatorId)) {
+		if (!tracker.hasRequests(elevatorId)) { //if idle, don't move
 			return null;
 		}
 		boolean hasFurtherRequests = false;
@@ -72,10 +81,44 @@ public class Scheduler implements Runnable {
 		if (hasFurtherRequests) {
 			return tracker.getElevatorDirection(elevatorId);
 		} else {
-			return tracker.getElevatorDirection(elevatorId) == Direction.UP ? Direction.DOWN : Direction.UP; //opposite direction
+			return tracker.getElevatorDirection(elevatorId) == Direction.UP ? Direction.DOWN : Direction.UP; //turn around
 		}
 	}
 	
+	/**
+	 * Checks whether an elevator should stop at a given floor.
+	 * @param elevatorId the ID of the elevator
+	 * @param floor the number/ID of the floor to check
+	 * @return true if the elevator should stop, false otherwise
+	 */
+	public boolean shouldStop(int elevatorId, int floor) {
+		tracker.updateElevatorFloor(elevatorId, floor);
+		//stop if there is a request (load in correct direction or unload) at the floor
+		boolean stopping = tracker.hasLoadRequestInDirection(elevatorId, floor, tracker.getElevatorDirection(elevatorId))
+				|| (tracker.countUnloadRequests(elevatorId, floor) > 0);
+		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
+		stopping = stopping ||
+				(floor == FloorSystem.MAX_FLOOR_NUMBER && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
+				(floor == 0 && tracker.getElevatorDirection(elevatorId)== Direction.DOWN);
+		
+		int[] furtherFloors = getFurtherFloors(elevatorId);
+		boolean hasFurtherRequests = false;
+		for (int f : furtherFloors) {
+			if (f != floor && (tracker.hasLoadRequest(elevatorId, f) || tracker.countUnloadRequests(elevatorId, f) > 0)) {
+				hasFurtherRequests = true;
+			}
+		}
+		if (!hasFurtherRequests) {
+			stopping = stopping || (tracker.hasLoadRequest(elevatorId, floor)); //if there are no further requests, accept a load request in the "other" direction, will turn around after
+		}
+		return stopping;
+	}
+	
+	/**
+	 * Gets the list of floors that an elevator would pass by if it kept going in its current direction.
+	 * @param elevatorId 
+	 * @return
+	 */
 	private int[] getFurtherFloors(int elevatorId) {
 		if (tracker.getElevatorDirection(elevatorId) == Direction.UP) {
 			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, SystemProperties.MAX_FLOOR_NUMBER).toArray();
@@ -86,6 +129,12 @@ public class Scheduler implements Runnable {
 		}
 	}
 	
+	/**
+	 * Assigns a new load request to the elevator in the best position to handle it.
+	 * @param floor the floor ID/number that the new request is at
+	 * @param direction the direction that the new request is going in
+	 * @return the ID of the elevator that the request was assigned to
+	 */
 	public int assignLoadRequest(int floor, Direction direction) {
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
@@ -118,6 +167,10 @@ public class Scheduler implements Runnable {
 		return elevatorId;
 	}
 	
+	/**
+	 * Gets the scheduler's elevator tracker.
+	 * @return this Scheduler's ElevatorTracker
+	 */
 	public ElevatorTracker getTracker() {
 		return tracker;
 	}
@@ -157,7 +210,7 @@ public class Scheduler implements Runnable {
 			}
 			
 			if (newState != null) {
-				state.doExit();
+//				state.doExit();
 				state = newState;
 				state.doEntry();
 			}

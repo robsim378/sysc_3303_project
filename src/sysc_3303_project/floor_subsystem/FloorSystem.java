@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 2.0
+ * @version 3.0
  */
 
 package sysc_3303_project.floor_subsystem;
@@ -34,72 +34,70 @@ public class FloorSystem implements Runnable{
 	private FloorState state;
 
 	/**
-	 * Location to get request data from
+	 * Whether or not the floor's lamp is illuminated.
 	 */
-    private String textFileLocation;
-    
+	private Lamps lamps;
+
+	/**
+	 * The ID of the floor. Also the floor number.
+	 */
+	private int floorID;
+
+	/**
+	 * The list of currently pending requests at this floor.
+	 */
+	private ArrayList<int> elevatorRequests;
+
     /**
-     * Event buffer for actions made to the floor system
+     * Event buffer for incoming messages to the floor system
      */
-    private EventBuffer<FloorEventType> eventBuffer;
+    private EventBuffer<FloorEventType> outputBuffer;
     
     /**
      * Event buffer for submitting actions to the scheduler
      */
-    private EventBuffer<SchedulerEventType> schedulerBuffer;
+    private EventBuffer<Enum<?>> inputBuffer;
 
     /**
      * Constructor for the Floor System class.
      * @param scheduler			Scheduler, the scheduler to communicate with
      * @param textFileLocation	String, the text tile to use for parsing
      */
-    public FloorSystem (EventBuffer<SchedulerEventType> schedulerBuffer, EventBuffer<FloorEventType> eventBuffer, String textFileLocation){
-        this.schedulerBuffer = schedulerBuffer;
+    public FloorSystem (int floorID, EventBuffer<FloorEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
+        this.inputBuffer = inputBuffer;
         this.textFileLocation = textFileLocation;
-        this.eventBuffer = eventBuffer;
+        this.outputBuffer = this.outputBuffer;
+		this.floorID = floorID;
         state = new FloorIdleState(this);
     }
-        
-    /**
-     * Parses data from the text file location specified by the class
-     * @return	ArrayList<RequestData>, a list of requests parsed from the classes text file
-     */
-    private ArrayList<RequestData> parseData(){
-    	ArrayList<RequestData> data = new ArrayList<RequestData>();
-    	
-    	BufferedReader br = null;
-    	
-    	Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Starting to parse data from the text file");
-    	try {
-    		br = new BufferedReader(new FileReader(textFileLocation));
-    	} catch (FileNotFoundException e) {
-    		e.printStackTrace();
-    	}
-    	
-    	// For each line in the text file, generate a request from it
-    	try {
-    		while(true) {
-    			
-    			//Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Parsing line from text file");
-    			String line = br.readLine();
-    			
-    			if(line == null)
-    				break;
-    			
-    			// If the provided line is invalid and throws an error during generation, catch and do not add
-    			try {
-        			data.add(RequestData.of(line));
-    			} catch(Exception e) {
-    				e.printStackTrace();
-    			}
-    			
-    		}
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    	return data;
-    }
-    
+
+	/**
+	 *
+	 * @param data
+	 */
+	public void addRequest(RequestData data) {
+		// Generate the event to send to the scheduler
+		event = new Event<SchedulerEventType>(
+				Subsystem.SCHEDULER,
+				schedulerid,
+				Subsystem.FLOOR,
+				floorID,
+				SchedulerEventType.FLOOR_BUTTON_PRESSED,
+				data.getDirection();
+		)
+
+		// Get the time to send the request
+		LocalTime requestTime = data.getRequestTime();
+		requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
+
+		// Create a thread to send the request at the specified time.
+		DelayTimerThread<FloorEventType> runnableMethod = new DelayTimerThread<FloorEventType>(time, event, this.outputBuffer);
+		new Thread(runnableMethod).start();
+
+		// Add the elevator buttons to press to the list.
+		elevatorRequests.add(data.getDestinationFloor);
+	}
+
     /**
      * Repetitively processes the floor system state pattern
      */
@@ -109,7 +107,7 @@ public class FloorSystem implements Runnable{
     	while(true) {
     		
     		// Wait to receive an event
-    		Event<FloorEventType> event = eventBuffer.getEvent();
+    		Event<FloorEventType> event = inputBuffer.getEvent();
 
     		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());    		
 
@@ -117,12 +115,14 @@ public class FloorSystem implements Runnable{
     		this.state.doExit();
     		    		
     		switch(event.getEventType()) {
-    		case BUTTON_PRESSED:
-    			this.state = this.state.handleButtonPressed((RequestData) event.getPayload(), schedulerBuffer);
-    			break;
-    		default:
-    			throw new IllegalArgumentException();
-    		}
+    			case BUTTON_PRESSED:
+    				this.state = this.state.handleButtonPressed((RequestData) event.getPayload(), inputBuffer);
+    				break;
+				case PASSENGERS_LOADED:
+					lamps.clearLamps();
+    			default:
+    				throw new IllegalArgumentException();
+    			}
     		
     		this.state.doEntry();
     		
@@ -131,30 +131,12 @@ public class FloorSystem implements Runnable{
     }
 
     /**
-     * Runnable method of the Floor Subsystem. Parses data from the test text file. Then
-     *   repeatedly sends requests to the scheduler and receives responses from containing
-     *   the original request data
+     * Runnable method of the Floor Subsystem.
      */
     @Override
     public void run() {
     	Logger.getLogger().logNotification(this.getClass().getName(), "Floor thread started");
-    	
-    	ArrayList<RequestData> requestListFromTextFile = new ArrayList<RequestData>();
-    	
-    	requestListFromTextFile = parseData();
-    	
-    	for (RequestData data: requestListFromTextFile){
-    		LocalTime requestTime = data.getRequestTime();
-    		
-    		int time = requestTime.getHour()*60*60*1000 + requestTime.getMinute()*60*1000 + requestTime.getSecond()*1000 + (requestTime.getNano()/(1000 * 1000));
-    		
-    		Event<FloorEventType> event = new Event<FloorEventType>(FloorEventType.BUTTON_PRESSED, this, data);
-    		DelayedEvent<FloorEventType> runnableMethod = new DelayedEvent<FloorEventType>(time, event, this.eventBuffer);
-    		
-    		new Thread(runnableMethod).start();
-    		
-    	}
-    	
+
     	Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Beginning state loop");
     	beginLoop();
     	

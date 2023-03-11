@@ -92,6 +92,38 @@ public class SchedulerTest {
         elevatorId = scheduler.assignLoadRequest(4, Direction.UP);
         assertEquals(1, elevatorId);
     }
+    
+    @Test
+    public void testDirectionToMove() {
+    	scheduler.getTracker().updateElevatorDirection(0, Direction.UP);
+    	scheduler.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+    	assertEquals(Direction.UP, scheduler.directionToMove(0));
+    	
+    	scheduler.getTracker().updateElevatorDirection(1, Direction.UP);
+    	scheduler.getTracker().updateElevatorFloor(1, 5);
+    	scheduler.getTracker().addUnloadRequest(1, 3);
+    	assertEquals(Direction.DOWN, scheduler.directionToMove(1));
+    	
+    	scheduler.getTracker().unloadElevator(1, 3);
+    	scheduler.getTracker().updateElevatorFloor(1, 3);
+    	assertEquals(null, scheduler.directionToMove(1));
+    }
+    
+    @Test
+    public void testShouldStop() {
+    	scheduler.getTracker().updateElevatorDirection(0, Direction.UP);
+    	scheduler.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+    	scheduler.getTracker().addLoadRequest(0, 6, Direction.DOWN);
+    	scheduler.getTracker().addLoadRequest(0, 4, Direction.UP);
+    	assertFalse(scheduler.shouldStop(0, 0)); //no request
+    	assertTrue(scheduler.shouldStop(0, 4)); //load request in correct direction
+    	scheduler.getTracker().addUnloadRequest(0, 7);
+    	assertFalse(scheduler.shouldStop(0, 6)); //load request in incorrect direction
+    	assertTrue(scheduler.shouldStop(0, 7)); //unload request
+    	assertTrue(scheduler.shouldStop(0, 8)); //load request in incorrect direction but no further requests
+    	scheduler.getTracker().updateElevatorDirection(1, Direction.DOWN);
+    	assertTrue(scheduler.shouldStop(1, 0)); //bottom floor
+    }
 
     @Test
     public void testStateMachine() throws Exception {
@@ -215,5 +247,13 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
         assertEquals(Direction.UP, evt.getPayload()); //elevator going up
         assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        
+        tracker.updateElevatorFloor(0, 7);
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 8));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
     }
 }

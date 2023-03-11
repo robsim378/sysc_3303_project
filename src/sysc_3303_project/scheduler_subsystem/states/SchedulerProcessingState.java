@@ -14,7 +14,6 @@ import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
-import sysc_3303_project.floor_subsystem.FloorSystem;
 
 /**
  * @author Andrei Popescu
@@ -34,6 +33,16 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleElevatorDoorsClosed(int elevatorId, int floorNumber) {
 		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
+		boolean hasRequestsAtCurrentFloor = contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0
+				|| contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId));
+		if (hasRequestsAtCurrentFloor) {
+			Logger.getLogger().logError(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.OPEN_DOORS, null));
+			return null;
+		}
 		Direction moveDirection = context.directionToMove(elevatorId);
 		contextTracker.updateElevatorDirection(elevatorId, moveDirection);
 		if (moveDirection != null) { // if there are no requests: shouldn't happen but don't break the system if it does
@@ -43,7 +52,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
 		} else { //failsafe, idle the elevator (if there are no requests)
-			Logger.getLogger().logError(context.getClass().getName(), "Unexpectedly no requests for " + elevatorId + ", open doors again");
+			Logger.getLogger().logError(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
@@ -71,7 +80,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					FloorEventType.PASSENGERS_LOADED, contextTracker.getElevatorDirection(elevatorId)));
 			Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + elevatorId);
 		}
-		if (loaded || unloadCount > 0 || contextTracker.hasRequests(elevatorId)) { //if we expect more requests close doors (the requests may not have come in yet)
+		if (loaded || contextTracker.hasRequests(elevatorId)) { //if we expect more requests close doors (the requests may not have come in yet)
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
@@ -79,6 +88,7 @@ public class SchedulerProcessingState extends SchedulerState {
 			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to close doors");
 			return null;
 		} else {
+			Logger.getLogger().logNotification(context.getClass().getName(), "Elevator " + elevatorId + " is idle, keep doors open");
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
 			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
@@ -100,14 +110,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
-		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
-		//stop if there is a request (load in correct direction or unload) at the floor
-		boolean stopping = contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId))
-				|| (contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0);
-		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
-		stopping = stopping ||
-				(floorNumber == FloorSystem.MAX_FLOOR_NUMBER && contextTracker.getElevatorDirection(elevatorId)== Direction.DOWN) ||
-				(floorNumber == 0 && contextTracker.getElevatorDirection(elevatorId)== Direction.UP);
+		boolean stopping = context.shouldStop(elevatorId, floorNumber);
 		if (stopping) {
 			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to stop at next floor " + floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(

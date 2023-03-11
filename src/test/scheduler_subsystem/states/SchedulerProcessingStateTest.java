@@ -13,9 +13,11 @@ import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerProcessingState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
+import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 
 import java.time.LocalTime;
 
@@ -33,19 +35,19 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 	@Override
     @Test
     public void handleElevatorDoorsClosedTest() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
-
-        Scheduler context = new Scheduler(elevatorBuffer, null);
+        EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
+    	
+        Scheduler context = new Scheduler(null, outputBuffer);
+        context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        Elevator e = new Elevator(null,null,0);
+        SchedulerState newState = testState.handleElevatorDoorsClosed(0, 0);
 
-        SchedulerState newState = testState.handleElevatorDoorsClosed(e);
-
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
 
         assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, testEvent.getEventType());
-        assertEquals(Direction.DOWN, testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
+        assertEquals(Direction.UP, testEvent.getPayload());
         assertNull(newState);
     }
 
@@ -55,31 +57,69 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 	@Override
     @Test
     public void handleElevatorDoorsOpenTest() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
-
-        RequestData testRequest1 = new RequestData(LocalTime.NOON, 3, Direction.DOWN, 0);
-        RequestData testRequest2 = new RequestData(LocalTime.NOON, 0, Direction.DOWN, 5);
-
-        context.addPendingRequest(testRequest1);
-        context.addPendingRequest(testRequest2);
-        context.markRequestInProgress(testRequest1);
-
-        Elevator e = new Elevator(null,null,0);
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        SchedulerState newState = testState.handleElevatorDoorsOpened(e);
+        SchedulerState newState = testState.handleElevatorDoorsOpened(0, 0);
 
-        assertFalse(context.getInProgressRequests().contains(testRequest1));
-        assertTrue(context.getInProgressRequests().contains(testRequest2));
-        assertNull(newState);
-
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
-
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
+        assertNull(newState); //all requests done but a load occurred so we expect more
+    }
+	
+	/**
+     * Tests reaction when the valid event "handleElevatorDoorsOpenTest" is triggered and unloads passengers
+     */
+	@Test
+    public void handleElevatorDoorsOpenUnloadTest() {
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
+
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addUnloadRequest(0, 8);
+		context.getTracker().addUnloadRequest(0, 8);
+
+        SchedulerState testState = new SchedulerProcessingState(context);
+
+        SchedulerState newState = testState.handleElevatorDoorsOpened(0, 8);
+
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
+        assertEquals(ElevatorEventType.PASSENGERS_UNLOADED, testEvent.getEventType());
+        assertEquals(0, testEvent.getDestinationID());
+        assertEquals(8, testEvent.getPayload());
+        testEvent = outputBuffer.getEvent();
+        assertEquals(ElevatorEventType.PASSENGERS_UNLOADED, testEvent.getEventType());
+        assertEquals(0, testEvent.getDestinationID());
+        assertEquals(8, testEvent.getPayload());
+        assertTrue(newState instanceof SchedulerWaitingState); //all requests done and expect no more
+    }
+	
+	/**
+     * Tests reaction when the valid event "handleElevatorDoorsOpenTest" is triggered and loads passengers
+     */
+	@Test
+    public void handleElevatorDoorsOpenLoadTest() {
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
+
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+
+        SchedulerState testState = new SchedulerProcessingState(context);
+
+        SchedulerState newState = testState.handleElevatorDoorsOpened(0, 8);
+        
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
+        assertEquals(FloorEventType.PASSENGERS_LOADED, testEvent.getEventType());
+        assertEquals(8, testEvent.getDestinationID());
+        assertNull(newState);
+        testEvent = outputBuffer.getEvent();
+        assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
+        assertEquals(0, testEvent.getDestinationID());
+        assertNull(newState);
     }
 
     /**
@@ -88,17 +128,18 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 	@Override
     @Test
     public void handleElevatorStoppedTest() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        SchedulerState newState = testState.handleElevatorStopped(null, 0);
+        SchedulerState newState = testState.handleElevatorStopped(0, 8); //floor doesn't matter here
 
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
-
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.OPEN_DOORS, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
         assertNull(newState);
     }
 	
@@ -114,24 +155,20 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
      */
     @Test
     public void handleElevatorApproachingFloorDropOffTest() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+    	EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
-
-        RequestData testRequest = new RequestData(LocalTime.NOON, 3, Direction.DOWN, 0);
-
-        context.addPendingRequest(testRequest);
-        context.markRequestInProgress(testRequest);
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addUnloadRequest(0, 8);
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        SchedulerState newState = testState.handleElevatorApproachingFloor(null, 0);
+        SchedulerState newState = testState.handleElevatorApproachingFloor(0, 8);
 
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
-
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
         assertNull(newState);
+
     }
 
     /**
@@ -139,22 +176,18 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
      */
     @Test
     public void handleElevatorApproachingFloorPickUpTest() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+    	EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
-
-        RequestData testRequest = new RequestData(LocalTime.NOON, 0, Direction.DOWN, 5);
-
-        context.addPendingRequest(testRequest);
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        SchedulerState newState = testState.handleElevatorApproachingFloor(null, 0);
+        SchedulerState newState = testState.handleElevatorApproachingFloor(0, 8);
 
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
-
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
         assertNull(newState);
     }
 
@@ -163,18 +196,18 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
      */
     @Test
     public void handleElevatorApproachingFloorNotStoppingTest() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+    	EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
+		Scheduler context = new Scheduler(null, outputBuffer);
+		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        SchedulerState newState = testState.handleElevatorApproachingFloor(null, 0);
+        SchedulerState newState = testState.handleElevatorApproachingFloor(0, 7);
 
-        Event<ElevatorEventType> testEvent = context.getElevatorBuffer().getEvent();
-
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.CONTINUE_MOVING, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getDestinationID());
         assertNull(newState);
     }
 
@@ -183,18 +216,38 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
      */
 	@Override
     @Test
-    public void handleFloorButtonPressed() {
-        EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
+    public void handleFloorButtonPressedTest() {
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Scheduler context = new Scheduler(elevatorBuffer, null);
+		Scheduler context = new Scheduler(null, outputBuffer);
+
         SchedulerState testState = new SchedulerProcessingState(context);
 
-        RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.DOWN, 4);
+        SchedulerState newState = testState.handleFloorButtonPressed(8, Direction.DOWN);
 
-        SchedulerState newState = testState.handleFloorButtonPressed(testInput);
+        Event<Enum<?>> testEvent = outputBuffer.getEvent();
+        assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
+        assertEquals(0, testEvent.getDestinationID());
+        assertNull(newState);
+        assertTrue(context.getTracker().hasRequests(0));
+    }
+	
+	/**
+     * Tests reaction when the valid event "handleElevatorButtonPressed" is triggered
+     */
+	@Override
+    @Test
+    public void handleElevatorButtonPressedTest() {
+		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        assertTrue(context.getPendingRequests().contains(testInput));
+		Scheduler context = new Scheduler(null, outputBuffer);
+		assertFalse(context.getTracker().hasRequests(0));
+
+        SchedulerState testState = new SchedulerProcessingState(context);
+
+        SchedulerState newState = testState.handleElevatorButtonPressed(0, 6);
 
         assertNull(newState);
+        assertTrue(context.getTracker().hasRequests(0));
     }
 }

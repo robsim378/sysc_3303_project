@@ -1,18 +1,23 @@
 package test.elevator_subsystem.states;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
+import sysc_3303_project.common.Event;
+import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
+import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorMovingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class ElevatorStateTest {
-	
-	ElevatorState testState;
-	
+    ElevatorState testState;
+
     /**
      * Tests reaction when the event "openDoors" is triggered
      */
@@ -113,7 +118,6 @@ public abstract class ElevatorStateTest {
         assertEquals(expectedMessage, e.getMessage());
     }
 
-
     /**
      * Tests reaction when the event "travelThroughFloorsTimer" is triggered
      */
@@ -128,5 +132,36 @@ public abstract class ElevatorStateTest {
         assertEquals(expectedMessage, e.getMessage());
     }
 
+    /**
+     * Tests reaction when the event "handlePassengersUnloaded" is triggered
+     */
+    @Test
+    public void testHandlePassengersUnloaded() {
+        Exception e = assertThrows(IllegalStateException.class, testState::handlePassengersUnloaded);
 
+        String expectedMessage = "handlePassengersUnloaded must be called from the ElevatorDoorsOpenState.";
+
+        assertEquals(expectedMessage, e.getMessage());
+    }
+
+    /**
+     * Tests reaction when the event "handleElevatorButtonPressed" is triggered
+     */
+    @Test
+    public void testHandleElevatorButtonPressed() {
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
+
+        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
+
+        ElevatorState testState = new ElevatorMovingState(testContext); // could be any state
+
+        ElevatorState newState = testState.handleElevatorButtonPressed(12);
+
+        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
+
+        assertEquals(SchedulerEventType.ELEVATOR_BUTTON_PRESSED, testEvent.getEventType());
+        assertEquals(12, testEvent.getPayload());
+        assertNull(newState);
+    }
 }

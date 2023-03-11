@@ -25,7 +25,7 @@ public class ElevatorDoorsClosedStateTest extends ElevatorStateTest{
     /**
      * Tests reaction when the valid event "openDoors" is triggered
      */
-	@Override
+    @Override
     @Test
     public void testOpenDoorsEvent() {
         ElevatorState testState = new ElevatorDoorsClosedState(null);
@@ -38,7 +38,7 @@ public class ElevatorDoorsClosedStateTest extends ElevatorStateTest{
     /**
      * Tests reaction when the valid event "setDirection" is triggered
      */
-	@Override
+    @Override
     @Test
     public void testSetDirectionEvent() {
         Elevator testContext = new Elevator(null, null, 0);
