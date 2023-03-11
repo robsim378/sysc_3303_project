@@ -77,7 +77,7 @@ public abstract class ElevatorState implements State {
      */
     public ElevatorState handleElevatorButtonPressed(int destination) {
         context.getOutputBuffer().addEvent(
-                new Event<? extends Enum<?>>(
+                new Event<>(
                         Subsystem.SCHEDULER,
                         0,
                         Subsystem.ELEVATOR,
