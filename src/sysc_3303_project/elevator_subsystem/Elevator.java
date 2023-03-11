@@ -10,9 +10,12 @@ import logging.Logger;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
+
+import java.util.Arrays;
 
 /**
  * Represents an Elevator to move between Floors.
@@ -28,6 +31,7 @@ public class Elevator implements Runnable {
     private Direction direction;
     private ElevatorState state;
     private final EventBuffer<ElevatorEventType> inputBuffer;
+    private final boolean[] floorLamps;
 
 
     /**
@@ -42,6 +46,7 @@ public class Elevator implements Runnable {
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
         this.inputBuffer = inputBuffer;
+        this.floorLamps = new boolean[SystemProperties.MAX_FLOOR_NUMBER];
     }
 
     /**
@@ -93,6 +98,10 @@ public class Elevator implements Runnable {
         return direction;
     }
 
+    public void turnOffLamp(int lampNumber) {
+        this.floorLamps[lampNumber] = false;
+    }
+
     /**
      * Move the elevator one floor towards its destination.
      */
@@ -111,7 +120,6 @@ public class Elevator implements Runnable {
 
     /**
      * The run method for the Elevator thread.
-     *
      * Contains the state machine for the Elevator.
      */
     public void run() {
@@ -120,24 +128,39 @@ public class Elevator implements Runnable {
         
 
         while (true) {
-
             event = inputBuffer.getEvent();
 
-            Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());
+            if (event.getPayload() instanceof Integer) {
+                int lampNumber = (int) event.getPayload();
+                floorLamps[lampNumber] = true;
+            }
 
-            state.doExit();
+            ElevatorState newState = null;
+
+            Logger.getLogger().logNotification(this.getClass().getName(),"Elevator " + elevatorID
+                    + "Lamps: " + Arrays.toString(floorLamps));
+
+            Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType()
+                    + ", State: " + state.getClass().getName());
 
             switch (event.getEventType()) {
-                case OPEN_DOORS -> state = state.openDoors();
-                case OPEN_DOORS_TIMER -> state = state.openDoorsTimer();
-                case CLOSE_DOORS -> state = state.closeDoors();
-                case CLOSE_DOORS_TIMER -> state = state.closeDoorsTimer();
-                case START_MOVING_IN_DIRECTION -> state = state.setDirection((Direction) event.getPayload());
-                case MOVING_TIMER -> state = state.travelThroughFloorsTimer();
-                case CONTINUE_MOVING -> state = state.continueMoving();
-                case STOP_AT_NEXT_FLOOR -> state = state.stopAtNextFloor();
+                case OPEN_DOORS -> newState = state.openDoors();
+                case OPEN_DOORS_TIMER -> newState = state.openDoorsTimer();
+                case CLOSE_DOORS -> newState = state.closeDoors();
+                case CLOSE_DOORS_TIMER -> newState = state.closeDoorsTimer();
+                case START_MOVING_IN_DIRECTION -> newState = state.setDirection((Direction) event.getPayload());
+                case MOVING_TIMER -> newState = state.travelThroughFloorsTimer();
+                case CONTINUE_MOVING -> newState = state.continueMoving();
+                case STOP_AT_NEXT_FLOOR -> newState = state.stopAtNextFloor();
+                case PASSENGERS_UNLOADED -> newState = state.handlePassengersUnloaded();
+                case ELEVATOR_BUTTON_PRESSED -> newState = state.handleElevatorButtonPressed((int) event.getPayload());
             }
-            state.doEntry();
+
+            if (newState != null) {
+                state.doExit();
+                state = newState;
+                state.doEntry();
+            }
         }
     }
 }

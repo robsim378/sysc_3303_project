@@ -41,6 +41,7 @@ public class ElevatorApproachingFloorsState extends ElevatorState {
                 SchedulerEventType.ELEVATOR_STOPPED,
                 context.getFloor()
         ));
+        context.turnOffLamp(context.getFloor());
         return new ElevatorDoorsClosedState(context);
     }
 

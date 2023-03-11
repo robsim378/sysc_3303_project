@@ -7,8 +7,11 @@
 package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.Event;
 import sysc_3303_project.common.State;
+import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
  * State class for the elevator state machine.
@@ -58,6 +61,28 @@ public abstract class ElevatorState implements State {
 
     public ElevatorState travelThroughFloorsTimer() {
         throw new IllegalStateException("travelThroughFloorsTimer() must be called from the ElevatorMovingState.");
+    }
+
+    public ElevatorState handlePassengersUnloaded() {
+        throw new IllegalStateException("handlePassengersUnloaded must be called from the _____________");
+    }
+
+    /**
+     * When an elevator button is pressed during any state, send an event to the Scheduler.
+     *
+     * @param destination int, the destination
+     * @return ElevatorState, next state
+     */
+    public ElevatorState handleElevatorButtonPressed(int destination) {
+        context.getOutputBuffer().addEvent(
+                new Event<>(
+                        Subsystem.SCHEDULER,
+                        0,
+                        Subsystem.ELEVATOR,
+                        context.getElevatorID(),
+                        SchedulerEventType.ELEVATOR_BUTTON_PRESSED,
+                        destination));
+        return null;
     }
 
     public void doEntry() {}
