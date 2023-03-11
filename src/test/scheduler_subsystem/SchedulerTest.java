@@ -1,8 +1,8 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @author khalid merai 101159203
- * @version 1.0
+ * @author khalid merai 101159203 & Andrei Popescu 101143798
+ * @version 3.0
  */
 
 package test.scheduler_subsystem;
@@ -24,7 +24,9 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import java.lang.reflect.Field;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,8 +47,8 @@ public class SchedulerTest {
     @Before
     public void setUp() {
     	outputBuffer = new EventBuffer<Enum<?>>();
+    	schedulerBuffer = new EventBuffer<>();
         scheduler = new Scheduler(schedulerBuffer, outputBuffer);
-        schedulerBuffer = scheduler.getInputBuffer();
     }
 
     /**
@@ -69,31 +71,15 @@ public class SchedulerTest {
         int elevatorId = scheduler.assignLoadRequest(8, Direction.DOWN);
         //tiebreakers dictate that elevator 0 must be selected
         assertEquals(0, elevatorId);
-        Event<Enum<?>> evt = outputBuffer.getEvent();
-        assertTrue(evt.getEventType() instanceof ElevatorEventType);
-        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
-        schedulerBuffer.addEvent(new Event<SchedulerEventType>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 0));
-        evt = outputBuffer.getEvent();
-        assertTrue(evt.getEventType() instanceof ElevatorEventType);
-        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
-        assertEquals(Direction.UP, (Direction) evt.getPayload());
     }
     /**
      * Test case to check if multiple requests can be added to the scheduler.
      */
     @Test
-    public void testAddMultipleRequests() throws Exception {
+    public void testAssignMultipleRequests() throws Exception {
     	int elevatorId = scheduler.assignLoadRequest(8, Direction.DOWN);
         //tiebreakers dictate that elevator 0 must be selected
         assertEquals(0, elevatorId);
-        Event<Enum<?>> evt = outputBuffer.getEvent();
-        assertTrue(evt.getEventType() instanceof ElevatorEventType);
-        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
-        schedulerBuffer.addEvent(new Event<SchedulerEventType>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 0));
-        evt = outputBuffer.getEvent();
-        assertTrue(evt.getEventType() instanceof ElevatorEventType);
-        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
-        assertEquals(Direction.UP, (Direction) evt.getPayload());
         
         Field elevatorTrackerField = Scheduler.class.getDeclaredField("tracker");
         elevatorTrackerField.setAccessible(true);
@@ -111,57 +97,123 @@ public class SchedulerTest {
     public void testStateMachine() throws Exception {
     	Thread schedulerThread = new Thread(scheduler);
     	schedulerThread.start();
-    	
     	Field elevatorTrackerField = Scheduler.class.getDeclaredField("tracker");
         elevatorTrackerField.setAccessible(true);
         ElevatorTracker tracker = (ElevatorTracker) elevatorTrackerField.get(scheduler);
+        Event<Enum<?>> evt;
         
-    	//floor button is pressed in waiting state (default): expect to order elevator to close doors
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.FLOOR_BUTTON_PRESSED, this, requestData));
+    	schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 8, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.DOWN));
     	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.CLOSE_DOORS);
-    	assertTrue(scheduler.hasRequests());
-    	assertTrue(scheduler.getPendingRequests().contains(requestData));
-    	//elevators doors closed in processing state: expect to order elevator to move (up)
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_DOORS_CLOSED, dummyElevator, null));
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID()); //request assigned to elevator 0
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 0));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(Direction.UP, evt.getPayload()); //elevator going up
+        assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 1));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CONTINUE_MOVING, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(1, tracker.getElevatorFloor(0));
+        
+        //assign extra requests partway
+        tracker.updateElevatorFloor(0, 4); //skip ahead for testing: approaching floors 2-4 will work the same as the previous test case
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 5, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.UP));
+        TimeUnit.MILLISECONDS.sleep(500);
+        assertFalse(tracker.hasRequests(1));
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 2, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.UP));
     	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.START_MOVING_IN_DIRECTION);
-    	//elevators approaching target floor in processing state: expect to order elevator to stop
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, dummyElevator, 1));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.STOP_AT_NEXT_FLOOR);
-    	//elevators stopped at target floor: expect to order elevator to open doors
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_STOPPED, dummyElevator, 1));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.OPEN_DOORS);
-    	elevatorFloorField.set(dummyElevator, 1);
-    	//elevators doors opened: expect requests updated
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_DOORS_OPENED, dummyElevator, 1));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.CLOSE_DOORS);
-    	assertFalse(scheduler.getPendingRequests().contains(requestData));
-    	assertTrue(scheduler.getInProgressRequests().contains(requestData));
-    	//elevators doors closed in processing state: expect to order elevator to move (up)
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_DOORS_CLOSED, dummyElevator, null));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.START_MOVING_IN_DIRECTION);
-    	//elevators approaching floor in processing state: expect to order elevator to keep moving
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, dummyElevator, 2));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.CONTINUE_MOVING);
-    	elevatorFloorField.set(dummyElevator, 2);
-    	//elevators approaching target floor in processing state: expect to order elevator to stop
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, dummyElevator, 3));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.STOP_AT_NEXT_FLOOR);
-    	elevatorFloorField.set(dummyElevator, 3);
-    	//elevators stopped at target floor: expect to order elevator to open doors
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_STOPPED, dummyElevator, 1));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertEquals(elevatorBuffer.getEvent().getEventType(), ElevatorEventType.OPEN_DOORS);
-    	//elevators doors opened: expect requests updated
-    	schedulerBuffer.addEvent(new Event<>(SchedulerEventType.ELEVATOR_DOORS_OPENED, dummyElevator, 1));
-    	TimeUnit.MILLISECONDS.sleep(500);
-    	assertFalse(scheduler.hasRequests());
+    	assertTrue(tracker.hasRequests(1));
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(1, evt.getDestinationID()); //request assigned to elevator 1; elevator 0 receives no additional events
+        
+    	schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 5));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(5, tracker.getElevatorFloor(0));
+    	
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_STOPPED, 5));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.OPEN_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 5));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof FloorEventType);
+        assertEquals(FloorEventType.PASSENGERS_LOADED, (FloorEventType) evt.getEventType());
+        assertEquals(5, evt.getDestinationID());
+        assertEquals(Direction.UP, (Direction) evt.getPayload());
+        evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_BUTTON_PRESSED, 6));
+        TimeUnit.MILLISECONDS.sleep(500);
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 5));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(Direction.UP, evt.getPayload()); //elevator going up
+        assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 6));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+    	
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_STOPPED, 6));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.OPEN_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 6));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.PASSENGERS_UNLOADED, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(6, (int) evt.getPayload());
+        assertTrue(tracker.hasRequests(0));
+        evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 6));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.START_MOVING_IN_DIRECTION, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        assertEquals(Direction.UP, evt.getPayload()); //elevator going up
+        assertEquals(Direction.UP, tracker.getElevatorDirection(0));
     }
 }

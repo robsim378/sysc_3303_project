@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 2.0
+ * @version 3.0
  */
 
 package sysc_3303_project.scheduler_subsystem;
@@ -14,6 +14,7 @@ import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 import logging.Logger;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,28 +65,32 @@ public class Scheduler implements Runnable {
 			return null;
 		}
 		boolean hasFurtherRequests = false;
+		if (tracker.getElevatorDirection(elevatorId) == null) tracker.updateElevatorDirection(elevatorId, Direction.DOWN); //give idle elevator a temporary direction
 		for (int floor : getFurtherFloors(elevatorId)) {
 			hasFurtherRequests = hasFurtherRequests || tracker.hasLoadRequest(elevatorId, floor) || tracker.countUnloadRequests(elevatorId, floor) > 0;
 		}
-		return null;
+		if (hasFurtherRequests) {
+			return tracker.getElevatorDirection(elevatorId);
+		} else {
+			return tracker.getElevatorDirection(elevatorId) == Direction.UP ? Direction.DOWN : Direction.UP; //opposite direction
+		}
 	}
 	
 	private int[] getFurtherFloors(int elevatorId) {
-		if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
-			return IntStream.range(tracker.getElevatorFloor(elevatorId), SystemProperties.MAX_FLOOR_NUMBER).toArray();
+		if (tracker.getElevatorDirection(elevatorId) == Direction.UP) {
+			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, SystemProperties.MAX_FLOOR_NUMBER).toArray();
 		} else if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
-			return IntStream.rangeClosed(tracker.getElevatorFloor(elevatorId), 0).toArray();
+			return IntStream.rangeClosed(tracker.getElevatorFloor(elevatorId) - 1, 0).toArray();
 		} else {
 			return new int[0];
 		}
 	}
 	
 	public int assignLoadRequest(int floor, Direction direction) {
-		int[] ids = IntStream.range(0, SystemProperties.MAX_ELEVATOR_NUMBER).toArray();
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();
-		for (int id : ids) {
+		for (int id = 0; id < SystemProperties.MAX_ELEVATOR_NUMBER; id++) {
 			boolean elevatorOnTheWay = false;
 			for (int f : getFurtherFloors(id)) {
 				if (f == floor) {
@@ -102,11 +107,13 @@ public class Scheduler implements Runnable {
 		//sort each set by fewest requests first
 		onTheWay.sort(assignPriority);
 		notOnTheWay.sort(assignPriority);
+		Logger.getLogger().logNotification("Scheduler", onTheWay.toString());
+		Logger.getLogger().logNotification("Scheduler", notOnTheWay.toString());
 		//combine the 2 so elevators that are on the way are always considered first
 		priorityList.addAll(onTheWay);
 		priorityList.addAll(notOnTheWay);
 		//due to how the onTheWay/notOnTheWay lists are generated, ties are broken by lowest ID number first
-		int elevatorId = onTheWay.get(0);
+		int elevatorId = priorityList.get(0);
 		tracker.addLoadRequest(elevatorId, floor, direction);
 		return elevatorId;
 	}

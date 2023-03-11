@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 2.0
+ * @version 3.0
  */
 
 package sysc_3303_project.scheduler_subsystem.states;
@@ -10,7 +10,6 @@ import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
-import sysc_3303_project.common.RequestData;
 import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.elevator_subsystem.*;
@@ -63,19 +62,21 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.PASSENGERS_UNLOADED, floorNumber));
-			return null;
+			Logger.getLogger().logNotification(context.getClass().getName(), "Unloading passenger at floor " + floorNumber + " from elevator " + elevatorId);
 		}
 		if (loaded) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.FLOOR, floorNumber, 
 					Subsystem.SCHEDULER, 0, 
 					FloorEventType.PASSENGERS_LOADED, contextTracker.getElevatorDirection(elevatorId)));
+			Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + elevatorId);
 		}
-		if (loaded || unloadCount > 0) { //if we expect more requests close doors (the requests will not have come in yet)
+		if (loaded || unloadCount > 0 || contextTracker.hasRequests(elevatorId)) { //if we expect more requests close doors (the requests may not have come in yet)
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to close doors");
 			return null;
 		} else {
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
