@@ -25,59 +25,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Ian Holmes
  *
  */
-public class SchedulerWaitingStateTest {
+public class SchedulerWaitingStateTest extends SchedulerStateTest{
 
-    /**
-     * Tests reaction when the invalid event "handleElevatorDoorsClosedTest" is triggered
-     */
-    @Test
-    public void handleElevatorDoorsClosedTest() {
-        SchedulerState testState = new SchedulerWaitingState(null);
-
-        assertThrows(IllegalStateException.class, () -> {
-            testState.handleElevatorDoorsClosed(null);
-        });
-    }
-
-    /**
-     * Tests reaction when the invalid event "handleElevatorDoorsOpenTest" is triggered
-     */
-    @Test
-    public void handleElevatorDoorsOpenTest() {
-        SchedulerState testState = new SchedulerWaitingState(null);
-
-        assertThrows(IllegalStateException.class, () -> {
-            testState.handleElevatorDoorsClosed(null);
-        });
-    }
-
-    /**
-     * Tests reaction when the invalid event "handleElevatorStoppedTest" is triggered
-     */
-    @Test
-    public void handleElevatorStoppedTest() {
-        SchedulerState testState = new SchedulerWaitingState(null);
-
-        assertThrows(IllegalStateException.class, () -> {
-            testState.handleElevatorDoorsClosed(null);
-        });
-    }
-
-    /**
-     * Tests reaction when the invalid event "handleElevatorApproachingFloorTest" is triggered
-     */
-    @Test
-    public void handleElevatorApproachingFloorTest() {
-        SchedulerState testState = new SchedulerWaitingState(null);
-
-        assertThrows(IllegalStateException.class, () -> {
-            testState.handleElevatorDoorsClosed(null);
-        });
-    }
-
-    /**
-     * Tests reaction when the valid event "handleFloorButtonPressed" is triggered
-     */
+	@Override
     @Test
     public void handleFloorButtonPressed() {
         EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();

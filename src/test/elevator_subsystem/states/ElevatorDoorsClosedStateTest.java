@@ -19,12 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Liam Gaudet and Ian Holmes
  *
  */
-public class ElevatorDoorsClosedStateTest {
+public class ElevatorDoorsClosedStateTest extends ElevatorStateTest{
 
 
     /**
      * Tests reaction when the valid event "openDoors" is triggered
      */
+	@Override
     @Test
     public void testOpenDoorsEvent() {
         ElevatorState testState = new ElevatorDoorsClosedState(null);
@@ -37,6 +38,7 @@ public class ElevatorDoorsClosedStateTest {
     /**
      * Tests reaction when the valid event "setDirection" is triggered
      */
+	@Override
     @Test
     public void testSetDirectionEvent() {
         Elevator testContext = new Elevator(null, null, 0);
@@ -47,90 +49,5 @@ public class ElevatorDoorsClosedStateTest {
 
         assertEquals(Direction.UP, testContext.getDirection());
         assertTrue(newState instanceof ElevatorMovingState);
-    }
-
-    /**
-     * Tests reaction when the invalid event "closeDoors" is triggered
-     */
-    @Test
-    public void testCloseDoorsEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::closeDoors);
-
-        String expectedMessage = "closeDoors() must be called from the ElevatorDoorsOpenState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "stopAtNextFloor" is triggered
-     */
-    @Test
-    public void testStopAtNextFloorEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::stopAtNextFloor);
-
-        String expectedMessage = "stopAtNextFloor() must be called from the ElevatorApproachingFloorsState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "continueMoving" is triggered
-     */
-    @Test
-    public void testContinueMovingEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::continueMoving);
-
-        String expectedMessage = "continueMoving() must be called from the ElevatorApproachingFloorsState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "openDoorsTimer" is triggered
-     */
-    @Test
-    public void testOpenDoorsTimer() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::openDoorsTimer);
-
-        String expectedMessage = "openDoorsTimer() must be called from the ElevatorDoorsOpeningState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "openDoorsTimer" is triggered
-     */
-    @Test
-    public void testCloseDoorsTimer() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::closeDoorsTimer);
-
-        String expectedMessage = "closeDoorsTimer() must be called from the ElevatorDoorsClosingState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-
-    /**
-     * Tests reaction when the invalid event "travelThroughFloorsTimer" is triggered
-     */
-    @Test
-    public void testTravelThroughFloorsTimerEvent() {
-        ElevatorState testState = new ElevatorDoorsClosedState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::travelThroughFloorsTimer);
-
-        String expectedMessage = "travelThroughFloorsTimer() must be called from the ElevatorMovingState.";
-
-        assertEquals(expectedMessage, e.getMessage());
     }
 }
