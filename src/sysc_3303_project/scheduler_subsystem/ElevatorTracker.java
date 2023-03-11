@@ -165,9 +165,9 @@ public class ElevatorTracker {
 	 * attempts to serve one in the opposite direction.
 	 * @param elevatorId the ID of the elevator to load
 	 * @param floor the ID/number of the floor to load passengers from 
-	 * @return true if passengers were loaded onto the elevator, false otherwise
+	 * @return the Direction of the served load request, or null if none served
 	 */
-	public boolean loadElevator(int elevatorId, int floor) {
+	public Direction loadElevator(int elevatorId, int floor) {
 		boolean wasCompleted = hasLoadRequestInDirection(elevatorId, floor, getElevatorDirection(elevatorId));
 		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
 		LoadRequest toRemove = null;
@@ -186,8 +186,9 @@ public class ElevatorTracker {
 		}
 		if (toRemove != null) { 
 			info.loadRequests.remove(toRemove);
+			return toRemove.direction;
 		}
-		return wasCompleted;
+		return null;
 	}
 	
 	/**

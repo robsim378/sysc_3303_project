@@ -255,5 +255,25 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_STOPPED, 8));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.OPEN_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
+        
+        schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 8));
+        TimeUnit.MILLISECONDS.sleep(500);
+    	evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof FloorEventType);
+        assertEquals(FloorEventType.PASSENGERS_LOADED, (FloorEventType) evt.getEventType());
+        assertEquals(8, evt.getDestinationID());
+        assertEquals(Direction.DOWN, (Direction) evt.getPayload());
+        assertFalse(tracker.hasRequests(0));
+        evt = outputBuffer.getEvent();
+        assertTrue(evt.getEventType() instanceof ElevatorEventType);
+        assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
+        assertEquals(0, evt.getDestinationID());
     }
 }

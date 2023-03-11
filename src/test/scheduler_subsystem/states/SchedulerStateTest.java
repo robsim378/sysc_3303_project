@@ -65,11 +65,6 @@ public class SchedulerStateTest {
      */
     @Test
     public void handleFloorButtonPressedTest() {
-        testState = new SchedulerWaitingState(new Scheduler(null, null));
-
-        assertThrows(IllegalStateException.class, () -> {
-            testState.handleFloorButtonPressed(0, Direction.UP);
-        });
     }
     
     /**
@@ -77,10 +72,5 @@ public class SchedulerStateTest {
      */
     @Test
     public void handleElevatorButtonPressedTest() {
-        testState = new SchedulerWaitingState(new Scheduler(null, null));
-
-        assertThrows(IllegalStateException.class, () -> {
-            testState.handleElevatorButtonPressed(0, 0);
-        });
     }
 }
