@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  */
 public class ElevatorDoorsOpenStateTest {
-	
-	/**
-	 * Tests reaction when the valid event "CloseDoors" is triggered
-	 */
+
+    /**
+     * Tests reaction when the valid event "closeDoors" is triggered
+     */
     @Test
     public void testCloseDoors() {
         ElevatorState testState = new ElevatorDoorsOpenState(null);
@@ -28,7 +28,18 @@ public class ElevatorDoorsOpenStateTest {
         ElevatorState newState = testState.closeDoors();
         
         assertTrue(newState instanceof ElevatorDoorsClosingState);
+    }
 
-    }    
-    
+    /**
+     * Tests reaction when the valid event "candlePassengersUnloaded" is triggered
+     */
+    @Test
+    public void testHandlePassengersUnloaded() {
+        ElevatorState testState = new ElevatorDoorsOpenState(null);
+
+        ElevatorState newState = testState.handlePassengersUnloaded();
+
+        assertNull(newState);
+    }
+
 }

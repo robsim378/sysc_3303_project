@@ -32,14 +32,14 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
     
     
     /**
-	 * Tests reaction when the invalid event "openDoors" is triggered
-	 */
-	@Override
+     * Tests reaction when the invalid event "openDoors" is triggered
+     */
+    @Override
     @Test
     public void testStopAtNextFloorEvent() {
-    	EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<SchedulerEventType>();
-    	Elevator context = new Elevator(schedulerBuffer, null, 0);
-    	context.setDirection(Direction.UP);
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        Elevator context = new Elevator(schedulerBuffer, null, 0);
+        context.setDirection(Direction.UP);
         ElevatorState testState = new ElevatorApproachingFloorsState(context);
 
         ElevatorState newState = testState.stopAtNextFloor();
@@ -47,7 +47,7 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
         assertTrue(newState instanceof ElevatorDoorsClosedState);
         assertEquals(1, context.getFloor());
         
-        Event<SchedulerEventType> suppliedEvent = schedulerBuffer.getEvent();
+        Event<Enum<?>> suppliedEvent = schedulerBuffer.getEvent();
         
         assertEquals(1, suppliedEvent.getPayload());
         
@@ -56,14 +56,14 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
     }
     
     /**
-	 * Tests reaction when the invalid event "openDoors" is triggered
-	 */
-	@Override
+     * Tests reaction when the invalid event "openDoors" is triggered
+     */
+    @Override
     @Test
     public void testContinueMovingEvent() {
-    	
-    	Elevator context = new Elevator(null, null, 0);
-    	context.setDirection(Direction.UP);
+
+        Elevator context = new Elevator(null, null, 0);
+        context.setDirection(Direction.UP);
         ElevatorState testState = new ElevatorApproachingFloorsState(context);
 
         ElevatorState newState = testState.continueMoving();

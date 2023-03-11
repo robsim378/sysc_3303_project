@@ -26,10 +26,10 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
     /**
      * Tests reaction when the valid event "closeDoorsTimer" is triggered
      */
-	@Override
+    @Override
     @Test
     public void testCloseDoorsTimer() {
-        EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
         EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
 
         Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
@@ -38,7 +38,7 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
 
         ElevatorState newState = testState.closeDoorsTimer();
 
-        Event<SchedulerEventType> testEvent = testContext.getOutputBuffer().getEvent();
+        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
 
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_CLOSED, testEvent.getEventType());
         assertNull(testEvent.getPayload());
