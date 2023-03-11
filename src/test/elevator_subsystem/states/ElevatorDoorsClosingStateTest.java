@@ -21,11 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Liam Gaudet and Ian Holmes
  *
  */
-public class ElevatorDoorsClosingStateTest {
+public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
 
     /**
      * Tests reaction when the valid event "closeDoorsTimer" is triggered
      */
+	@Override
     @Test
     public void testCloseDoorsTimer() {
         EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();
@@ -42,106 +43,6 @@ public class ElevatorDoorsClosingStateTest {
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_CLOSED, testEvent.getEventType());
         assertNull(testEvent.getPayload());
         assertTrue(newState instanceof ElevatorDoorsClosedState);
-    }
-
-    /**
-     * Tests reaction when the invalid event "closeDoors" is triggered
-     */
-    @Test
-    public void testCloseDoorsEvent() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::closeDoors);
-
-        String expectedMessage = "closeDoors() must be called from the ElevatorDoorsOpenState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "openDoors" is triggered
-     */
-    @Test
-    public void testOpenDoorsEvent() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::openDoors);
-
-        String expectedMessage = "openDoors() must be called from the ElevatorDoorsClosedState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "setDirection" is triggered
-     */
-    @Test
-    public void testSetDirectionEvent() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            testState.setDirection(null);
-        });
-
-        String expectedMessage = "setDirection() must be called from the ElevatorDoorsClosedState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "stopAtNextFloor" is triggered
-     */
-    @Test
-    public void testStopAtNextFloorEvent() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::stopAtNextFloor);
-
-        String expectedMessage = "stopAtNextFloor() must be called from the ElevatorApproachingFloorsState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "continueMoving" is triggered
-     */
-    @Test
-    public void testContinueMovingEvent() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::continueMoving);
-
-        String expectedMessage = "continueMoving() must be called from the ElevatorApproachingFloorsState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "openDoorsTimer" is triggered
-     */
-    @Test
-    public void testOpenDoorsTimer() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::openDoorsTimer);
-
-        String expectedMessage = "openDoorsTimer() must be called from the ElevatorDoorsOpeningState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-    }
-
-    /**
-     * Tests reaction when the invalid event "travelThroughFloorsTimer" is triggered
-     */
-    @Test
-    public void testTravelThroughTimeTest() {
-        ElevatorState testState = new ElevatorDoorsClosingState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::travelThroughFloorsTimer);
-
-        String expectedMessage = "travelThroughFloorsTimer() must be called from the ElevatorMovingState.";
-
-        assertEquals(expectedMessage, e.getMessage());
     }
 
     /**

@@ -60,7 +60,7 @@ public class UDPMessagerOutgoing implements Runnable{
 		
 	}
 	
-	private int getPort(Subsystem destinationSubsystem) {
+	public int getPort(Subsystem destinationSubsystem) {
 		switch(destinationSubsystem) {
 		case ELEVATOR:
 			return SystemProperties.ELEVATOR_PORT;
