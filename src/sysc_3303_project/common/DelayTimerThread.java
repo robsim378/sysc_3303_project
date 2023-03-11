@@ -15,7 +15,7 @@ package sysc_3303_project.common;
  * A thread process that administers a delayed event trigger for various purposes. For
  *   example, delaying the time before an elevator request is made or delaying the time between floors
  */
-public class DelayTimerThread<T> implements Runnable {
+public class DelayTimerThread<T extends Enum<?>> implements Runnable {
 	
 	private int timeDelay;
 	private Event<T> event;

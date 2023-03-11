@@ -1,4 +1,4 @@
-package test.Messaging;
+package test.messaging;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +13,12 @@ import static org.junit.Assert.assertEquals;
 public class UDPMessagerOutgoingTest {
 
     private EventBuffer<TestEnum> eventBuffer;
-    private UDPMessagerOutgoing<TestEnum> udpMessagerOutgoing;
+    private UDPMessagerOutgoing udpMessagerOutgoing;
 
     @Before
     public void setUp() {
         eventBuffer = new EventBuffer<>();
-        udpMessagerOutgoing = new UDPMessagerOutgoing<>(eventBuffer);
+        udpMessagerOutgoing = new UDPMessagerOutgoing(eventBuffer);
     }
 
     @Test

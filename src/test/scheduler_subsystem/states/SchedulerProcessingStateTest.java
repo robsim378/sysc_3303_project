@@ -25,11 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Ian Holmes
  *
  */
-public class SchedulerProcessingStateTest {
+public class SchedulerProcessingStateTest extends SchedulerStateTest {
 
     /**
      * Tests reaction when the valid event "handleElevatorDoorsClosedTest" is triggered
      */
+	@Override
     @Test
     public void handleElevatorDoorsClosedTest() {
         EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
@@ -51,6 +52,7 @@ public class SchedulerProcessingStateTest {
     /**
      * Tests reaction when the valid event "handleElevatorDoorsOpenTest" is triggered
      */
+	@Override
     @Test
     public void handleElevatorDoorsOpenTest() {
         EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
@@ -83,6 +85,7 @@ public class SchedulerProcessingStateTest {
     /**
      * Tests reaction when the valid event "handleElevatorStoppedTest" is triggered
      */
+	@Override
     @Test
     public void handleElevatorStoppedTest() {
         EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();
@@ -98,6 +101,13 @@ public class SchedulerProcessingStateTest {
         assertNull(testEvent.getPayload());
         assertNull(newState);
     }
+	
+	
+	@Override
+	@Test
+	public void handleElevatorApproachingFloorTest() {
+		//Not valid anymore, three other tests to do below
+	}
 
     /**
      * Tests reaction when the valid event "handleElevatorApproachingFloorTest" is triggered and the elevator drops someone off
@@ -171,6 +181,7 @@ public class SchedulerProcessingStateTest {
     /**
      * Tests reaction when the valid event "handleFloorButtonPressed" is triggered
      */
+	@Override
     @Test
     public void handleFloorButtonPressed() {
         EventBuffer<ElevatorEventType> elevatorBuffer = new EventBuffer<>();

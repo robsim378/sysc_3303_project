@@ -1,4 +1,4 @@
-package test.Messaging;
+package test.messaging;
 
 import static org.junit.Assert.assertEquals;
 

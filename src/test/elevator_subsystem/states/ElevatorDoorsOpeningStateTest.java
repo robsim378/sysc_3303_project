@@ -25,88 +25,8 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
  * @author Liam Gaudet and Ian Holmes
  *
  */
-public class ElevatorDoorsOpeningStateTest {
+public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
 
-	/**
-	 * Tests reaction when the invalid event "CloseDoors" is triggered
-	 */
-    @Test
-    public void testCloseDoors() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-        
-        Exception e = assertThrows(IllegalStateException.class, testState::closeDoors);
-
-        String expectedMessage = "closeDoors() must be called from the ElevatorDoorsOpenState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-    }
-    
-	/**
-	 * Tests reaction when the invalid event "openDoors" is triggered
-	 */
-    @Test
-    public void testOpenDoors() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::openDoors);
-
-        String expectedMessage = "openDoors() must be called from the ElevatorDoorsClosedState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-
-    }
-    
-	/**
-	 * Tests reaction when the invalid event "setDirection" is triggered
-	 */
-    @Test
-    public void testSetDirection() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            testState.setDirection(null);
-        });
-
-        String expectedMessage = "setDirection() must be called from the ElevatorDoorsClosedState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-
-    }
-    
-	/**
-	 * Tests reaction when the invalid event "stopAtNextFloor" is triggered
-	 */
-    @Test
-    public void testStopAtNextFloor() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::stopAtNextFloor);
-
-        String expectedMessage = "stopAtNextFloor() must be called from the ElevatorApproachingFloorsState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-
-    }
-    
-	/**
-	 * Tests reaction when the invalid event "continueMoving" is triggered
-	 */
-    @Test
-    public void testContinueMoving() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::continueMoving);
-
-        String expectedMessage = "continueMoving() must be called from the ElevatorApproachingFloorsState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-
-    }
     
 	/**
 	 * Tests reaction when the valid event "openDoorsTimer" is triggered
@@ -126,41 +46,9 @@ public class ElevatorDoorsOpeningStateTest {
         
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_OPENED, addedEvent.getEventType());
         assertNull(addedEvent.getPayload());
-        assertEquals(context, addedEvent.getSender());
 
     }
-    
-	/**
-	 * Tests reaction when the invalid event "travelThroughFloorsTimer" is triggered
-	 */
-    @Test
-    public void testTravelThroughFloorTimer() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::travelThroughFloorsTimer);
-
-        String expectedMessage = "travelThroughFloorsTimer() must be called from the ElevatorMovingState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-
-    }
-    
-	/**
-	 * Tests reaction when the invalid event "closeDoorsTimer" is triggered
-	 */
-    @Test
-    public void testCloseDoorsTimer() {
-        ElevatorState testState = new ElevatorDoorsOpeningState(null);
-
-        Exception e = assertThrows(IllegalStateException.class, testState::closeDoorsTimer);
-
-        String expectedMessage = "closeDoorsTimer() must be called from the ElevatorDoorsClosingState.";
-
-        assertEquals(expectedMessage, e.getMessage());
-
-    }
-    
+        
     /**
      * Tests on entry for state
      */
