@@ -16,16 +16,13 @@ import sysc_3303_project.common.events.EventBuffer;
 public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implements Runnable{
 	
 	private List<EventBuffer<T>> eventBuffers;
-	
-	private int listeningPort;
-	
+		
 	DatagramSocket sendRecieveSocket = null;
 	
 	public UDPMessagerIncoming(List<EventBuffer<T>> eventBuffers, Subsystem sys) {
 		this.eventBuffers = eventBuffers;
-		this.listeningPort = listeningPort;
 		try {
-			sendRecieveSocket = new DatagramSocket(this.listeningPort);
+			sendRecieveSocket = new DatagramSocket(getPort(sys));
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
