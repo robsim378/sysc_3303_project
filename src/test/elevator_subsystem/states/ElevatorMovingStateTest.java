@@ -38,7 +38,7 @@ public class ElevatorMovingStateTest extends ElevatorStateTest{
 
         ElevatorState newState = testState.travelThroughFloorsTimer();
 
-        Event<SchedulerEventType> testEvent = testContext.getSchedulerBuffer().getEvent();
+        Event<SchedulerEventType> testEvent = testContext.getOutputBuffer().getEvent();
 
         assertEquals(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, testEvent.getEventType());
         assertEquals(1, testEvent.getPayload());

@@ -10,9 +10,12 @@ import logging.Logger;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.Event;
 import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.SystemProperties;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
+
+import java.util.Arrays;
 
 /**
  * Represents an Elevator to move between Floors.
@@ -22,26 +25,28 @@ import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
  */
 public class Elevator implements Runnable {
 
-    private final EventBuffer<SchedulerEventType> schedulerBuffer;
+    private final EventBuffer<Enum<?>> outputBuffer;
     private final int elevatorID;
     private int elevatorFloor;
     private Direction direction;
     private ElevatorState state;
-    private final EventBuffer<ElevatorEventType> eventBuffer;
+    private final EventBuffer<ElevatorEventType> inputBuffer;
+    private final boolean[] floorLamps;
 
 
     /**
      * Constructor for the Elevator class.
      *
-     * @param schedulerBuffer EventBuffer, the scheduler to receive requests from
+     * @param outputBuffer EventBuffer, the scheduler to receive requests from
      * @param elevatorID int, the ID of the Elevator
      */
-    public Elevator(EventBuffer<SchedulerEventType> schedulerBuffer, EventBuffer<ElevatorEventType> eventBuffer, int elevatorID) {
-        this.schedulerBuffer = schedulerBuffer;
+    public Elevator(EventBuffer<Enum<?>> outputBuffer, EventBuffer<ElevatorEventType> inputBuffer, int elevatorID) {
+        this.outputBuffer = outputBuffer;
         this.elevatorID = elevatorID;
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
-        this.eventBuffer = eventBuffer;
+        this.inputBuffer = inputBuffer;
+        this.floorLamps = new boolean[SystemProperties.MAX_FLOOR_NUMBER];
     }
 
     /**
@@ -49,8 +54,8 @@ public class Elevator implements Runnable {
      *
      * @return int, the ID number of this elevator.
      */
-    public EventBuffer<ElevatorEventType> getEventBuffer() {
-        return eventBuffer;
+    public EventBuffer<ElevatorEventType> getInputBuffer() {
+        return inputBuffer;
     }
 
     /**
@@ -67,8 +72,8 @@ public class Elevator implements Runnable {
      *
      * @return int, the ID number of this elevator
      */
-    public EventBuffer<SchedulerEventType> getSchedulerBuffer() {
-        return schedulerBuffer;
+    public EventBuffer<Enum<?>> getOutputBuffer() {
+        return outputBuffer;
     }
 
     /**
@@ -93,6 +98,10 @@ public class Elevator implements Runnable {
         return direction;
     }
 
+    public void turnOffLamp(int lampNumber) {
+        this.floorLamps[lampNumber] = false;
+    }
+
     /**
      * Move the elevator one floor towards its destination.
      */
@@ -111,7 +120,6 @@ public class Elevator implements Runnable {
 
     /**
      * The run method for the Elevator thread.
-     *
      * Contains the state machine for the Elevator.
      */
     public void run() {
@@ -120,24 +128,39 @@ public class Elevator implements Runnable {
         
 
         while (true) {
+            event = inputBuffer.getEvent();
 
-            event = eventBuffer.getEvent();
+            if (event.getPayload() instanceof Integer) {
+                int lampNumber = (int) event.getPayload();
+                floorLamps[lampNumber] = true;
+            }
 
-            Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());
+            ElevatorState newState = null;
 
-            state.doExit();
+            Logger.getLogger().logNotification(this.getClass().getName(),"Elevator " + elevatorID
+                    + "Lamps: " + Arrays.toString(floorLamps));
+
+            Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType()
+                    + ", State: " + state.getClass().getName());
 
             switch (event.getEventType()) {
-                case OPEN_DOORS -> state = state.openDoors();
-                case OPEN_DOORS_TIMER -> state = state.openDoorsTimer();
-                case CLOSE_DOORS -> state = state.closeDoors();
-                case CLOSE_DOORS_TIMER -> state = state.closeDoorsTimer();
-                case START_MOVING_IN_DIRECTION -> state = state.setDirection((Direction) event.getPayload());
-                case MOVING_TIMER -> state = state.travelThroughFloorsTimer();
-                case CONTINUE_MOVING -> state = state.continueMoving();
-                case STOP_AT_NEXT_FLOOR -> state = state.stopAtNextFloor();
+                case OPEN_DOORS -> newState = state.openDoors();
+                case OPEN_DOORS_TIMER -> newState = state.openDoorsTimer();
+                case CLOSE_DOORS -> newState = state.closeDoors();
+                case CLOSE_DOORS_TIMER -> newState = state.closeDoorsTimer();
+                case START_MOVING_IN_DIRECTION -> newState = state.setDirection((Direction) event.getPayload());
+                case MOVING_TIMER -> newState = state.travelThroughFloorsTimer();
+                case CONTINUE_MOVING -> newState = state.continueMoving();
+                case STOP_AT_NEXT_FLOOR -> newState = state.stopAtNextFloor();
+                case PASSENGERS_UNLOADED -> newState = state.handlePassengersUnloaded();
+                case ELEVATOR_BUTTON_PRESSED -> newState = state.handleElevatorButtonPressed((int) event.getPayload());
             }
-            state.doEntry();
+
+            if (newState != null) {
+                state.doExit();
+                state = newState;
+                state.doEntry();
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
 
         ElevatorState newState = testState.closeDoorsTimer();
 
-        Event<SchedulerEventType> testEvent = testContext.getSchedulerBuffer().getEvent();
+        Event<SchedulerEventType> testEvent = testContext.getOutputBuffer().getEvent();
 
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_CLOSED, testEvent.getEventType());
         assertNull(testEvent.getPayload());
