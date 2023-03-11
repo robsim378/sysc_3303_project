@@ -8,7 +8,7 @@ package sysc_3303_project.elevator_subsystem;
 
 import logging.Logger;
 import sysc_3303_project.common.Direction;
-
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 
@@ -47,7 +47,7 @@ public class Elevator implements Runnable {
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
         this.inputBuffer = inputBuffer;
-        this.floorLamps = new boolean[ResourceManager.getResourceManager().get("count.floors")];
+        this.floorLamps = new boolean[ResourceManager.getResourceManager().getInt("count.floors")];
     }
 
     /**

@@ -8,7 +8,7 @@ package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.common.Direction;
 
-import sysc_3303_project.common.events.DelayedEvent;
+import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.configuration.Subsystem;
 

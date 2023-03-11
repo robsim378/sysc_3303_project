@@ -10,7 +10,7 @@ import sysc_3303_project.common.Direction;
 
 import sysc_3303_project.common.state.State;
 import sysc_3303_project.common.configuration.Subsystem;
-import sysc_3303_project.common.event.Event;
+import sysc_3303_project.common.events.Event;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -77,7 +77,7 @@ public abstract class ElevatorState implements State {
      */
     public ElevatorState handleElevatorButtonPressed(int destination) {
         context.getOutputBuffer().addEvent(
-                new Event<>(
+                new Event<? extends Enum<?>>(
                         Subsystem.SCHEDULER,
                         0,
                         Subsystem.ELEVATOR,
