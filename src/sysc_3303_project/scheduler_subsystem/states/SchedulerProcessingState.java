@@ -65,7 +65,8 @@ public class SchedulerProcessingState extends SchedulerState {
 	public SchedulerState handleElevatorDoorsOpened(int elevatorId, int floorNumber) {
 		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		int unloadCount = contextTracker.unloadElevator(elevatorId, floorNumber);
-		boolean loaded = contextTracker.loadElevator(elevatorId, floorNumber);
+		Direction loadDirection = contextTracker.loadElevator(elevatorId, floorNumber);
+		boolean loaded = loadDirection != null;
 		for (int i = 0; i < unloadCount; i++) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
@@ -76,8 +77,8 @@ public class SchedulerProcessingState extends SchedulerState {
 		if (loaded) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.FLOOR, floorNumber, 
-					Subsystem.SCHEDULER, 0, 
-					FloorEventType.PASSENGERS_LOADED, contextTracker.getElevatorDirection(elevatorId)));
+					Subsystem.SCHEDULER, elevatorId, //use the elevator ID since it is more meaningful
+					FloorEventType.PASSENGERS_LOADED, loadDirection));
 			Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + elevatorId);
 		}
 		if (loaded || contextTracker.hasRequests(elevatorId)) { //if we expect more requests close doors (the requests may not have come in yet)
