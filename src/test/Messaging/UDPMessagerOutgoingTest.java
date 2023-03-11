@@ -1,4 +1,4 @@
-package sysc_3303_project.messaging;
+package test.Messaging;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,6 +6,7 @@ import org.junit.Test;
 import sysc_3303_project.common.EventBuffer;
 import sysc_3303_project.common.Subsystem;
 import sysc_3303_project.common.SystemProperties;
+import sysc_3303_project.messaging.UDPMessagerOutgoing;
 
 import static org.junit.Assert.assertEquals;
 
