@@ -10,10 +10,13 @@ import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.floor_subsystem.FloorEventType;
@@ -31,12 +34,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class FloorIdleStateTest {
 	private InputFileController fileController;
-	private int numFloors;
 	EventBuffer<Enum<?>> outgoingBuffer;
 	FloorSystem floor;
-	ArrayList<FloorSystem> floors;
+	ArrayList<FloorSystem> floors = new ArrayList<FloorSystem>();
 
-	@BeforeAll
+	@Before
 	public void setup() {
 		// Create the outgoing message buffer shared by all floors
 		outgoingBuffer = new EventBuffer<>();
@@ -54,6 +56,7 @@ public class FloorIdleStateTest {
 		Thread floorThread = new Thread(floor);
 		floorThread.start();
 		inputFileThread.start();
+		
 	}
 
 
@@ -62,45 +65,24 @@ public class FloorIdleStateTest {
 	 */
 	@Test
 	public void testFloorIdleStateButtonPress() {
+		
+		setup();
+		
 		// The requestData to test with
 		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.DOWN, 4);
 
-
-
-
-
-//		String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testSingularEntry.txt";
-//		fileController = new InputFileController(floorFilePath, floors);
-//
-//		// Fixing the visibility of the method and calling it
-//		@SuppressWarnings("rawtypes")
-//		Class[] emptyArgs = new Class[0];
-//		ArrayList<RequestData> requestData = null;
-//		Method method = null;
-//
-//		try {
-//			method = InputFileController.class.getDeclaredMethod("parseData", emptyArgs);
-//			method.setAccessible(true);
-//			requestData = (ArrayList<RequestData>) method.invoke(fileController);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			fail();
-//		}
-
-
-
-
-
 		FloorState newState = floor.getState().handleButtonPressed(testInput);
 
-		RequestData testOutput = (RequestData)floor.getOutputBuffer().getEvent().getPayload();
+		Event<?> testOutput = floor.getOutputBuffer().getEvent();
 
 
+		assertEquals(Subsystem.SCHEDULER,  testOutput.getDestinationSubsystem());
+		assertEquals(0,  testOutput.getDestinationID());
+		assertEquals(Subsystem.FLOOR,  testOutput.getSourceSubsystem());
+		assertEquals(0,  testOutput.getSourceID());
+		assertEquals(SchedulerEventType.FLOOR_BUTTON_PRESSED,  testOutput.getEventType());
+		assertEquals(Direction.DOWN, (Direction) testOutput.getPayload());
 
-		assertEquals(LocalTime.NOON, testOutput.getRequestTime());
-		assertEquals(2, testOutput.getCurrentFloor());
-		assertEquals(Direction.DOWN, testOutput.getDirection());
-		assertEquals(4, testOutput.getDestinationFloor());
 		assertTrue(newState instanceof FloorIdleState);
 	}
 }

@@ -12,15 +12,11 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
-import sysc_3303_project.common.configuration.ResourceManager;
-import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
-import sysc_3303_project.common.messaging.UDPMessagerIncoming;
-import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 import sysc_3303_project.floor_subsystem.InputFileController;
@@ -37,7 +33,7 @@ class FloorSystemTest {
 	ArrayList<FloorSystem> floors;
 
 
-	@BeforeAll
+	@Before
 	public void setup() {
 		// Create the outgoing message buffer shared by all floors
 		outgoingBuffer = new EventBuffer<>();
