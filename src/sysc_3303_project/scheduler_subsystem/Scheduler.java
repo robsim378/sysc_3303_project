@@ -44,7 +44,7 @@ public class Scheduler implements Runnable {
 		this.inputBuffer = inputBuffer;
 		this.outputBuffer = outputBuffer;
 
-		tracker = new ElevatorTracker(ResourceManager.getResourceManager().getInt("count.elevators"));
+		tracker = new ElevatorTracker(ResourceManager.get().getInt("count.elevators"));
 		
 		state = new SchedulerWaitingState(this);
 
@@ -110,7 +110,7 @@ public class Scheduler implements Runnable {
 				|| (tracker.countUnloadRequests(elevatorId, floor) > 0);
 		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
 		stopping = stopping ||
-				(floor == ResourceManager.getResourceManager().getInt("count.floors") - 1 && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
+				(floor == ResourceManager.get().getInt("count.floors") - 1 && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
 				(floor == 0 && tracker.getElevatorDirection(elevatorId)== Direction.DOWN);
 		
 		int[] furtherFloors = getFurtherFloors(elevatorId);
@@ -134,7 +134,7 @@ public class Scheduler implements Runnable {
 	private int[] getFurtherFloors(int elevatorId) {
 		if (tracker.getElevatorDirection(elevatorId) == Direction.UP) {
 			
-			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, ResourceManager.getResourceManager().getInt("count.floors")).toArray();
+			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, ResourceManager.get().getInt("count.floors")).toArray();
 		} else if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
 			return IntStream.rangeClosed(0, tracker.getElevatorFloor(elevatorId) - 1).toArray();
 		} else {
@@ -152,7 +152,7 @@ public class Scheduler implements Runnable {
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();
-		for (int id = 0; id < ResourceManager.getResourceManager().getInt("count.elevators"); id++) {
+		for (int id = 0; id < ResourceManager.get().getInt("count.elevators"); id++) {
 			boolean elevatorOnTheWay = false;
 			for (int f : getFurtherFloors(id)) {
 				if (f == floor) {

@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 2.0
+ * @version 3.0
 */
 
 package sysc_3303_project.elevator_subsystem;
@@ -46,7 +46,7 @@ public class Elevator implements Runnable {
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
         this.inputBuffer = inputBuffer;
-        this.buttonLamps = new boolean[ResourceManager.getResourceManager().getInt("count.floors")];
+        this.buttonLamps = new boolean[ResourceManager.get().getInt("count.floors")];
     }
 
     /**
