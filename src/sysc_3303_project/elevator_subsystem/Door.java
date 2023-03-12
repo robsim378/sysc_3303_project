@@ -14,18 +14,32 @@ public class Door {
 
     private boolean isOpen;
 
+    /**
+     * Constructor for Door.
+     */
     public Door() {
         isOpen = false;
     }
 
+    /**
+     * Open the door.
+     */
     public void setOpen() {
         isOpen = true;
     }
 
+    /**
+     * Close the door.
+     */
     public void setClosed() {
         isOpen = false;
     }
 
+    /**
+     * Get if door is open.
+     *
+     * @return boolean, true if door is open
+     */
     public boolean getIsOpen() {
         return isOpen;
     }

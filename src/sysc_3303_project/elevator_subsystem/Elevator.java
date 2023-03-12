@@ -14,6 +14,7 @@ import sysc_3303_project.common.events.EventBuffer;
 
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.floor_subsystem.Lamps;
 
 import java.util.Arrays;
 
@@ -35,6 +36,7 @@ public class Elevator implements Runnable {
     private final ElevatorButton[] buttons;
     private final Motor motor;
     private final Door door;
+    private final Lamps directionLamps;
 
 
     /**
@@ -53,20 +55,41 @@ public class Elevator implements Runnable {
         this.buttons = new ElevatorButton[ResourceManager.get().getInt("count.floors")];
         this.motor = new Motor();
         this.door = new Door();
+        this.directionLamps = new Lamps();
     }
 
+    /**
+     * Getter for the elevator door.
+     *
+     * @return Door, the door
+     */
     public Door getDoor() {
         return door;
     }
 
+    /**
+     * Getter for the elevator lamps.
+     *
+     * @return ElevatorButtons[], the lamps
+     */
     public ElevatorLamp[] getButtonLamps() {
         return buttonLamps;
     }
 
+    /**
+     * Getter for the elevator buttons.
+     *
+     * @return ElevatorButtons[], the buttons
+     */
     public ElevatorButton[] getButtons() {
         return buttons;
     }
 
+    /**
+     * Getter for the elevator motor.
+     *
+     * @return Motor, the motor
+     */
     public Motor getMotor() {
         return motor;
     }
@@ -113,6 +136,7 @@ public class Elevator implements Runnable {
      * @param direction Direction, the direction to move the elevator
      */
     public void setDirection(Direction direction) {
+        directionLamps.lightDirectionalLamp(direction);
         this.direction = direction;
     }
     
