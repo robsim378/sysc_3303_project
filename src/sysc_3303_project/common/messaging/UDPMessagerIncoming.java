@@ -50,8 +50,8 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 	public void run() {
 
 		while(true) {
-			byte[] msg = new byte[500];
-			DatagramPacket packet = new DatagramPacket(msg, 500);
+			byte[] msg = new byte[1000];
+			DatagramPacket packet = new DatagramPacket(msg, 1000);
 			
 			try {
 				sendRecieveSocket.receive(packet);
@@ -79,7 +79,6 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 					// ignore close exception
 				}
 			}
-			System.out.println(e.toString());
 			eventBuffers.get(e.getDestinationID()).addEvent(e);
 		}
 	}

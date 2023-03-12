@@ -20,6 +20,7 @@ public class ElevatorMain {
         
         for (int i = 0; i < count; i++) {
             EventBuffer<ElevatorEventType> inputBuffer = new EventBuffer<>();
+            inputBuffersList.add(inputBuffer);
 
             Elevator elevator = new Elevator(outputBuffer, inputBuffer, i);
 

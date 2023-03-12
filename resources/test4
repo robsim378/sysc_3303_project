@@ -1,0 +1,4 @@
+Two requests at the same floor, opposite directions
+PASSED
+00:00:00.001 3 UP 4
+00:00:01.001 3 DOWN 2

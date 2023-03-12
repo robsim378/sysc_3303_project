@@ -28,6 +28,7 @@ public class FloorMain {
 
         for (int i = 0; i < numFloors; i++) {
             EventBuffer<FloorEventType> floorBuffer = new EventBuffer<>();
+            floorBuffers.add(floorBuffer);
             floors.add(new FloorSystem(i, floorBuffer, outgoingBuffer));
         }
 
