@@ -14,7 +14,6 @@ import sysc_3303_project.common.events.EventBuffer;
 
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
-import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import java.util.Arrays;
 
@@ -32,7 +31,7 @@ public class Elevator implements Runnable {
     private Direction direction;
     private ElevatorState state;
     private final EventBuffer<ElevatorEventType> inputBuffer;
-    private final boolean[] floorLamps;
+    private final boolean[] buttonLamps;
 
 
     /**
@@ -47,7 +46,7 @@ public class Elevator implements Runnable {
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
         this.inputBuffer = inputBuffer;
-        this.floorLamps = new boolean[ResourceManager.getResourceManager().getInt("count.floors")];
+        this.buttonLamps = new boolean[ResourceManager.getResourceManager().getInt("count.floors")];
     }
 
     /**
@@ -100,7 +99,7 @@ public class Elevator implements Runnable {
     }
 
     public void turnOffLamp(int lampNumber) {
-        this.floorLamps[lampNumber] = false;
+        this.buttonLamps[lampNumber] = false;
     }
 
     /**
@@ -124,22 +123,21 @@ public class Elevator implements Runnable {
      * Contains the state machine for the Elevator.
      */
     public void run() {
-        System.out.println("Elevator thread started");
+        Logger.getLogger().logNotification(this.getClass().getName(),"Elevator " + elevatorID + " running.");
         Event<ElevatorEventType> event;
-        
 
         while (true) {
             event = inputBuffer.getEvent();
 
             if (event.getPayload() instanceof Integer) {
                 int lampNumber = (int) event.getPayload();
-                floorLamps[lampNumber] = true;
+                buttonLamps[lampNumber] = true;
             }
 
             ElevatorState newState = null;
 
             Logger.getLogger().logNotification(this.getClass().getName(),"Elevator " + elevatorID
-                    + "Lamps: " + Arrays.toString(floorLamps));
+                    + " Lamps: " + Arrays.toString(buttonLamps));
 
             Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType()
                     + ", State: " + state.getClass().getName());

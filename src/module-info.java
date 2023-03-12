@@ -6,7 +6,6 @@
  *
  */
 module sysc_3303_project {
-    exports sysc_3303_project;
     exports sysc_3303_project.elevator_subsystem; //for reflection in unit tests
     exports test.common;
     exports test.elevator_subsystem;

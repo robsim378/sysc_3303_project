@@ -43,9 +43,11 @@ public class Scheduler implements Runnable {
 	public Scheduler(EventBuffer<SchedulerEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
 		this.inputBuffer = inputBuffer;
 		this.outputBuffer = outputBuffer;
-		state = new SchedulerWaitingState(this);
 
 		tracker = new ElevatorTracker(ResourceManager.getResourceManager().getInt("count.elevators"));
+		
+		state = new SchedulerWaitingState(this);
+
 	}
 	
 	/**
@@ -74,8 +76,17 @@ public class Scheduler implements Runnable {
 		if (!tracker.hasRequests(elevatorId)) { //if idle, don't move
 			return null;
 		}
+		if (tracker.getElevatorDirection(elevatorId) == null) {
+			if (tracker.getElevatorFloor(elevatorId) > 0) {
+				tracker.updateElevatorDirection(elevatorId, Direction.DOWN); //give idle elevator a temporary direction
+			} else { 
+				tracker.updateElevatorDirection(elevatorId, Direction.UP);
+			}
+		}
+		if (tracker.hasLoadRequest(elevatorId, tracker.getElevatorFloor(elevatorId))) {
+			return tracker.getElevatorDirection(elevatorId);
+		}
 		boolean hasFurtherRequests = false;
-		if (tracker.getElevatorDirection(elevatorId) == null) tracker.updateElevatorDirection(elevatorId, Direction.DOWN); //give idle elevator a temporary direction
 		for (int floor : getFurtherFloors(elevatorId)) {
 			hasFurtherRequests = hasFurtherRequests || tracker.hasLoadRequest(elevatorId, floor) || tracker.countUnloadRequests(elevatorId, floor) > 0;
 		}
@@ -99,7 +110,7 @@ public class Scheduler implements Runnable {
 				|| (tracker.countUnloadRequests(elevatorId, floor) > 0);
 		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
 		stopping = stopping ||
-				(floor == FloorSystem.MAX_FLOOR_NUMBER && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
+				(floor == ResourceManager.getResourceManager().getInt("count.floors") - 1 && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
 				(floor == 0 && tracker.getElevatorDirection(elevatorId)== Direction.DOWN);
 		
 		int[] furtherFloors = getFurtherFloors(elevatorId);
@@ -125,7 +136,7 @@ public class Scheduler implements Runnable {
 			
 			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, ResourceManager.getResourceManager().getInt("count.floors")).toArray();
 		} else if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
-			return IntStream.rangeClosed(tracker.getElevatorFloor(elevatorId) - 1, 0).toArray();
+			return IntStream.rangeClosed(0, tracker.getElevatorFloor(elevatorId) - 1).toArray();
 		} else {
 			return new int[0];
 		}
@@ -166,6 +177,7 @@ public class Scheduler implements Runnable {
 		//due to how the onTheWay/notOnTheWay lists are generated, ties are broken by lowest ID number first
 		int elevatorId = priorityList.get(0);
 		tracker.addLoadRequest(elevatorId, floor, direction);
+		Logger.getLogger().logNotification("Scheduler", "Assigned load request to elevator " + elevatorId + ": " + floor + " " + direction);
 		return elevatorId;
 	}
 	

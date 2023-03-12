@@ -13,6 +13,7 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.*;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 
 /**
  * @author Andrei Popescu
@@ -33,6 +34,13 @@ public class SchedulerWaitingState extends SchedulerState {
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		// assign request and get assigned elevator ID
 		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.FLOOR, floorNumber, 
+					Subsystem.SCHEDULER, assignedElevator, //use the elevator ID since it is more meaningful
+					FloorEventType.PASSENGERS_LOADED, direction));
+			Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + assignedElevator);
+		}
 		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + assignedElevator + " to close doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, assignedElevator, 
