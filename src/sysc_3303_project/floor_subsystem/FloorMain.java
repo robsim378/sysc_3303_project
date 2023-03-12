@@ -15,6 +15,11 @@ import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.messaging.UDPMessagerIncoming;
 import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
 
+/**
+ * Floor main execution
+ * @author Robert
+ *
+ */
 public class FloorMain {
     
     public static void main(String[] args) {
