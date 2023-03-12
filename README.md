@@ -21,48 +21,48 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 ## logging
 
 - Logger.java 
-  - Provides basic logging functionality to make messages consistent.
+    - Provides basic logging functionality to make messages consistent.
 
 ## sysc_3303_project
 
 ### ./common
 - Direction
-  - enumeration to specify Elevator directions, UP or DOWN.
+    - enumeration to specify Elevator directions, UP or DOWN.
 
 ### ./common/configuration
 
 - ResourceManager.java
-  - manages system constants/values
+    - manages system constants/values
 - Subsystem.java
-  - enumeration for the type of subsystem
-- SystemProperties.java
-  - the config values for the system
+    - enumeration for the type of subsystem
+- SystemProperties.java (DEPRECATED)
+    - the config values for the system
 
 ### ./common/events
 
 - DelayTimerThread.java
-  - used to create threads to pass events to a buffer after a given delay.
+    - used to create threads to pass events to a buffer after a given delay.
 - Event.java
-  - represents a simple event object to be used in event buffers. Provides ways to get the event type, sender and payload of the event.
+    - represents a simple event object to be used in event buffers. Provides ways to get the event type, sender and payload of the event.
 - EventBuffer.java
-  - provides a way to queue up events of a given type for a subsystem to respond to. This allows threads to synchronize correctly.
-- RequestData.java (DEPRECATED)
-  - represent the individual requests parsed by the Floor
+    - provides a way to queue up events of a given type for a subsystem to respond to. This allows threads to synchronize correctly.
+- RequestData.java
+    - represent the individual requests parsed by the Floor
     system which are passed between the Floor, Scheduler, and Elevator.
 
 ### ./common/messaging
 
 - UDPMessager.java
-  - abstract class containing common methods for the messaging
+    - abstract class containing common methods for the messaging
 - UDPMessagerIncoming.java
-  - handles incoming UDP connections
+    - handles incoming UDP connections
 - UDPMessagerOutgoing.java
-  - handles outgoing UDP connections
+    - handles outgoing UDP connections
 
 ### ./common/state
 
 - State.java
-  - interface is implemented by all state classes for each subsystem. It provides only methods to implement entry/exit actions.
+    - interface is implemented by all state classes for each subsystem. It provides only methods to implement entry/exit actions.
 
 
 ### ./elevator_subsystem
@@ -72,15 +72,20 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
       to the appropriate floor, and then sending a response back to the Scheduler.
 
 - ElevatorEventType.java
-
-    - an enumeration for the Elevator event types.
+     - an enumeration for the Elevator event types.
+   
 - ElevatorMain.java
-  - the main method for running the subsystem.
+    - the main method for running the subsystem.
 
 #### /elevator_subsystem/states
 - contains all Elevator state classes
-
-
+    - ElevatorApproachingFloorsState: Elevator is moving and approaching a door state
+    - ElevatorDoorsClosedState: Elevators doors are closed state
+    - ElevatorDoorsClosingState: Elevators doors are closing state
+    - ElevatorDoorsOpeningState: Elevators doors are opening state
+    - ElevatorDoorsOpenState: Elevator doors open state
+    - ElevatorMovingState: Elevator in movement state
+    - ElevatorState: Base abstract state 
 
 
 ### ./scheduler_subsystem
@@ -88,19 +93,22 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 
 - Scheduler.java
 
-  - the core of the Scheduler subsystem. It maintains a state machine, and is responsible for routing the elevator, including ordering it to open/close its doors, as well as whether to stop at a floor or not. It also keeps track of all pending and in-progress requests.
+    - the core of the Scheduler subsystem. It maintains a state machine, and is responsible for routing the elevator, including ordering it to open/close its doors, as well as whether to stop at a floor or not. It also keeps track of all pending and in-progress requests.
 
 - SchedulerEventType.java
     - contains an enumeration which defines the different kinds of events that the Scheduler subsystem is expected to act on.
 
 - SchedulerMain.java
-  - the main method for running the subsystem.
+    - the main method for running the subsystem.
 - ElevatorTracker.java
-  - manages elevators for the scheduler.
+    - manages elevators for the scheduler.
 
 #### ./scheduler_subsystem/states
 
 - contains all the classes for the Scheduler class's state machine.
+    - SchedulerProcessingState: Schedule is processing data state
+    - SchedulerWaitingState: Scheduler is waiting for input state
+    - SchedulerState: Abstract scheduler state
 
 
 
@@ -115,16 +123,19 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
     - enum class for determining request types for the FloorSystem to process
 
 - FloorMain.java
-  - the main method for running the subsystem.
+    - the main method for running the subsystem.
 
 - InputFileController.java
-  - Reads the input file and sends its contents as events to their destinations.
+    - Reads the input file and sends its contents as events to their destinations.
 
 - Lamps.java
-  - handles functionality for floor lamps
+    - handles functionality for floor lamps
 
 #### ./floor_subsystem/states
 - contains all the classes for the FloorSystem class's state machine. It contains two states
+    - FloorIdleState: Floor is waiting for input state
+    - FloorState: Abstract floor state
+
 
 ## Set Up Instructions
 1. Open the Eclipse IDE.
@@ -132,8 +143,13 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 3. Select General/Existing Projects into Workspace from the import wizard menu and click "Next".
 4. Click the "Select archive file:" option and click "Browse" or type the filepath into the box.
 5. Click "Finish".
-6. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_2 -> src -> sysc_3303_project.
-7. Right click on "Main.java" and select "Run As" -> "Java Application".
+6. If you want to adjust the hosts running each procedure, navigate to resources -> config.properties and enter for each "XXX.hostname=" the host running that process. If this step is not done, all processes must be run on the same machine.
+7. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> scheduler_subsystem.
+8. Right click on "SchedulerMain.java" and select "Run As" -> "Java Application".
+9. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> elevator_subsystem.
+10. Right click on "ElevatorMain.java" and select "Run As" -> "Java Application".
+11. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> floor_subsystem.
+12. Right click on "FloorMain.java" and select "Run As" -> "Java Application".
 
 ## Testing
 The `test` package includes the unit tests for all classes. To run multiple unit tests in Eclipse, right-click any of the `test` subpackages (such as `test.common`) in the Package Explorer or Packages window, then select "Run As" > "JUnit Test". Some tests may take longer to run than others.
@@ -157,7 +173,7 @@ Iteration 2:
 - Created unit tests for Elevator states
 
 Iteration 3:
-- Designed UDP Messaging System
+- Designed and implemented UDP Messaging System
 - Helped with functional testing
 - Developed test case files
 
