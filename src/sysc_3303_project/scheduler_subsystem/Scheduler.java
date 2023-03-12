@@ -43,9 +43,11 @@ public class Scheduler implements Runnable {
 	public Scheduler(EventBuffer<SchedulerEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
 		this.inputBuffer = inputBuffer;
 		this.outputBuffer = outputBuffer;
-		state = new SchedulerWaitingState(this);
 
 		tracker = new ElevatorTracker(ResourceManager.getResourceManager().getInt("count.elevators"));
+		
+		state = new SchedulerWaitingState(this);
+
 	}
 	
 	/**
