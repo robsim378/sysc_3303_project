@@ -115,5 +115,7 @@ public class FloorIdleStateTest {
 		assertEquals(SchedulerEventType.ELEVATOR_BUTTON_PRESSED,  testOutput.getEventType());
 		assertEquals(4, (int) testOutput.getPayload());
 		assertEquals(floor.getElevatorRequests(), expectedElevatorRequests);
+
+		assertTrue(newState instanceof FloorIdleState);
 	}
 }
