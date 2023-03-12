@@ -136,7 +136,7 @@ public class Scheduler implements Runnable {
 			
 			return IntStream.range(tracker.getElevatorFloor(elevatorId) + 1, ResourceManager.getResourceManager().getInt("count.floors")).toArray();
 		} else if (tracker.getElevatorDirection(elevatorId) == Direction.DOWN) {
-			return IntStream.rangeClosed(tracker.getElevatorFloor(elevatorId) - 1, 0).toArray();
+			return IntStream.rangeClosed(0, tracker.getElevatorFloor(elevatorId) - 1).toArray();
 		} else {
 			return new int[0];
 		}
