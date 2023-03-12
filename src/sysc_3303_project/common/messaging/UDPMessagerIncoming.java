@@ -79,7 +79,6 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 					// ignore close exception
 				}
 			}
-			System.out.println(e.toString());
 			eventBuffers.get(e.getDestinationID()).addEvent(e);
 		}
 	}
