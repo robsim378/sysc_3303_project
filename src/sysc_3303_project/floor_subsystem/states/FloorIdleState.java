@@ -37,9 +37,8 @@ public class FloorIdleState extends FloorState {
 	}
 
 	/**
-	 * Handles pressing a button a floor
+	 * Handles pressing a button on a floor
 	 * @param requestData		RequestData, the data for the button request
-	 * @param outputBuffer		EventBuffer, the location to send the data to.
 	 * @return					FloorState, the next state
 	 */
 	@Override
@@ -58,7 +57,9 @@ public class FloorIdleState extends FloorState {
 
 		// Adds the destination request to the list of requests waiting, which will be sent to an elevator when it arrives.
 		context.getElevatorRequests().add(requestData.getDestinationFloor());
-		
+
+		context.lightButtonLamp(requestData.getDirection());
+
 		return new FloorIdleState(this.context);
 	}
 
@@ -70,6 +71,7 @@ public class FloorIdleState extends FloorState {
 	 */
 	@Override
 	public FloorState handleElevatorArrived(Direction direction, int elevatorID) {
+		context.clearButtonLamps(direction);
 		// Go through all the requests on the current floor, sending a button request to all the floors in the direction
 		// the elevator is heading and removing them from the list.
 		Logger.getLogger().logNotification("FloorIdleState", "Elevator " + elevatorID + " arrived at floor in direction " + direction);

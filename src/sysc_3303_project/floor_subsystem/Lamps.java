@@ -15,49 +15,104 @@ public class Lamps {
 	
 	private static final boolean ON = true;
 	private static final boolean OFF = false;
+
     /**
      * Lamp indicating that an elevator going up has arrived
      */
-    private boolean upLamp = OFF;
+    private boolean upDirectionalLamp = OFF;
     /**
      * Lamp indicating that an elevator going down has arrived
      */
-    private boolean downLamp = OFF;
+    private boolean downDirectionalLamp = OFF;
 
     /**
-     * Gets the status of the up lamp.
+     * Lamp indicating that an elevator going up has arrived
+     */
+    private boolean upButtonLamp = OFF;
+    /**
+     * Lamp indicating that an elevator going down has arrived
+     */
+    private boolean downButtonLamp = OFF;
+
+    /**
+     * Gets the status of the up directional lamp.
      * @return  Boolean, true if the up lamp is on, false if it is off.
      */
-    public boolean getUpLampStatus() {
-        return upLamp;
+    public boolean getUpDirectionalLampStatus() {
+        return upDirectionalLamp;
     }
 
     /**
-     * Gets the status of the down lamp.
+     * Gets the status of the down directional lamp.
      * @return  Boolean, true if the down lamp is on, false if it is off.
      */
-    public boolean getDownLampStatus() {
-        return downLamp;
+    public boolean getDownDirectionalLampStatus() {
+        return downDirectionalLamp;
+    }
+
+    /**
+     * Gets the status of the up button lamp.
+     * @return  Boolean, true if the up lamp is on, false if it is off.
+     */
+    public boolean getUpButtonLampStatus() {
+        return upDirectionalLamp;
+    }
+
+    /**
+     * Gets the status of the down button lamp.
+     * @return  Boolean, true if the down lamp is on, false if it is off.
+     */
+    public boolean getDownButtonLampStatus() {
+        return downDirectionalLamp;
     }
 
     /**
      * Lights the directional lamp for the given direction
      * @param direction     Direction, the directional lamp to light.
      */
-    public void lightLamp(Direction direction) {
+    public void lightDirectionalLamp(Direction direction) {
         if (direction == Direction.UP) {
-            upLamp = ON;
+            upDirectionalLamp = ON;
         }
         else {
-            downLamp = ON;
+            downDirectionalLamp = ON;
         }
     }
 
     /**
-     * Turns off all lamps.
+     * Lights the button lamp for the given direction
+     * @param direction     Direction, the button lamp to light.
      */
-    public void clearLamps() {
-        upLamp = OFF;
-        downLamp = OFF;
+    public void lightButtonLamp(Direction direction) {
+        if (direction == Direction.UP) {
+            upButtonLamp = ON;
+        }
+        else {
+            downButtonLamp = ON;
+        }
     }
+
+    /**
+     * Turns off all directional lamps.
+     * @param direction     Direction, the directional lamp to turn off.
+     */
+    public void clearDirectionalLamps(Direction direction) {
+        if (direction == Direction.UP) {
+            upDirectionalLamp = OFF;
+        }
+        else {
+            downDirectionalLamp = OFF;
+        }    }
+
+    /**
+     * Turns off all button lamps.
+     * @param direction     Direction, the button lamp to turn off.
+     */
+    public void clearButtonLamps(Direction direction) {
+        if (direction == Direction.UP) {
+            upButtonLamp = OFF;
+        }
+        else {
+            downButtonLamp = OFF;
+        }    }
 }
