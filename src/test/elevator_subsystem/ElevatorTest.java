@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * 	reflection is used to access them.
  */
 public class ElevatorTest {
-	private EventBuffer<SchedulerEventType> schedulerBuffer;
+	private EventBuffer<Enum<?>> schedulerBuffer;
 	private EventBuffer<ElevatorEventType> eventBuffer;
 	private Elevator elevator;
 	@Before
@@ -92,29 +93,29 @@ public class ElevatorTest {
 			elevatorThread.start();
 
 			// Close the elevator doors and ensure that the close doors event is generated
-			eventBuffer.addEvent(new Event<>(ElevatorEventType.CLOSE_DOORS, null, null));
+			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.CLOSE_DOORS, null));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_CLOSED);
 
 			// Start moving the elevator up and ensure that the moving timer event is generated,
 			// and that the elevator's direction is correctly set to UP
-			eventBuffer.addEvent(new Event<>(ElevatorEventType.START_MOVING_IN_DIRECTION, null, Direction.UP));
+			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.START_MOVING_IN_DIRECTION, Direction.UP));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(elevator.getDirection(), Direction.UP);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
 			
 			// Continue moving
-			eventBuffer.addEvent(new Event<>(ElevatorEventType.CONTINUE_MOVING, null, null));
+			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.CONTINUE_MOVING, null));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
 			
 			// Stop the elevator at the next floor
-			eventBuffer.addEvent(new Event<>(ElevatorEventType.STOP_AT_NEXT_FLOOR, null, null));
+			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.STOP_AT_NEXT_FLOOR, null));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_STOPPED);
 
 			// Open the elevator doors
-			eventBuffer.addEvent(new Event<>(ElevatorEventType.OPEN_DOORS, null, null));
+			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.OPEN_DOORS, null));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_OPENED);
 		}
