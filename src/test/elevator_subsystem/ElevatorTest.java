@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * 	reflection is used to access them.
  */
 public class ElevatorTest {
+
 	private EventBuffer<Enum<?>> schedulerBuffer;
 	private EventBuffer<ElevatorEventType> eventBuffer;
 	private Elevator elevator;
