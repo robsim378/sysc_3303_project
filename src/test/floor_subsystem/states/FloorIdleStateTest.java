@@ -63,7 +63,7 @@ public class FloorIdleStateTest {
 
 
 	/**
-	 * Only one flow of events so only one test
+	 * Test pressing a button on the floor
 	 */
 	@Test
 	public void testFloorIdleStateButtonPress() {
@@ -91,6 +91,9 @@ public class FloorIdleStateTest {
 		assertTrue(newState instanceof FloorIdleState);
 	}
 
+	/**
+	 * Test an elevator arriving at the floor
+	 */
 	@Test
 	public void testFloorIdleStateHandleElevatorArrived() {
 		setup();
