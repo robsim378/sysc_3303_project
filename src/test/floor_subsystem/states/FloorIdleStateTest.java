@@ -84,7 +84,7 @@ public class FloorIdleStateTest {
 		assertEquals(Subsystem.FLOOR,  testOutput.getSourceSubsystem());
 		assertEquals(0,  testOutput.getSourceID());
 		assertEquals(SchedulerEventType.FLOOR_BUTTON_PRESSED,  testOutput.getEventType());
-		assertEquals(Direction.DOWN, (Direction) testOutput.getPayload());
+		assertEquals(Direction.UP, (Direction) testOutput.getPayload());
 		assertEquals(floor.getElevatorRequests(), expectedElevatorRequests);
 
 		assertTrue(newState instanceof FloorIdleState);
@@ -104,7 +104,7 @@ public class FloorIdleStateTest {
 		ArrayList<Integer> expectedElevatorRequests = new ArrayList<Integer>();
 
 
-		FloorState newState = floor.getState().handleElevatorArrived(Direction.DOWN, 2);
+		FloorState newState = floor.getState().handleElevatorArrived(Direction.UP, 2);
 
 		Event<?> testOutput = floor.getOutputBuffer().getEvent();
 
