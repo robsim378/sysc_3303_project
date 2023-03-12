@@ -177,3 +177,7 @@ Iteration 1:
 Iteration 2:
 - Designed and implemented Elevator state machine
 - Added Javadocs
+
+
+## Known Errors
+- If two requests are made at a floor in the same direction, two elevators are dispatched instead of one. Small fix, but out of time
