@@ -192,7 +192,8 @@ Iteration 1:
  - Helped in designing the state machine diagram of the elevator
 
 Iteration 3:
-- unit testing
+- unit testing : maintained the test classes after changes made for iteration3
+- created junit test classes for the messager package (incoming and outgoing)
 
 ### Andrei Popescu
 
