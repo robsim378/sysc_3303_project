@@ -70,7 +70,7 @@ public class FloorIdleStateTest {
 		setup();
 
 		// The requestData to test with
-		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.DOWN, 4);
+		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.UP, 4);
 
 		FloorState newState = floor.getState().handleButtonPressed(testInput);
 
@@ -95,7 +95,7 @@ public class FloorIdleStateTest {
 		setup();
 
 		// The requestData to test with
-		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.DOWN, 4);
+		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.UP, 4);
 
 		floor.getState().handleButtonPressed(testInput);
 
