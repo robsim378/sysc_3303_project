@@ -110,7 +110,7 @@ public class Scheduler implements Runnable {
 				|| (tracker.countUnloadRequests(elevatorId, floor) > 0);
 		//also stop if reaching the top or bottom floor - shouldn't happen but failsafe
 		stopping = stopping ||
-				(floor == ResourceManager.getResourceManager().getInt("count.floors") && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
+				(floor == ResourceManager.getResourceManager().getInt("count.floors") - 1 && tracker.getElevatorDirection(elevatorId) == Direction.UP) ||
 				(floor == 0 && tracker.getElevatorDirection(elevatorId)== Direction.DOWN);
 		
 		int[] furtherFloors = getFurtherFloors(elevatorId);
