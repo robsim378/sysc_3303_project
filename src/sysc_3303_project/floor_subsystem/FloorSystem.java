@@ -92,6 +92,14 @@ public class FloorSystem implements Runnable{
 	}
 
 	/**
+	 * Gets the current state. Should probably only be used for testing.
+	 * @return FloorState, the current state of the floor.
+	 */
+	public FloorState getState() {
+		return state;
+	}
+
+	/**
 	 * Get the input buffer of the floor.
 	 * @return	EventBuffer<FloorEventType>, the floor's input buffer
 	 */
@@ -194,4 +202,6 @@ public class FloorSystem implements Runnable{
     	
     	
     }
+
+
 }
