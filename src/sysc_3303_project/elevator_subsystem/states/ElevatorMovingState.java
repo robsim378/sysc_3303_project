@@ -36,6 +36,7 @@ public class ElevatorMovingState extends ElevatorState {
      */
     @Override
     public void doEntry() {
+        context.getMotor().turnOn();
         new Thread(new DelayTimerThread<>(1000,
                 new Event<>(
                         Subsystem.ELEVATOR,
@@ -45,7 +46,6 @@ public class ElevatorMovingState extends ElevatorState {
                         ElevatorEventType.MOVING_TIMER,
                         null),
                 context.getInputBuffer())).start();
-
     }
 
     /**

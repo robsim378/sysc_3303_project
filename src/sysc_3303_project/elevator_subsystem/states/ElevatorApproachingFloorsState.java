@@ -42,6 +42,8 @@ public class ElevatorApproachingFloorsState extends ElevatorState {
                 context.getFloor()
         ));
         context.turnOffLamp(context.getFloor());
+        context.getButtons()[context.getFloor()].resetButton();
+        context.getMotor().turnOff();
         return new ElevatorDoorsClosedState(context);
     }
 

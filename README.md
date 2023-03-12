@@ -71,6 +71,15 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
     - The Elevator is responsible for receiving requests from the Scheduler, moving
       to the appropriate floor, and then sending a response back to the Scheduler.
 
+- Door.java
+  - the elevator door.
+- Motor.java
+  - the elevator motor.
+- ElevatorLamp.java
+  - lamp class for the elevator buttons.
+- ElevatorButton.java
+  - the elevator buttons.
+
 - ElevatorEventType.java
      - an enumeration for the Elevator event types.
    
@@ -227,6 +236,7 @@ Iteration 2:
 Iteration 3:
 - Redesigned Scheduler subsystem to use UDP messaging
 - Created ElevatorTracker class to manage elevators within the Scheduler Subsystem
+- Updated Scheduler unit testing
 
 ### Robert Simionescu
 
