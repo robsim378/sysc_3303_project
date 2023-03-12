@@ -53,9 +53,29 @@ public class Elevator implements Runnable {
         this.inputBuffer = inputBuffer;
         this.buttonLamps = new ElevatorLamp[ResourceManager.get().getInt("count.floors")];
         this.buttons = new ElevatorButton[ResourceManager.get().getInt("count.floors")];
+        createLamps();
+        createButtons();
         this.motor = new Motor();
         this.door = new Door();
         this.directionLamps = new Lamps();
+    }
+
+    /**
+     * Create the button lamps.
+     */
+    private void createLamps() {
+        for (int i = 0; i < ResourceManager.get().getInt("count.floors"); i++) {
+            buttonLamps[i] = new ElevatorLamp(i);
+        }
+    }
+
+    /**
+     * Create the buttons.
+     */
+    private void createButtons() {
+        for (int i = 0; i < ResourceManager.get().getInt("count.floors"); i++) {
+            buttons[i] = new ElevatorButton(i);
+        }
     }
 
     /**
@@ -175,8 +195,8 @@ public class Elevator implements Runnable {
         while (true) {
             event = inputBuffer.getEvent();
 
-            if (event.getPayload() instanceof Integer) {
-                int lampNumber = (int) event.getPayload();
+            if (event.getPayload() instanceof Integer) {    // this should be moved to a better location
+                int lampNumber = (int) event.getPayload();  // I'm sorry Liam :(
                 buttonLamps[lampNumber].turnOn();
             }
 

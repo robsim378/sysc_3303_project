@@ -41,9 +41,9 @@ public class EventBufferTest {
         Event<EventTypes> retrievedEvent = buffer.getEvent();
         assertNotNull(retrievedEvent);
         assertEquals(Subsystem.FLOOR, retrievedEvent.getDestinationSubsystem());
-        assertEquals(1, retrievedEvent.getDestinationID());
+        assertEquals(2, retrievedEvent.getDestinationID());
         assertEquals(Subsystem.SCHEDULER, retrievedEvent.getSourceSubsystem());
-        assertEquals(1, retrievedEvent.getSourceID());
+        assertEquals(2, retrievedEvent.getSourceID());
         assertEquals(EventTypes.FLOOR_REQUEST, retrievedEvent.getEventType());
         assertEquals("Payload 2", retrievedEvent.getPayload());
     }
