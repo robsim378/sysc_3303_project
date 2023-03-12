@@ -16,9 +16,9 @@ import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.floor_subsystem.states.FloorIdleState;
 
 /**
- * @author Liam Gaudet
+ * @author Liam Gaudet and Robert Simionescu
  * Represents the floor subsystem of the project. Includes parsing data from the request file,
- *   sending request information to the Scheduler and receiving requests from the scheduler.
+ * sending request information to the Scheduler and receiving requests from the scheduler.
  */
 public class FloorSystem implements Runnable{
 
@@ -54,8 +54,9 @@ public class FloorSystem implements Runnable{
 
     /**
      * Constructor for the Floor System class.
-     * @param scheduler			Scheduler, the scheduler to communicate with
-     * @param textFileLocation	String, the text tile to use for parsing
+	 * @param floorID 		int, the ID/floor number of the floor
+	 * @param inputBuffer	EventBuffer<FloorEventType>, the buffer for incoming events to this floor.
+	 * @param outputBuffer 	EventBuffer<Enum<?>>, the buffer for outgoing events from this floor.
      */
     public FloorSystem (int floorID, EventBuffer<FloorEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
         this.inputBuffer = inputBuffer;
@@ -66,22 +67,42 @@ public class FloorSystem implements Runnable{
         state = new FloorIdleState(this);
     }
 
+	/**
+	 * Add a request to the list of pending destinations.
+	 * @param destinationFloor	int, the floor to add a request for.
+	 */
 	public void addElevatorRequest(int destinationFloor) {
 		elevatorRequests.add(destinationFloor);
 	}
 
+	/**
+	 * Get the list of pending floor requests
+	 * @return	ArrayList<Integer>, the list of floors that people are waiting to go to.
+	 */
 	public ArrayList<Integer> getElevatorRequests() {
 		return elevatorRequests;
 	}
 
+	/**
+	 * Remove a floor request from the list once it has been serviced.
+	 * @param destinationFloor	int, the floor number of the request to remove from the list
+	 */
 	public void removeElevatorRequest(Integer destinationFloor) {
 		elevatorRequests.remove(destinationFloor);
 	}
-	
+
+	/**
+	 * Get the input buffer of the floor.
+	 * @return	EventBuffer<FloorEventType>, the floor's input buffer
+	 */
 	public EventBuffer<FloorEventType> getInputBuffer() {
 		return inputBuffer;
 	}
-	
+
+	/**
+	 * Get the output buffer of the floor.
+	 * @return	EventBuffer<Enum<?>>, the floor's output buffer
+	 */
 	public EventBuffer<Enum<?>> getOutputBuffer() {
 		return outputBuffer;
 	}
@@ -125,9 +146,10 @@ public class FloorSystem implements Runnable{
 	public void clearLamps() {
 		lamps.clearLamps();
 	}
-		/**
-         * Repetitively processes the floor system state pattern
-         */
+
+	/**
+     * Repetitively processes the floor system state pattern
+     */
     public void beginLoop() {
     	
     	// Infinitely looping

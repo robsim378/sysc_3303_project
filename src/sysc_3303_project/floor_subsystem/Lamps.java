@@ -43,7 +43,6 @@ public class Lamps {
     /**
      * Lights the directional lamp for the given direction
      * @param direction     Direction, the directional lamp to light.
-     * @return 
      */
     public void lightLamp(Direction direction) {
         if (direction == Direction.UP) {
