@@ -143,7 +143,7 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 3. Select General/Existing Projects into Workspace from the import wizard menu and click "Next".
 4. Click the "Select archive file:" option and click "Browse" or type the filepath into the box.
 5. Click "Finish".
-6. If you want to adjust the hosts running each procedure, navigate to resources -> config.properties and enter for each "XXX.hostname=" the host running that process.
+6. If you want to adjust the hosts running each procedure, navigate to resources -> config.properties and enter for each "XXX.hostname=" the host running that process. If this step is not done, all processes must be run on the same machine.
 7. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> scheduler_subsystem.
 8. Right click on "SchedulerMain.java" and select "Run As" -> "Java Application".
 9. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> elevator_subsystem.
