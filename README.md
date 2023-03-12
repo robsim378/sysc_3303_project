@@ -1,4 +1,4 @@
-# L2G1_milestone_2
+# L2G1_milestone_3
 
 ## Group 1 
 - Liam Gaudet
@@ -12,93 +12,119 @@
 All files can be found within the GitHub repository, located at:
 https://github.com/robsim378/sysc_3303_project
 
-### test
+## test
 
 The test package and its subpackages contain unit tests for all classes. State machines are tested in the class using them (for example, the tests for the Scheduler subsystem's state machine are included in the file `SchedulerTest.java`).
 
 In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3303_project package in your workspace. In Eclipse, the tests can be run in the following ways: For the tests to function, the project classpath needs to contain all necessary dependencies, including JUnit and the sysc_3303_project package. When right-clicking a test class file, such as SchedulerTest.java, select "Run As" followed by "JUnit Test" from the context menu. The results of the tests, including any that were incorrect or failed, will be displayed in Eclipse's JUnit view.
 
-### logging
+## logging
 
-#### Logger.java
+- Logger.java 
+  - Provides basic logging functionality to make messages consistent.
 
-Provides basic logging functionality to make messages consistent.
+## sysc_3303_project
 
 ### ./common
+- Direction
+  - enumeration to specify Elevator directions, UP or DOWN.
 
-#### DelayTimerThread.java
-The DelayTimerThread is used to create threads to pass events to a buffer after a given delay.
+### ./common/configuration
 
-#### Direction.java
-The Direction enumeration specifies Elevator directions, UP or DOWN.
+- ResourceManager.java
+  - manages system constants/values
+- Subsystem.java
+  - enumeration for the type of subsystem
+- SystemProperties.java
+  - the config values for the system
 
-#### Event.java
-The Event class represents a simple event object to be used in event buffers. Provides ways to get the event type, sender and payload of the event.
+### ./common/events
 
-#### EventBuffer.java
-The EventBuffer class provides a way to queue up events of a given type for a subsystem to respond to. This allows threads to synchronize correctly.
+- DelayTimerThread.java
+  - used to create threads to pass events to a buffer after a given delay.
+- Event.java
+  - represents a simple event object to be used in event buffers. Provides ways to get the event type, sender and payload of the event.
+- EventBuffer.java
+  - provides a way to queue up events of a given type for a subsystem to respond to. This allows threads to synchronize correctly.
+- RequestData.java (DEPRECATED)
+  - represent the individual requests parsed by the Floor
+    system which are passed between the Floor, Scheduler, and Elevator.
 
-#### RequestData.java
-RequestData objects represent the individual requests parsed by the Floor
-system which are passed between the Floor, Scheduler, and Elevator.
+### ./common/messaging
 
-#### State.java
-The State interface is implemented by all state classes for each subsystem. It provides only methods to implement entry/exit actions.
+- UDPMessager.java
+  - abstract class containing common methods for the messaging
+- UDPMessagerIncoming.java
+  - handles incoming UDP connections
+- UDPMessagerOutgoing.java
+  - handles outgoing UDP connections
+
+### ./common/state
+
+- State.java
+  - interface is implemented by all state classes for each subsystem. It provides only methods to implement entry/exit actions.
+
 
 ### ./elevator_subsystem
 
-- contains all Elevator Subsystem related files.
+- Elevator.java
+    - The Elevator is responsible for receiving requests from the Scheduler, moving
+      to the appropriate floor, and then sending a response back to the Scheduler.
+
+- ElevatorEventType.java
+
+    - an enumeration for the Elevator event types.
+- ElevatorMain.java
+  - the main method for running the subsystem.
 
 #### /elevator_subsystem/states
+- contains all Elevator state classes
 
-   - contains all Elevator state classes
 
-#### Elevator.java
 
-  - The Elevator is responsible for receiving requests from the Scheduler, moving
-    to the appropriate floor, and then sending a response back to the Scheduler.
-  
-  #### ElevatorEventType.java
-
-  - an enumeration for the Elevator event types.
 
 ### ./scheduler_subsystem
 
-This package contains the classes for the Scheduler subsystem.
 
-#### Scheduler.java
+- Scheduler.java
 
-The Scheduler class is the core of the Scheduler subsystem. It maintains a state machine, and is responsible for routing the elevator, including ordering it to open/close its doors, as well as whether to stop at a floor or not. It also keeps track of all pending and in-progress requests.
+  - the core of the Scheduler subsystem. It maintains a state machine, and is responsible for routing the elevator, including ordering it to open/close its doors, as well as whether to stop at a floor or not. It also keeps track of all pending and in-progress requests.
 
+- SchedulerEventType.java
+    - contains an enumeration which defines the different kinds of events that the Scheduler subsystem is expected to act on.
+
+- SchedulerMain.java
+  - the main method for running the subsystem.
+- ElevatorTracker.java
+  - manages elevators for the scheduler.
 
 #### ./scheduler_subsystem/states
 
-This package contains all the classes for the Scheduler class's state machine.
+- contains all the classes for the Scheduler class's state machine.
 
-#### SchedulerEventType.java
 
-This file contains an enumeration which defines the different kinds of events that the Scheduler subsystem is expected to act on.
 
 ### ./floor_subsystem
 
-- contains all Floor Subsystem related files.
+- FloorSystem.java
+    - responsible for parsing requests from a text file,
+    - returning them as a list of Requests,
+    - and sending the requests to the Scheduler.
+
+- FloorEventType.java
+    - enum class for determining request types for the FloorSystem to process
+
+- FloorMain.java
+  - the main method for running the subsystem.
+
+- InputFileController.java
+  - Reads the input file and sends its contents as events to their destinations.
+
+- Lamps.java
+  - handles functionality for floor lamps
 
 #### ./floor_subsystem/states
-
-This package contains all the classes for the FloorSystem class's state machine. It contains two states
-- FloorState: An abstract state used for any floor states
-- FloorIdleState: The only state the floor system takes part in, handles IO operations.
-
-#### FloorSystem.java
-The Floor system is responsible for parsing requests from a text file,
-returning them as a list of Requests, and sending the requests to the Scheduler.
-The Floor system also receives responses back from the Scheduler.
-
-#### FloorEventType
-An enum class for determining request types for the FloorSystem to process
-
-### Main.java
-The Main file contains the main method for running the program.
+- contains all the classes for the FloorSystem class's state machine. It contains two states
 
 ## Set Up Instructions
 1. Open the Eclipse IDE.
@@ -116,7 +142,7 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 
 ## Contributions
 
-#### Liam Gaudet
+### Liam Gaudet
 
 Iteration 1:
 - Created the FloorSystem class
@@ -130,14 +156,19 @@ Iteration 2:
 - Participated in the design of program architecture 
 - Created unit tests for Elevator states
 
+Iteration 3:
+- Designed UDP Messaging System
+- Helped with functional testing
+- Developed test case files
 
-#### Ian Holmes
+
+### Ian Holmes
 
 Iteration 1:
-- creating the Elevator class
-- helped with functional testing
-- contributed to UML class diagram
-- constructed README.md
+- Created the Elevator class
+- Helped with functional testing
+- Contributed to UML class diagram
+- Constructed README.md
 
 Iteration 2:
 - Designed and implemented Elevator state machine
@@ -145,7 +176,12 @@ Iteration 2:
 - Helped with functional testing
 - Contributed to UML class diagram
 
-#### Khalid Merai
+Iteration 3:
+- Updated Elevator subsystem (updated event sending, added new event actions, implemented elevator lamps)
+- Helped with functional testing
+- Updated Elevator States unit tests
+
+### Khalid Merai
 Iteration 1:
  - created the JUnit test classes for the Scheduler,requestData and Elevator
  - The testing section of the README.md 
@@ -155,7 +191,10 @@ Iteration 1:
  - Created two new junit test cases which are EventBufferTest and DelayTimerThreadTest
  - Helped in designing the state machine diagram of the elevator
 
-#### Andrei Popescu
+Iteration 3:
+- unit testing
+
+### Andrei Popescu
 
 Iteration 1:
 - created the Scheduler class and relevant parts of the UML class diagram
@@ -168,7 +207,11 @@ Iteration 2:
 - created the Logger class
 - created UML state diagrams
 
-#### Robert Simionescu
+Iteration 3:
+- Redesigned Scheduler subsystem to use UDP messaging
+- Created ElevatorTracker class to manage elevators within the Scheduler Subsystem
+
+### Robert Simionescu
 
 Iteration 1:
 - Created the Main file
@@ -178,6 +221,11 @@ Iteration 2:
 - Designed and implemented Elevator state machine
 - Added Javadocs
 
+Iteration 3:
+- Updated Floor subsystem (updated event sending, implemented floor lamps)
+- Helped with functional testing
+- Updated Floor unit testing
+- Separated input parsing into InputFileController class
 
 ## Known Errors
-- If two requests are made at a floor in the same direction, two elevators are dispatched instead of one. Small fix, but out of time
+- If two requests are made at a floor in the same direction, two elevators are dispatched instead of one. Small fix, but out of time.
