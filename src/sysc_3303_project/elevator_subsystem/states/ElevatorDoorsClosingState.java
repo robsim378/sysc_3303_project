@@ -59,6 +59,7 @@ public class ElevatorDoorsClosingState extends ElevatorState {
                 context.getElevatorID(),
                 SchedulerEventType.ELEVATOR_DOORS_CLOSED,
                 context.getFloor()));
+        context.getDoor().setClosed();
         return new ElevatorDoorsClosedState(context);
     }
 }

@@ -84,6 +84,7 @@ public abstract class ElevatorState implements State {
                         context.getElevatorID(),
                         SchedulerEventType.ELEVATOR_BUTTON_PRESSED,
                         destination));
+        context.getButtons()[context.getFloor()].pushButton();
         return null;
     }
 

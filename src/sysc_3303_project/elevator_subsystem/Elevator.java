@@ -31,7 +31,10 @@ public class Elevator implements Runnable {
     private Direction direction;
     private ElevatorState state;
     private final EventBuffer<ElevatorEventType> inputBuffer;
-    private final boolean[] buttonLamps;
+    private final ElevatorLamp[] buttonLamps;
+    private final ElevatorButton[] buttons;
+    private final Motor motor;
+    private final Door door;
 
 
     /**
@@ -46,7 +49,26 @@ public class Elevator implements Runnable {
         this.elevatorFloor = 0;
         state = new ElevatorDoorsOpenState(this);
         this.inputBuffer = inputBuffer;
-        this.buttonLamps = new boolean[ResourceManager.getResourceManager().getInt("count.floors")];
+        this.buttonLamps = new ElevatorLamp[ResourceManager.getResourceManager().getInt("count.floors")];
+        this.buttons = new ElevatorButton[ResourceManager.getResourceManager().getInt("count.floors")];
+        this.motor = new Motor();
+        this.door = new Door();
+    }
+
+    public Door getDoor() {
+        return door;
+    }
+
+    public ElevatorLamp[] getButtonLamps() {
+        return buttonLamps;
+    }
+
+    public ElevatorButton[] getButtons() {
+        return buttons;
+    }
+
+    public Motor getMotor() {
+        return motor;
     }
 
     /**
@@ -99,7 +121,7 @@ public class Elevator implements Runnable {
     }
 
     public void turnOffLamp(int lampNumber) {
-        this.buttonLamps[lampNumber] = false;
+        this.buttonLamps[lampNumber].turnOff();
     }
 
     /**
@@ -131,7 +153,7 @@ public class Elevator implements Runnable {
 
             if (event.getPayload() instanceof Integer) {
                 int lampNumber = (int) event.getPayload();
-                buttonLamps[lampNumber] = true;
+                buttonLamps[lampNumber].turnOn();
             }
 
             ElevatorState newState = null;
