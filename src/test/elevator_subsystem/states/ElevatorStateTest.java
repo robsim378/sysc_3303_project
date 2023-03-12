@@ -2,14 +2,11 @@ package test.elevator_subsystem.states;
 
 import org.junit.jupiter.api.Test;
 
-import sysc_3303_project.common.Event;
-import sysc_3303_project.common.EventBuffer;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
-import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
-import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosingState;
-import sysc_3303_project.elevator_subsystem.states.ElevatorMovingState;
-import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.elevator_subsystem.states.*;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -137,6 +134,8 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testHandlePassengersUnloaded() {
+        testState = new ElevatorDoorsOpenState(null);
+
         Exception e = assertThrows(IllegalStateException.class, testState::handlePassengersUnloaded);
 
         String expectedMessage = "handlePassengersUnloaded must be called from the ElevatorDoorsOpenState.";
