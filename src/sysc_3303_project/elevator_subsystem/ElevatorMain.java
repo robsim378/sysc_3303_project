@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
+ */
 package sysc_3303_project.elevator_subsystem;
 
 import sysc_3303_project.common.configuration.ResourceManager;
@@ -9,14 +14,23 @@ import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *  Main class for elevator
+ * @author Ian
+ *
+ */
 public class ElevatorMain {
 
+	/**
+	 * Main method
+	 * @param args N/A
+	 */
     public static void main(String[] args) {
         EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
         List<EventBuffer<ElevatorEventType>> inputBuffersList = new LinkedList<>();
         List<Elevator> elevators = new LinkedList<>();
 
-        int count = ResourceManager.getResourceManager().getInt("count.elevators");
+        int count = ResourceManager.get().getInt("count.elevators");
         
         for (int i = 0; i < count; i++) {
             EventBuffer<ElevatorEventType> inputBuffer = new EventBuffer<>();

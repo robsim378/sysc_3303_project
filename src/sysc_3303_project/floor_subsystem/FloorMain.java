@@ -21,8 +21,7 @@ import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
  */
 public class FloorMain {
     public static void main(String[] args) {
-        // Read the number of floors to instantiate
-    	int numFloors = ResourceManager.getResourceManager().getInt("count.floors");
+    	int numFloors = ResourceManager.get().getInt("count.floors");
 
         // Create the outgoing message buffer shared by all floors
         EventBuffer<Enum<?>> outgoingBuffer = new EventBuffer<>();
