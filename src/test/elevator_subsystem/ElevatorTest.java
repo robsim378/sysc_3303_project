@@ -119,4 +119,4 @@ public class ElevatorTest {
         TimeUnit.MILLISECONDS.sleep(500);
         assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_OPENED);
     }
-}}
+}
