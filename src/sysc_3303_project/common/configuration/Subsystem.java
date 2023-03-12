@@ -6,6 +6,11 @@
 
 package sysc_3303_project.common.configuration;
 
+/**
+ * An enum to determine subsystems
+ * @author Andrei
+ *
+ */
 public enum Subsystem {
 	FLOOR,
 	SCHEDULER,

@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
+ */
 package sysc_3303_project.common.configuration;
 
 import java.io.FileInputStream;
@@ -5,15 +10,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * A resource manager for properties information. Singleton style
+ * @author Liam
+ *
+ */
 public class ResourceManager {
 	
-	
+	/**
+	 * A static instance of the class
+	 */
 	private static ResourceManager resourceManager;
 	
+	/**
+	 * The properties wrapper
+	 */
 	private Properties prop = null;
 	
+	/**
+	 * A path that has the properties file
+	 */
 	private String path = "resources/config.properties";
 	
+	/**
+	 * Constructor
+	 */
 	private ResourceManager() {
 		prop = buildProperties();
 	}
@@ -67,7 +88,11 @@ public class ResourceManager {
 		path = s;
 	}
 	
-	public static ResourceManager getResourceManager() {
+	/**
+	 * returns the singular instance of the projects ResourcceManager
+	 * @return		ResourceManager, the singleton object
+	 */
+	public static ResourceManager get() {
 		if (resourceManager == null) {
 			resourceManager = new ResourceManager();
 		}

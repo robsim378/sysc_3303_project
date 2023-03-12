@@ -1,5 +1,16 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
+ */
 package sysc_3303_project.common.configuration;
 
+/**
+ * Old system to be used for managing system information. Depracated
+ * @author Liam, Andrei
+ *
+ */
+@Deprecated
 public class SystemProperties {
 	
 	public static final int ELEVATOR_PORT = 6000;

@@ -1,14 +1,13 @@
 /**
- * 
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
  */
 package sysc_3303_project.scheduler_subsystem;
 
 import java.util.LinkedList;
-import java.util.List;
 
-import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.configuration.Subsystem;
-import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.messaging.UDPMessagerIncoming;
 import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
