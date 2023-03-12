@@ -41,6 +41,7 @@ class FloorSystemTest {
 		EventBuffer<FloorEventType> floorBuffer = new EventBuffer<FloorEventType>();
 		floor = new FloorSystem(0, floorBuffer, outgoingBuffer);
 
+		floors = new ArrayList<FloorSystem>();
 		floors.add(floor);
 
 		String floorFilePath = new File("").getAbsolutePath() + "/resources/testing_examples";
@@ -66,11 +67,11 @@ class FloorSystemTest {
 		fileController = new InputFileController(floorFilePath, floors);
 
 		// Fixing the visibility of the method and calling it
-        @SuppressWarnings("rawtypes")
+		@SuppressWarnings("rawtypes")
 		Class[] emptyArgs = new Class[0];
 		ArrayList<RequestData> requestData = null;
-        Method method = null;
-        
+		Method method = null;
+
 		try {
 			method = InputFileController.class.getDeclaredMethod("parseData", emptyArgs);
 			method.setAccessible(true);
@@ -79,14 +80,14 @@ class FloorSystemTest {
 			e.printStackTrace();
 			fail();
 		}
-				
+
 		// Now for the actual tests
 		assertEquals(1, requestData.size());
 		RequestData current = requestData.get(0);
 		assertEquals("00:00:07.001 0 UP 2", current.toString());
-		
+
 	}
-	
+
 	/**
 	 * Test method to check parsing of a file with multiple valid entries.
 	 * Parses the file using the private method "parseData" through reflection,
@@ -96,7 +97,7 @@ class FloorSystemTest {
 	@Test
 	void testMultipleEntry() {
 
-        String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testMultipleEntries.txt";
+		String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testMultipleEntries.txt";
 		fileController = new InputFileController(floorFilePath, floors);
 
 		// Fixing the visibility of the method and calling it
@@ -131,8 +132,8 @@ class FloorSystemTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	void testInvalidEntries() {
-		
-        String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testInvalidEntries.txt";
+
+		String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testInvalidEntries.txt";
 		fileController = new InputFileController(floorFilePath, floors);
 
 		// Fixing the visibility of the method and calling it
@@ -149,12 +150,12 @@ class FloorSystemTest {
 			e.printStackTrace();
 			fail();
 		}
-				
+
 		// Now for the actual tests
 		assertEquals(1, requestData.size());
 		RequestData current = requestData.get(0);
 		assertEquals("00:00:02.001 3 DOWN 2", current.toString());
-		
+
 	}
 
 }
