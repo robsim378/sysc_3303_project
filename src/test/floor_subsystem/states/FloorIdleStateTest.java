@@ -19,6 +19,7 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
+import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 import sysc_3303_project.floor_subsystem.InputFileController;
@@ -112,7 +113,7 @@ public class FloorIdleStateTest {
 		assertEquals(0,  testOutput.getSourceID());
 		assertEquals(Subsystem.ELEVATOR,  testOutput.getDestinationSubsystem());
 		assertEquals(2,  testOutput.getDestinationID());
-		assertEquals(SchedulerEventType.ELEVATOR_BUTTON_PRESSED,  testOutput.getEventType());
+		assertEquals(ElevatorEventType.ELEVATOR_BUTTON_PRESSED,  testOutput.getEventType());
 		assertEquals(4, (int) testOutput.getPayload());
 		assertEquals(floor.getElevatorRequests(), expectedElevatorRequests);
 
