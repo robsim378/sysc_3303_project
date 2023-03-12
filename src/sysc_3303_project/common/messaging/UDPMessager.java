@@ -18,7 +18,7 @@ import sysc_3303_project.common.configuration.Subsystem;
  */
 public abstract class UDPMessager {
 	
-	ResourceManager resourceManager = ResourceManager.getResourceManager();
+	ResourceManager resourceManager = ResourceManager.get();
 	
 	/**
 	 * Determines port from destination

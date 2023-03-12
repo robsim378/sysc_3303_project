@@ -10,7 +10,7 @@ public class ResourceManagerTest {
 	
 	@Test
 	public void testGet() {
-		ResourceManager manager = ResourceManager.getResourceManager();
+		ResourceManager manager = ResourceManager.get();
 		assertNotNull(manager.get("test.value1"));
 		assertNotNull(manager.get("test.value2"));
 	}
@@ -18,7 +18,7 @@ public class ResourceManagerTest {
 	
 	@Test
 	public void testGetInt() {
-		ResourceManager manager = ResourceManager.getResourceManager();
+		ResourceManager manager = ResourceManager.get();
 		assertNotNull(manager.getInt("test.int1"));
 		assertNotNull(manager.getInt("test.int2"));
 

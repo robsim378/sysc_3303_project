@@ -92,6 +92,14 @@ public class FloorSystem implements Runnable{
 	}
 
 	/**
+	 * Gets the current state. Should probably only be used for testing.
+	 * @return FloorState, the current state of the floor.
+	 */
+	public FloorState getState() {
+		return state;
+	}
+
+	/**
 	 * Get the input buffer of the floor.
 	 * @return	EventBuffer<FloorEventType>, the floor's input buffer
 	 */
@@ -116,35 +124,67 @@ public class FloorSystem implements Runnable{
 	}
 
 	/**
-	 * Gets the status of the up lamp.
+	 * Gets the status of the up directional lamp.
 	 * @return  Boolean, true if the up lamp is on, false if it is off.
 	 */
-	public boolean getUpLampStatus() {
-		return lamps.getUpLampStatus();
+	public boolean getUpDirectionalLampStatus() {
+		return lamps.getUpDirectionalLampStatus();
 	}
 
 	/**
-	 * Gets the status of the down lamp.
+	 * Gets the status of the down directional lamp.
 	 * @return  Boolean, true if the down lamp is on, false if it is off.
 	 */
-	public boolean getDownLampStatus() {
-		return lamps.getDownLampStatus();
+	public boolean getDownDirectionalLampStatus() {
+		return lamps.getDownDirectionalLampStatus();
+	}
+
+	/**
+	 * Gets the status of the up button lamp.
+	 * @return  Boolean, true if the up lamp is on, false if it is off.
+	 */
+	public boolean getUpButtonLampStatus() {
+		return lamps.getUpButtonLampStatus();
+	}
+
+	/**
+	 * Gets the status of the down button lamp.
+	 * @return  Boolean, true if the down lamp is on, false if it is off.
+	 */
+	public boolean getDownButtonLampStatus() {
+		return lamps.getDownButtonLampStatus();
 	}
 
 	/**
 	 * Lights the directional lamp for the given direction
 	 * @param direction     Direction, the directional lamp to light.
 	 */
-	public void lightLamp(Direction direction) {
-		lamps.lightLamp(direction);
+	public void lightDirectionalLamp(Direction direction) {
+		lamps.lightDirectionalLamp(direction);
 	}
 
 	/**
-	 * Turns off all lamps.
+	 * Lights the button lamp for the given direction
+	 * @param direction     Direction, the button lamp to light.
 	 */
+	public void lightButtonLamp(Direction direction) {
+		lamps.lightButtonLamp(direction);
+	}
 
-	public void clearLamps() {
-		lamps.clearLamps();
+	/**
+	 * Turns off all directional lamps.
+	 * @param direction     Direction, the directional lamp to turn off.
+	 */
+	public void clearDirectionalLamps(Direction direction) {
+		lamps.clearDirectionalLamps(direction);
+	}
+
+	/**
+	 * Turns off all button lamps.
+	 * @param direction     Direction, the button lamp to turn off.
+	 */
+	public void clearButtonLamps(Direction direction) {
+		lamps.clearButtonLamps(direction);
 	}
 
 	/**
@@ -194,4 +234,6 @@ public class FloorSystem implements Runnable{
     	
     	
     }
+
+
 }

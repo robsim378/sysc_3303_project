@@ -1,15 +1,24 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 3.0
+ */
 package sysc_3303_project.common.events;
 
 import java.io.Serializable;
 
 import sysc_3303_project.common.configuration.Subsystem;
 
+/**
+ * Event object for transmitting data. Simply a getter/setter object
+ * @author Andrei
+ *
+ * @param <T> type of enum to pass
+ */
 public class Event<T extends Enum<?>> implements Serializable {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4717946647791314554L;
+	
 	
 	private Subsystem destinationSubsystem;
 	private int destinationID;
@@ -18,6 +27,15 @@ public class Event<T extends Enum<?>> implements Serializable {
 	private T eventType;
 	private Serializable payload;
 	
+	/**
+	 * Constructor
+	 * @param dest		Subsystem, location to send to
+	 * @param destID	int, ID of subsystem recipient
+	 * @param src		Subsystem, system sender
+	 * @param srcID		int, ID of sender
+	 * @param type		<T>, event type
+	 * @param payload	Serializable, a serialisable payload
+	 */
 	public Event(Subsystem dest, int destID, Subsystem src, int srcID, T type, Serializable payload) {
 		this.destinationSubsystem = dest;
 		this.destinationID = destID;
@@ -27,26 +45,50 @@ public class Event<T extends Enum<?>> implements Serializable {
 		this.payload = payload;
 	}
 	
+	/**
+	 * Getter for destionation subsystem
+	 * @return Subsystem, destination subsystem
+	 */
 	public Subsystem getDestinationSubsystem() {
 		return destinationSubsystem;
 	}
 	
+	/**
+	 * Getter for source subsystem
+	 * @return Subsystem, source subsystem
+	 */
 	public Subsystem getSourceSubsystem() {
 		return sourceSubsystem;
 	}
 	
+	/**
+	 * Getter for destination ID
+	 * @return int, destination ID
+	 */
 	public int getDestinationID() {
 		return destinationID;
 	}
 	
+	/**
+	 * Getter for source ID
+	 * @return int, source ID
+	 */
 	public int getSourceID() {
 		return sourceID;
 	}
 	
+	/**
+	 * Getter for event type
+	 * @return <T>, event type
+	 */
 	public T getEventType() {
 		return eventType;
 	}
 	
+	/**
+	 * Getter for payload
+	 * @return Serializable, payload
+	 */
 	public Serializable getPayload() {
 		return payload;
 	}
