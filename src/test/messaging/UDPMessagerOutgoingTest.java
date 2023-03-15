@@ -23,9 +23,9 @@ public class UDPMessagerOutgoingTest {
 
     @Test
     public void testGetPort() {
-        assertEquals(SystemProperties.ELEVATOR_PORT, udpMessagerOutgoing.getPort(Subsystem.ELEVATOR));
-        assertEquals(SystemProperties.FLOOR_PORT, udpMessagerOutgoing.getPort(Subsystem.FLOOR));
-        assertEquals(SystemProperties.SCHEDULER_PORT, udpMessagerOutgoing.getPort(Subsystem.SCHEDULER));
+        assertEquals(9200, udpMessagerOutgoing.getPort(Subsystem.ELEVATOR));
+        assertEquals(9000, udpMessagerOutgoing.getPort(Subsystem.FLOOR));
+        assertEquals(9100, udpMessagerOutgoing.getPort(Subsystem.SCHEDULER));
         assertEquals(-1, udpMessagerOutgoing.getPort(null));
     }
 

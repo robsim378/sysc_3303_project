@@ -8,6 +8,7 @@
 module sysc_3303_project {
     exports sysc_3303_project.elevator_subsystem; //for reflection in unit tests
     exports test.common;
+    exports test.messaging;
     exports test.elevator_subsystem;
     exports test.elevator_subsystem.states;
     exports test.floor_subsystem;

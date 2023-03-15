@@ -122,4 +122,15 @@ public class FloorIdleStateTest {
 
 		assertTrue(newState instanceof FloorIdleState);
 	}
+
+	@Test
+	public void testHandleElevatorDirection() {
+		setup();
+
+		FloorState newState = floor.getState().handleElevatorDirection(Direction.UP, 1);
+		
+		assertEquals(true, floor.getUpDirectionalLampStatus(1));
+		
+
+	}
 }

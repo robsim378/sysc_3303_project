@@ -14,13 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class ElevatorStateTest {
     ElevatorState testState;
+    
+    protected abstract ElevatorState getState(Elevator context);
 
     /**
      * Tests reaction when the event "openDoors" is triggered
      */
     @Test
     public void testOpenDoorsEvent() {
-        ElevatorState testState = new ElevatorMovingState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::openDoors);
 
@@ -34,7 +36,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testSetDirectionEvent() {
-        ElevatorState testState = new ElevatorMovingState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, () -> {
             testState.setDirection(null);
@@ -50,7 +52,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testCloseDoorsEvent() {
-        testState = new ElevatorDoorsClosedState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::closeDoors);
 
@@ -64,7 +66,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testStopAtNextFloorEvent() {
-        testState = new ElevatorDoorsClosedState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::stopAtNextFloor);
 
@@ -78,7 +80,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testContinueMovingEvent() {
-        testState = new ElevatorDoorsClosedState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::continueMoving);
 
@@ -92,7 +94,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testOpenDoorsTimer() {
-        testState = new ElevatorDoorsClosedState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::openDoorsTimer);
 
@@ -106,7 +108,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testCloseDoorsTimer() {
-        testState = new ElevatorDoorsClosedState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::closeDoorsTimer);
 
@@ -120,7 +122,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testTravelThroughFloorsTimerEvent() {
-        testState = new ElevatorDoorsClosedState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::travelThroughFloorsTimer);
 
@@ -134,7 +136,7 @@ public abstract class ElevatorStateTest {
      */
     @Test
     public void testHandlePassengersUnloaded() {
-        testState = new ElevatorDoorsOpenState(null);
+        testState = getState(null);
 
         Exception e = assertThrows(IllegalStateException.class, testState::handlePassengersUnloaded);
 
@@ -153,7 +155,7 @@ public abstract class ElevatorStateTest {
 
         Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
 
-        ElevatorState testState = new ElevatorMovingState(testContext); // could be any state
+        testState = getState(testContext);
 
         ElevatorState newState = testState.handleElevatorButtonPressed(12);
 

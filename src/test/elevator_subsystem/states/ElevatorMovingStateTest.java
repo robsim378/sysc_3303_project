@@ -12,6 +12,7 @@ import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.*;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,11 +35,15 @@ public class ElevatorMovingStateTest extends ElevatorStateTest{
 
         testContext.setDirection(Direction.UP);
 
+        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
+        assertEquals(FloorEventType.UPDATE_ELEVATOR_DIRECTION, testEvent.getEventType());
+        assertEquals(Direction.UP, testEvent.getPayload());
+        
         ElevatorState testState = new ElevatorMovingState(testContext);
 
         ElevatorState newState = testState.travelThroughFloorsTimer();
 
-        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
+        testEvent = testContext.getOutputBuffer().getEvent();
 
         assertEquals(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, testEvent.getEventType());
         assertEquals(1, testEvent.getPayload());
@@ -61,4 +66,9 @@ public class ElevatorMovingStateTest extends ElevatorStateTest{
         assertEquals(ElevatorEventType.MOVING_TIMER, newEvent.getEventType());
         assertNull(newEvent.getPayload());
     }
+
+	@Override
+	protected ElevatorState getState(Elevator context) {
+		return new ElevatorMovingState(context);
+	}
 }

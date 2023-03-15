@@ -21,6 +21,7 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorMovingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -40,6 +41,11 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
         EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
         Elevator context = new Elevator(schedulerBuffer, null, 0);
         context.setDirection(Direction.UP);
+        
+        Event<Enum<?>> testEvent = context.getOutputBuffer().getEvent();
+        assertEquals(FloorEventType.UPDATE_ELEVATOR_DIRECTION, testEvent.getEventType());
+        assertEquals(Direction.UP, testEvent.getPayload());
+
         ElevatorState testState = new ElevatorApproachingFloorsState(context);
 
         ElevatorState newState = testState.stopAtNextFloor();
@@ -50,7 +56,6 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
         Event<Enum<?>> suppliedEvent = schedulerBuffer.getEvent();
         
         assertEquals(1, suppliedEvent.getPayload());
-        
         assertEquals(SchedulerEventType.ELEVATOR_STOPPED, suppliedEvent.getEventType());
 
     }
@@ -61,9 +66,16 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
     @Override
     @Test
     public void testContinueMovingEvent() {
+        EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
-        Elevator context = new Elevator(null, null, 0);
+        Elevator context = new Elevator(outputBuffer, null, 0);
         context.setDirection(Direction.UP);
+        
+        Event<Enum<?>> testEvent = context.getOutputBuffer().getEvent();
+        assertEquals(FloorEventType.UPDATE_ELEVATOR_DIRECTION, testEvent.getEventType());
+        assertEquals(Direction.UP, testEvent.getPayload());
+
+        
         ElevatorState testState = new ElevatorApproachingFloorsState(context);
 
         ElevatorState newState = testState.continueMoving();
@@ -72,6 +84,11 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
         assertEquals(1, context.getFloor());
 
     }
+
+	@Override
+	protected ElevatorState getState(Elevator context) {
+		return new ElevatorApproachingFloorsState(context);
+	}
     
 
 }
