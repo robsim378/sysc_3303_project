@@ -205,6 +205,7 @@ Iteration 3:
 - Updated Elevator subsystem (updated event sending, added new event actions, implemented elevator lamps)
 - Helped with functional testing
 - Updated Elevator States unit tests
+- Updated sequence and class UML diagrams
 
 ### Khalid Merai
 Iteration 1:
