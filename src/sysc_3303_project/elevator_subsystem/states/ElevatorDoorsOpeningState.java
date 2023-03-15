@@ -59,4 +59,9 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
         context.getDoor().setOpen();
         return new ElevatorDoorsOpenState(context);
     }
+    
+    @Override
+    public ElevatorState openDoors() {
+    	return null;
+    }
 }

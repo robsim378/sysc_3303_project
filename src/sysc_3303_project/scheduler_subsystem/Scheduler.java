@@ -153,6 +153,12 @@ public class Scheduler implements Runnable {
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();
 		for (int id = 0; id < ResourceManager.get().getInt("count.elevators"); id++) {
+			if (tracker.hasLoadRequestInDirection(id, floor, direction)) {
+				Logger.getLogger().logNotification("Scheduler", "Load request already assigned to elevator " + id + ": " + floor + " " + direction);
+				return id; // an elevator already has that request, don't add it again
+			}
+		}
+		for (int id = 0; id < ResourceManager.get().getInt("count.elevators"); id++) {
 			boolean elevatorOnTheWay = false;
 			for (int f : getFurtherFloors(id)) {
 				if (f == floor) {

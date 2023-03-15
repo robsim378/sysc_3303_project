@@ -133,6 +133,7 @@ public class SchedulerProcessingState extends SchedulerState {
 		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
+				contextTracker.loadElevator(assignedElevator, floorNumber);
 				context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 						Subsystem.FLOOR, floorNumber, 
 						Subsystem.SCHEDULER, assignedElevator, //use the elevator ID since it is more meaningful

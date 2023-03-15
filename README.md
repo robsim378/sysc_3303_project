@@ -235,6 +235,7 @@ Iteration 2:
 
 Iteration 3:
 - Redesigned Scheduler subsystem to use UDP messaging
+- Rewrote Scheduler tests and state tests
 - Created ElevatorTracker class to manage elevators within the Scheduler Subsystem
 - Updated Scheduler unit testing
 
@@ -253,6 +254,3 @@ Iteration 3:
 - Helped with functional testing
 - Updated Floor unit testing
 - Separated input parsing into InputFileController class
-
-## Known Errors
-- If two requests are made at a floor in the same direction, two elevators are dispatched instead of one. Small fix, but out of time.
