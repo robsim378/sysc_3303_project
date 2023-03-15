@@ -79,11 +79,15 @@ public class Logger {
 			log(className, "Error", message);
 	}
 	
-	
+	/**
+	 * Enum for log levels
+	 * @author Liam
+	 *
+	 */
 	private enum Level {
-		ERROR(0),
-		NOTIFICATION(1),
-		DEBUG(2);
+		ERROR(0),			// only log errors
+		NOTIFICATION(1),	//only log notifications and above
+		DEBUG(2);			//only log debugs and above
 		
 		int rank;
 		
