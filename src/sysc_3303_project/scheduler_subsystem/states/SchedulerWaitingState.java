@@ -35,6 +35,7 @@ public class SchedulerWaitingState extends SchedulerState {
 		// assign request and get assigned elevator ID
 		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
 		if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
+			contextTracker.loadElevator(assignedElevator, floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.FLOOR, floorNumber, 
 					Subsystem.SCHEDULER, assignedElevator, //use the elevator ID since it is more meaningful

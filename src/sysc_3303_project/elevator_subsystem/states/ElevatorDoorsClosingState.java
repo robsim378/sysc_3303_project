@@ -62,4 +62,9 @@ public class ElevatorDoorsClosingState extends ElevatorState {
         context.getDoor().setClosed();
         return new ElevatorDoorsClosedState(context);
     }
+    
+    @Override
+    public ElevatorState closeDoors() {
+    	return null;
+    }
 }
