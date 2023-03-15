@@ -46,7 +46,7 @@ public class SchedulerProcessingState extends SchedulerState {
 		Direction moveDirection = context.directionToMove(elevatorId);
 		contextTracker.updateElevatorDirection(elevatorId, moveDirection);
 		if (moveDirection != null) { // if there are no requests: shouldn't happen but don't break the system if it does
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to start moving");
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to start moving");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
@@ -72,24 +72,24 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.PASSENGERS_UNLOADED, floorNumber));
-			Logger.getLogger().logNotification(context.getClass().getName(), "Unloading passenger at floor " + floorNumber + " from elevator " + elevatorId);
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Unloading passenger at floor " + floorNumber + " from elevator " + elevatorId);
 		}
 		if (loaded) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.FLOOR, floorNumber, 
 					Subsystem.SCHEDULER, elevatorId, //use the elevator ID since it is more meaningful
 					FloorEventType.PASSENGERS_LOADED, loadDirection));
-			Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + elevatorId);
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Loading passengers at floor " + floorNumber + " into elevator " + elevatorId);
 		}
 		if (loaded || contextTracker.hasRequests(elevatorId)) { //if we expect more requests close doors (the requests may not have come in yet)
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to close doors");
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to close doors");
 			return null;
 		} else {
-			Logger.getLogger().logNotification(context.getClass().getName(), "Elevator " + elevatorId + " is idle, keep doors open");
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
 			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
@@ -101,7 +101,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleElevatorStopped(int elevatorId, int floorNumber) {
 		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
+		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to open doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, elevatorId, 
 				Subsystem.SCHEDULER, 0, 
@@ -113,13 +113,13 @@ public class SchedulerProcessingState extends SchedulerState {
 	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
 		boolean stopping = context.shouldStop(elevatorId, floorNumber);
 		if (stopping) {
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to stop at next floor " + floorNumber);
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to stop at next floor " + floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.STOP_AT_NEXT_FLOOR, null));
 		} else {
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to NOT stop at next floor " + floorNumber);
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to NOT stop at next floor " + floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
@@ -137,9 +137,9 @@ public class SchedulerProcessingState extends SchedulerState {
 						Subsystem.FLOOR, floorNumber, 
 						Subsystem.SCHEDULER, assignedElevator, //use the elevator ID since it is more meaningful
 						FloorEventType.PASSENGERS_LOADED, direction));
-				Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + assignedElevator);
+				Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Loading passengers at floor " + floorNumber + " into elevator " + assignedElevator);
 			}
-			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + assignedElevator + " to close doors");
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + assignedElevator + " to close doors");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, assignedElevator, 
 					Subsystem.SCHEDULER, 0, 

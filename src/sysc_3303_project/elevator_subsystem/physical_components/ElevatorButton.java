@@ -3,7 +3,7 @@
  * Group 1
  * @version 3.0
  */
-package sysc_3303_project.elevator_subsystem;
+package sysc_3303_project.elevator_subsystem.physical_components;
 
 /**
  * Elevator button.

@@ -15,4 +15,5 @@ package sysc_3303_project.floor_subsystem;
 public enum FloorEventType {
 	BUTTON_PRESSED, // Payload: RequestData. This is only sent from the input file.
 	PASSENGERS_LOADED, // direction payload for lamp
+	UPDATE_ELEVATOR_DIRECTION
 }

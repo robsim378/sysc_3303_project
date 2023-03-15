@@ -79,7 +79,15 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 					// ignore close exception
 				}
 			}
-			eventBuffers.get(e.getDestinationID()).addEvent(e);
+			
+			int destination = e.getDestinationID();
+			if(destination == -1) {
+				for(EventBuffer<T> buff : eventBuffers){
+					buff.addEvent(e);
+				}
+			} else if (destination >=0 && destination < eventBuffers.size()) {
+				eventBuffers.get(e.getDestinationID()).addEvent(e);
+			}
 		}
 	}
 

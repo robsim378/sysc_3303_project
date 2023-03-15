@@ -53,7 +53,7 @@ public class InputFileController implements Runnable {
 
         BufferedReader br = null;
 
-        Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Starting to parse data from the text file");
+        Logger.getLogger().logNotification(this.getClass().getSimpleName(), "FloorSystem: Starting to parse data from the text file");
         try {
             br = new BufferedReader(new FileReader(textFileLocation));
         } catch (FileNotFoundException e) {
@@ -90,7 +90,7 @@ public class InputFileController implements Runnable {
      */
     @Override
     public void run() {
-        Logger.getLogger().logNotification(this.getClass().getName(), "Input File Controller thread started");
+        Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Input File Controller thread started");
 
         // Get and parse the input file
         ArrayList<RequestData> requestListFromTextFile = new ArrayList<RequestData>();

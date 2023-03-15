@@ -9,11 +9,16 @@ package sysc_3303_project.elevator_subsystem;
 import logging.Logger;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
-
+import sysc_3303_project.elevator_subsystem.physical_components.Door;
+import sysc_3303_project.elevator_subsystem.physical_components.ElevatorButton;
+import sysc_3303_project.elevator_subsystem.physical_components.ElevatorLamp;
+import sysc_3303_project.elevator_subsystem.physical_components.Motor;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.Lamps;
 
 import java.util.Arrays;
@@ -158,6 +163,8 @@ public class Elevator implements Runnable {
     public void setDirection(Direction direction) {
         directionLamps.lightDirectionalLamp(direction);
         this.direction = direction;
+        
+        outputBuffer.addEvent(new Event<Enum<?>>(Subsystem.FLOOR, -1, Subsystem.ELEVATOR, elevatorID, FloorEventType.UPDATE_ELEVATOR_DIRECTION, direction));
     }
     
     public Direction getDirection() {
@@ -179,7 +186,7 @@ public class Elevator implements Runnable {
         else {
             resultFloor = elevatorFloor - 1;
         }
-        Logger.getLogger().logNotification(this.getClass().getName(), "Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
+        Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
         elevatorFloor = resultFloor;
     }
 
@@ -189,7 +196,7 @@ public class Elevator implements Runnable {
      * Contains the state machine for the Elevator.
      */
     public void run() {
-        Logger.getLogger().logNotification(this.getClass().getName(),"Elevator " + elevatorID + " running.");
+        Logger.getLogger().logNotification(this.getClass().getSimpleName(),"Elevator " + elevatorID + " running.");
         Event<ElevatorEventType> event;
 
         while (true) {
@@ -202,10 +209,10 @@ public class Elevator implements Runnable {
 
             ElevatorState newState = null;
 
-            Logger.getLogger().logNotification(this.getClass().getName(),"Elevator " + elevatorID
+            Logger.getLogger().logDebug(this.getClass().getSimpleName(),"Elevator " + elevatorID
                     + " Lamps: " + Arrays.toString(buttonLamps));
 
-            Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType()
+            Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Event: " + event.getEventType()
                     + ", State: " + state.getClass().getName());
 
             switch (event.getEventType()) {
