@@ -10,6 +10,7 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -103,6 +104,7 @@ public class ElevatorTest {
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.START_MOVING_IN_DIRECTION, Direction.UP));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(elevator.getDirection(), Direction.UP);
+			assertEquals(schedulerBuffer.getEvent().getEventType(), FloorEventType.UPDATE_ELEVATOR_DIRECTION);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
 			
 			// Continue moving

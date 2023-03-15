@@ -38,4 +38,12 @@ public abstract class FloorState implements State {
 	 * @return					FloorState, the next state
 	 */
 	public abstract FloorState handleElevatorArrived(Direction direction, int elevatorID);
+	
+	/**
+	 * Handles the direction of the elevator for the floor's directional lamp
+	 * @param direction		Direction of the elevator
+	 * @param elevatorID	Elevator lamp to update
+	 * @return				FloorState, Next state
+	 */
+	public abstract FloorState handleElevatorDirection(Direction direction, int elevatorID);
 }

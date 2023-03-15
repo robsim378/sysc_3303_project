@@ -124,7 +124,7 @@ public class ElevatorTracker {
 	 * @param floor the floor ID/number the elevator is at
 	 */
 	public void updateElevatorFloor(int elevatorId, int floor) {
-		Logger.getLogger().logNotification("ElevatorTracker", "Elevator " + elevatorId + " is at floor " + floor);
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Elevator " + elevatorId + " is at floor " + floor);
 		elevatorTrackingInfo.get(elevatorId).floor = floor;
 	}
 	
@@ -134,7 +134,7 @@ public class ElevatorTracker {
 	 * @param direction the direction the elevator is going in, or null if idle
 	 */
 	public void updateElevatorDirection(int elevatorId, Direction direction) {
-		Logger.getLogger().logNotification("ElevatorTracker", "Elevator " + elevatorId + " is moving in direction " + direction);
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Elevator " + elevatorId + " is moving in direction " + direction);
 		elevatorTrackingInfo.get(elevatorId).direction = direction;
 	}
 	

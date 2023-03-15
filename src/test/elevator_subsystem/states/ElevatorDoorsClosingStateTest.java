@@ -42,8 +42,10 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
         Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
 
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_CLOSED, testEvent.getEventType());
-        assertNull(testEvent.getPayload());
+        assertEquals(0, testEvent.getPayload());
         assertTrue(newState instanceof ElevatorDoorsClosedState);
+        
+        assertFalse(testContext.getDoor().getIsOpen());
     }
 
     /**
@@ -62,4 +64,9 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
         assertEquals(ElevatorEventType.CLOSE_DOORS_TIMER, newEvent.getEventType());
         assertNull(newEvent.getPayload());
     }
+
+	@Override
+	protected ElevatorState getState(Elevator context) {
+		return new ElevatorDoorsClosingState(context);
+	}
 }

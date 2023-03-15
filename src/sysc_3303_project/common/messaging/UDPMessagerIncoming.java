@@ -56,31 +56,44 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 			try {
 				sendRecieveSocket.receive(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			ByteArrayInputStream bis = new ByteArrayInputStream(packet.getData());
-			ObjectInput in = null;
-			Event<T> e = null;
-			
-			try {
-				in = new ObjectInputStream(bis);
-				e = (Event<T>) in.readObject(); 
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} finally {
-				try {
-					if (in != null) {
-						in.close();
-					}
-				} catch (IOException ex) {
-					// ignore close exception
+			Event<T> e = parseEvent(packet);
+						
+			int destination = e.getDestinationID();
+			if(destination == -1) {
+				for(EventBuffer<T> buff : eventBuffers){
+					buff.addEvent(e);
 				}
+			} else if (destination >=0 && destination < eventBuffers.size()) {
+				eventBuffers.get(e.getDestinationID()).addEvent(e);
 			}
-			eventBuffers.get(e.getDestinationID()).addEvent(e);
 		}
+	}
+	
+	public Event<T> parseEvent(DatagramPacket packet){
+		ByteArrayInputStream bis = new ByteArrayInputStream(packet.getData());
+		ObjectInput in = null;
+		Event<T> e = null;
+		
+		try {
+			in = new ObjectInputStream(bis);
+			e = (Event<T>) in.readObject(); 
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException ex) {
+				// ignore close exception
+			}
+		}
+		
+		return e;
 	}
 
 }

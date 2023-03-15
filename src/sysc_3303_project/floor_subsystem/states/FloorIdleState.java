@@ -43,8 +43,11 @@ public class FloorIdleState extends FloorState {
 	 */
 	@Override
 	public FloorState handleButtonPressed(RequestData requestData) {
-		Logger.getLogger().logNotification(this.getClass().getName(), "Sent request to scheduler: " + requestData.toString());
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent request to scheduler: " + requestData.toString());
 
+		context.pressButton(requestData.getDirection());
+		context.lightButtonLamp(requestData.getDirection());
+		
 		// Send an event to the scheduler requesting an elevator.
 		Event<Enum<?>> event = new Event<>(
 				Subsystem.SCHEDULER,
@@ -74,7 +77,7 @@ public class FloorIdleState extends FloorState {
 		context.clearButtonLamps(direction);
 		// Go through all the requests on the current floor, sending a button request to all the floors in the direction
 		// the elevator is heading and removing them from the list.
-		Logger.getLogger().logNotification("FloorIdleState", "Elevator " + elevatorID + " arrived at floor in direction " + direction);
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Elevator " + elevatorID + " arrived at floor in direction " + direction);
 		List<Integer> handledRequests = new LinkedList<>();
 		for (int destination : context.getElevatorRequests()) {
 			// Check if the request is in the elevator's path.
@@ -95,6 +98,14 @@ public class FloorIdleState extends FloorState {
 		for (int destination : handledRequests) {
 			context.removeElevatorRequest(destination);
 		}
+		context.clearButtonLamps(direction);
+		return new FloorIdleState(this.context);
+	}
+
+	@Override
+	public FloorState handleElevatorDirection(Direction direction, int elevatorID) {
+		this.context.clearDirectionalLamps(direction == Direction.UP? Direction.DOWN: Direction.UP, elevatorID);
+		this.context.lightDirectionalLamp(direction, elevatorID);
 		return new FloorIdleState(this.context);
 	}
 

@@ -10,9 +10,13 @@ import java.util.ArrayList;
 import logging.Logger;
 import sysc_3303_project.floor_subsystem.states.FloorState;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
+import sysc_3303_project.floor_subsystem.physical_components.DirectionalLamp;
+import sysc_3303_project.floor_subsystem.physical_components.FloorButton;
+import sysc_3303_project.floor_subsystem.physical_components.FloorLamp;
 import sysc_3303_project.floor_subsystem.states.FloorIdleState;
 
 /**
@@ -26,11 +30,21 @@ public class FloorSystem implements Runnable{
 	 * Current state of the floor
 	 */
 	private FloorState state;
+	
+	/**
+	 * The floor's buttons
+	 */
+	private FloorButton[] floorButtons;
 
 	/**
-	 * Whether or not the floor's lamp is illuminated.
+	 * The floor's lamps
 	 */
-	private Lamps lamps;
+	private FloorLamp[] floorLamps;
+	
+	/**
+	 * Direction lamps for each elevator
+	 */
+	private DirectionalLamp[][] directionalLamps;
 
 	/**
 	 * The ID of the floor. Also the floor number.
@@ -63,7 +77,15 @@ public class FloorSystem implements Runnable{
         this.outputBuffer = outputBuffer;
 		this.floorID = floorID;
 		elevatorRequests = new ArrayList<>();
-		lamps = new Lamps();
+		floorButtons = new FloorButton[] {new FloorButton("Up", floorID), new FloorButton("Off", floorID)};
+		floorLamps = new FloorLamp[] {new FloorLamp("Up", floorID), new FloorLamp("Off", floorID)};
+		
+		int elevatorCount = ResourceManager.get().getInt("count.elevators");
+		directionalLamps = new DirectionalLamp[elevatorCount][2];
+		for(int i = 0; i < elevatorCount; i++) {
+			directionalLamps[i][0] = new DirectionalLamp(i, Direction.UP, floorID);
+			directionalLamps[i][1] = new DirectionalLamp(i, Direction.DOWN, floorID);
+		}
         state = new FloorIdleState(this);
     }
 
@@ -127,16 +149,16 @@ public class FloorSystem implements Runnable{
 	 * Gets the status of the up directional lamp.
 	 * @return  Boolean, true if the up lamp is on, false if it is off.
 	 */
-	public boolean getUpDirectionalLampStatus() {
-		return lamps.getUpDirectionalLampStatus();
+	public boolean getUpDirectionalLampStatus(int elevator) {
+		return directionalLamps[elevator][0].isTurnedOn();
 	}
 
 	/**
 	 * Gets the status of the down directional lamp.
 	 * @return  Boolean, true if the down lamp is on, false if it is off.
 	 */
-	public boolean getDownDirectionalLampStatus() {
-		return lamps.getDownDirectionalLampStatus();
+	public boolean getDownDirectionalLampStatus(int elevator) {
+		return directionalLamps[elevator][1].isTurnedOn();
 	}
 
 	/**
@@ -144,7 +166,7 @@ public class FloorSystem implements Runnable{
 	 * @return  Boolean, true if the up lamp is on, false if it is off.
 	 */
 	public boolean getUpButtonLampStatus() {
-		return lamps.getUpButtonLampStatus();
+		return floorLamps[0].isTurnedOn();
 	}
 
 	/**
@@ -152,15 +174,20 @@ public class FloorSystem implements Runnable{
 	 * @return  Boolean, true if the down lamp is on, false if it is off.
 	 */
 	public boolean getDownButtonLampStatus() {
-		return lamps.getDownButtonLampStatus();
+		return floorLamps[1].isTurnedOn();
 	}
 
 	/**
 	 * Lights the directional lamp for the given direction
 	 * @param direction     Direction, the directional lamp to light.
 	 */
-	public void lightDirectionalLamp(Direction direction) {
-		lamps.lightDirectionalLamp(direction);
+	public void lightDirectionalLamp(Direction direction, int elevator) {
+		
+		if(direction == Direction.UP) {
+			directionalLamps[elevator][0].turnOn();
+		} else {
+			directionalLamps[elevator][1].turnOn();
+		}
 	}
 
 	/**
@@ -168,15 +195,36 @@ public class FloorSystem implements Runnable{
 	 * @param direction     Direction, the button lamp to light.
 	 */
 	public void lightButtonLamp(Direction direction) {
-		lamps.lightButtonLamp(direction);
+		if(direction == Direction.UP) {
+			floorLamps[0].turnOn();
+		} else {
+			floorLamps[1].turnOn();
+		}
 	}
+	
+	/**
+	 * Lights the button lamp for the given direction
+	 * @param direction     Direction, the button lamp to light.
+	 */
+	public void pressButton(Direction direction) {
+		if(direction == Direction.UP) {
+			floorButtons[0].press();
+		} else {
+			floorButtons[1].press();
+		}
+	}
+
 
 	/**
 	 * Turns off all directional lamps.
 	 * @param direction     Direction, the directional lamp to turn off.
 	 */
-	public void clearDirectionalLamps(Direction direction) {
-		lamps.clearDirectionalLamps(direction);
+	public void clearDirectionalLamps(Direction direction, int elevator) {
+		if(direction == Direction.UP) {
+			directionalLamps[elevator][0].turnOff();
+		} else {
+			directionalLamps[elevator][1].turnOff();
+		}
 	}
 
 	/**
@@ -184,7 +232,11 @@ public class FloorSystem implements Runnable{
 	 * @param direction     Direction, the button lamp to turn off.
 	 */
 	public void clearButtonLamps(Direction direction) {
-		lamps.clearButtonLamps(direction);
+		if(direction == Direction.UP) {
+			floorLamps[0].turnOff();
+		} else {
+			floorLamps[1].turnOff();
+		}
 	}
 
 	/**
@@ -198,7 +250,7 @@ public class FloorSystem implements Runnable{
     		// Wait to receive an event
     		Event<FloorEventType> event = inputBuffer.getEvent();
 
-    		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());    		
+    		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Event: " + event.getEventType() + ", State: " + state.getClass().getName());    		
 
     		// Go through the exit process for the state, transfer to the new state, and enact the entry activity for the new state
     		this.state.doExit();
@@ -211,6 +263,9 @@ public class FloorSystem implements Runnable{
 					// For a PASSENGERS_LOADED message, the sourceID is the ID of the elevator that has arrived,
 					// not the scheduler that sent the message.
 					this.state = this.state.handleElevatorArrived((Direction) event.getPayload(), event.getSourceID());
+					break;
+				case UPDATE_ELEVATOR_DIRECTION:
+					this.state = this.state.handleElevatorDirection((Direction) event.getPayload(), event.getSourceID());
 					break;
     			default:
     				throw new IllegalArgumentException();
@@ -227,9 +282,9 @@ public class FloorSystem implements Runnable{
      */
     @Override
     public void run() {
-    	Logger.getLogger().logNotification(this.getClass().getName(), "Floor thread started");
+    	Logger.getLogger().logDebug(this.getClass().getSimpleName(), "Floor thread started");
 
-    	Logger.getLogger().logNotification(this.getClass().getName(), "FloorSystem: Beginning state loop");
+    	Logger.getLogger().logDebug(this.getClass().getSimpleName(), "FloorSystem: Beginning state loop");
     	beginLoop();
     	
     	

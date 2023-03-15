@@ -40,9 +40,9 @@ public class SchedulerWaitingState extends SchedulerState {
 					Subsystem.FLOOR, floorNumber, 
 					Subsystem.SCHEDULER, assignedElevator, //use the elevator ID since it is more meaningful
 					FloorEventType.PASSENGERS_LOADED, direction));
-			Logger.getLogger().logNotification(context.getClass().getName(), "Loading passengers at floor " + floorNumber + " into elevator " + assignedElevator);
+			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Loading passengers at floor " + floorNumber + " into elevator " + assignedElevator);
 		}
-		Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + assignedElevator + " to close doors");
+		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + assignedElevator + " to close doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 

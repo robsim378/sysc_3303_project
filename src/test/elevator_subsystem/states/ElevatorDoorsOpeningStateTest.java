@@ -45,7 +45,9 @@ public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
         Event addedEvent = (schedulerBuffer.getEvent());
         
         assertEquals(SchedulerEventType.ELEVATOR_DOORS_OPENED, addedEvent.getEventType());
-        assertNull(addedEvent.getPayload());
+        assertEquals(0, addedEvent.getPayload());
+        
+        assertTrue(context.getDoor().getIsOpen());
     }
 
     /**
@@ -65,4 +67,9 @@ public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
         
         assertNull(newEvent.getPayload());
     }
+
+	@Override
+	protected ElevatorState getState(Elevator context) {
+		return new ElevatorDoorsOpeningState(context);
+	}
 }

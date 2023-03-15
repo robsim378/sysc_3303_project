@@ -175,15 +175,15 @@ public class Scheduler implements Runnable {
 		//sort each set by fewest requests first
 		onTheWay.sort(assignPriority);
 		notOnTheWay.sort(assignPriority);
-		Logger.getLogger().logNotification("Scheduler", onTheWay.toString());
-		Logger.getLogger().logNotification("Scheduler", notOnTheWay.toString());
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), onTheWay.toString());
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), notOnTheWay.toString());
 		//combine the 2 so elevators that are on the way are always considered first
 		priorityList.addAll(onTheWay);
 		priorityList.addAll(notOnTheWay);
 		//due to how the onTheWay/notOnTheWay lists are generated, ties are broken by lowest ID number first
 		int elevatorId = priorityList.get(0);
 		tracker.addLoadRequest(elevatorId, floor, direction);
-		Logger.getLogger().logNotification("Scheduler", "Assigned load request to elevator " + elevatorId + ": " + floor + " " + direction);
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Assigned load request to elevator " + elevatorId + ": " + floor + " " + direction);
 		return elevatorId;
 	}
 	
@@ -205,7 +205,7 @@ public class Scheduler implements Runnable {
 			SchedulerState newState = null;
 
 
-    		Logger.getLogger().logNotification(this.getClass().getName(), "Event: " + evt.getEventType() + ", State: " + state.getClass().getName());    		
+    		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Event: " + evt.getEventType() + ", State: " + state.getClass().getName());    		
 
 			
 			switch(evt.getEventType()) {
@@ -239,11 +239,11 @@ public class Scheduler implements Runnable {
 
 	@Override
 	public void run() {
-		Logger.getLogger().logNotification(this.getClass().getName(), "Scheduler thread running");
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Scheduler thread running");
 		try {
 			eventLoop();
 		} catch (IllegalStateException e) {
-			Logger.getLogger().logError(this.getClass().getName(), e.toString());
+			Logger.getLogger().logError(this.getClass().getSimpleName(), e.toString());
 		}
 		
 	}

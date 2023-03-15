@@ -17,6 +17,8 @@ public class Logger {
 	
 	private static Logger singleton = null;
 	
+	private Level level = Level.NOTIFICATION;
+	
 	/**
 	 * Creates a new Logger.
 	 */
@@ -47,12 +49,24 @@ public class Logger {
 	}
 	
 	/**
+	 * Logs a debug to the console.
+	 * @param className the name of the class displaying a log
+	 * @param message the message to display
+	 */
+	public void logDebug(String className, String message) {
+		if(this.level.getLevel() >= Level.DEBUG.getLevel())
+			log(className, "Debug", message);
+	}
+
+	
+	/**
 	 * Logs a notification to the console.
 	 * @param className the name of the class displaying a log
 	 * @param message the message to display
 	 */
 	public void logNotification(String className, String message) {
-		log(className, "Notification", message);
+		if(this.level.getLevel() >= Level.NOTIFICATION.getLevel())
+			log(className, "Notification", message);
 	}
 
 	/**
@@ -61,7 +75,29 @@ public class Logger {
 	 * @param message the message to display
 	 */
 	public void logError(String className, String message) {
-		log(className, "Error", message);
+		if(this.level.getLevel() >= Level.ERROR.getLevel())
+			log(className, "Error", message);
 	}
+	
+	/**
+	 * Enum for log levels
+	 * @author Liam
+	 *
+	 */
+	private enum Level {
+		ERROR(0),			// only log errors
+		NOTIFICATION(1),	//only log notifications and above
+		DEBUG(2);			//only log debugs and above
+		
+		int rank;
+		
+		private Level(int i) {
+			this.rank = i;
+		}
+		
+		public int getLevel() {
+			return rank;
+		}
+	};
 
 }

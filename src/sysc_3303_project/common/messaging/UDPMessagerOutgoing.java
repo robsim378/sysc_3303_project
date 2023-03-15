@@ -48,7 +48,7 @@ public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 			//Get event
 			Event<?> ev = eventBuffer.getEvent();
 			
-			Logger.getLogger().logNotification(this.getClass().toString(), ev.toString());
+			Logger.getLogger().logDebug(this.getClass().getSimpleName(), ev.toString());
 			
 			// Build data to send
 			int port = getPort(ev.getDestinationSubsystem());
@@ -64,7 +64,7 @@ public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 			// Send data
 			try {
 				sendSocket.send(sendPacket);
-				Logger.getLogger().logNotification(this.getClass().toString(), "Sent datagram packet to " + ev.getDestinationSubsystem().toString());
+				Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent datagram packet to " + ev.getDestinationSubsystem().toString());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				Logger.getLogger().logError(this.getClass().toString(), e.getMessage());

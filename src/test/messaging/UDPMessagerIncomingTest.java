@@ -54,12 +54,10 @@ public class UDPMessagerIncomingTest {
         Event<TestEnum> event = new Event<>(destSubsystem, destID, srcSubsystem, srcID, eventType, payload);
         byte[] eventBytes = eventToBytes(event);
         DatagramPacket packet = new DatagramPacket(eventBytes, eventBytes.length, InetAddress.getLocalHost(), listeningPort);
-        DatagramSocket sendSocket = new DatagramSocket();
-        sendSocket.send(packet);
 
+        UDPMessagerIncoming thing = new UDPMessagerIncoming(eventBuffers, Subsystem.FLOOR);
         // wait for event to be added to the correct buffer
-        EventBuffer<TestEnum> expectedBuffer = eventBuffers.get(destID);
-        Event<TestEnum> actualEvent = expectedBuffer.getEvent();
+        Event<TestEnum> actualEvent = thing.parseEvent(packet);
 
         // assert that the event was added to the correct buffer
         assertEquals(destSubsystem, actualEvent.getDestinationSubsystem());

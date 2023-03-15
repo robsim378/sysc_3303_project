@@ -7,11 +7,15 @@ package test.elevator_subsystem.states;
 
 import org.junit.jupiter.api.Test;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpeningState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorMovingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.floor_subsystem.FloorEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,13 +45,25 @@ public class ElevatorDoorsClosedStateTest extends ElevatorStateTest{
     @Override
     @Test
     public void testSetDirectionEvent() {
-        Elevator testContext = new Elevator(null, null, 0);
+        EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
+
+        Elevator testContext = new Elevator(outputBuffer, null, 0);
 
         ElevatorState testState = new ElevatorDoorsClosedState(testContext);
 
         ElevatorState newState = testState.setDirection(Direction.UP);
+        
+        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
+        assertEquals(FloorEventType.UPDATE_ELEVATOR_DIRECTION, testEvent.getEventType());
+        assertEquals(Direction.UP, testEvent.getPayload());
+
 
         assertEquals(Direction.UP, testContext.getDirection());
         assertTrue(newState instanceof ElevatorMovingState);
     }
+
+	@Override
+	protected ElevatorState getState(Elevator context) {
+		return new ElevatorDoorsClosedState(context);
+	}
 }
