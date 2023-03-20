@@ -17,5 +17,6 @@ public enum SchedulerEventType {
 	ELEVATOR_STOPPED, //floor number (int) payload
 	ELEVATOR_APPROACHING_FLOOR, //floor number (int) payload
 	FLOOR_BUTTON_PRESSED, //RequestData payload
-	ELEVATOR_BUTTON_PRESSED //floor number (int) payload
+	ELEVATOR_BUTTON_PRESSED, //floor number (int) payload
+	ELEVATOR_BLOCKED //elevator ID (int) payload
 }
