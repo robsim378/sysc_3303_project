@@ -9,6 +9,7 @@ package sysc_3303_project.scheduler_subsystem;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import logging.Logger;
 import sysc_3303_project.common.Direction;
@@ -18,30 +19,6 @@ import sysc_3303_project.common.Direction;
  *
  */
 public class ElevatorTracker {
-	
-	/**
-	 * 
-	 * @author Andrei Popescu
-	 * Internal class that represents a load request.
-	 */
-	private class LoadRequest {
-		public int floor;
-		public Direction direction;
-		
-		public LoadRequest(int floor, Direction direction) {
-			this.floor = floor;
-			this.direction = direction;
-		}
-		
-		@Override
-		public boolean equals(Object o) {
-			if (!(o instanceof LoadRequest)) {
-				return false;
-			}
-			LoadRequest other = (LoadRequest) o;
-			return (this.floor == other.floor && this.direction == other.direction);
-		}
-	}
 	
 	/**
 	 * 
@@ -87,6 +64,20 @@ public class ElevatorTracker {
 			newElevatorInfo.direction = null;
 			elevatorTrackingInfo.put(elevatorId, newElevatorInfo);
 		}
+	}
+	
+	/**
+	 * Checks whether an elevator is active, i.e. the elevator with the given ID
+	 * both exists and has not been shut down due to being blocked.
+	 * @param elevatorId the ID of the elevator to check
+	 * @return true if the elevator is active, false otherwise
+	 */
+	public boolean isActive(int elevatorId) {
+		return elevatorTrackingInfo.containsKey(elevatorId);
+	}
+	
+	public Set<Integer> getElevatorIds() {
+		return elevatorTrackingInfo.keySet();
 	}
 	
 	/**
@@ -142,12 +133,10 @@ public class ElevatorTracker {
 	 * Adds a load request to a specified elevator.
 	 * Corresponds to one or more identical floor button presses.
 	 * @param elevatorId the ID of the elevator to add the request to
-	 * @param floor the ID/number of the floor to load passengers from
-	 * @param direction the direction of the load request
+	 * @param request the load request to add to the elevator
 	 */
-	public void addLoadRequest(int elevatorId, int floor, Direction direction) {
+	public void addLoadRequest(int elevatorId, LoadRequest request) {
 		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
-		LoadRequest request = new LoadRequest(floor, direction);
 		if (!info.loadRequests.contains(request)) info.loadRequests.add(request);
 	}
 	
@@ -261,5 +250,15 @@ public class ElevatorTracker {
 	public boolean hasRequests(int elevatorId) {
 		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
 		return !(info.loadRequests.isEmpty() && info.unloadRequests.isEmpty());
+	}
+	
+	/**
+	 * 
+	 * @param elevatorId
+	 */
+	public List<LoadRequest> shutdownElevator(int elevatorId) {
+		List<LoadRequest> incompleteRequests = elevatorTrackingInfo.get(elevatorId).loadRequests;
+		elevatorTrackingInfo.remove(elevatorId);
+		return incompleteRequests;
 	}
 }

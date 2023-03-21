@@ -6,11 +6,14 @@
 
 package sysc_3303_project.scheduler_subsystem.states;
 
+import java.util.List;
+
 import logging.Logger;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
-import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
@@ -91,7 +94,7 @@ public class SchedulerProcessingState extends SchedulerState {
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
-			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
+			for (int i : contextTracker.getElevatorIds()) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
 			}
 			return new SchedulerWaitingState(context);
@@ -130,7 +133,8 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
-		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		LoadRequest request = new LoadRequest(floorNumber, direction);
+		int assignedElevator = context.assignLoadRequest(request);
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 				contextTracker.loadElevator(assignedElevator, floorNumber);
@@ -152,6 +156,18 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
 		contextTracker.addUnloadRequest(elevatorId, floorNumber);
+		return null;
+	}
+	
+	@Override
+	public SchedulerState handleElevatorBlocked(int elevatorId) {
+		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
+			context.getInputBuffer().addEvent(new Event<>(
+					Subsystem.FLOOR, request.floor,
+					Subsystem.SCHEDULER, 0,
+					SchedulerEventType.FLOOR_BUTTON_PRESSED, request.direction));
+		}
 		return null;
 	}
 }

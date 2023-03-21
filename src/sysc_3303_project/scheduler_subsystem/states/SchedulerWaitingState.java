@@ -7,11 +7,11 @@
 package sysc_3303_project.scheduler_subsystem.states;
 
 import logging.Logger;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
-import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 
@@ -33,7 +33,8 @@ public class SchedulerWaitingState extends SchedulerState {
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		// assign request and get assigned elevator ID
-		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		LoadRequest request = new LoadRequest(floorNumber, direction);
+		int assignedElevator = context.assignLoadRequest(request);
 		if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 			contextTracker.loadElevator(assignedElevator, floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
