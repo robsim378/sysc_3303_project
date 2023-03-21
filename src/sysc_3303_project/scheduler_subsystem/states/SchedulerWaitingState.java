@@ -6,9 +6,12 @@
 
 package sysc_3303_project.scheduler_subsystem.states;
 
+import java.util.List;
+
 import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
@@ -55,5 +58,16 @@ public class SchedulerWaitingState extends SchedulerState {
 	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
 		contextTracker.addUnloadRequest(elevatorId, floorNumber);
 		return new SchedulerProcessingState(context);
+	}
+	
+	public SchedulerState handleElevatorBlocked(int elevatorId) {
+		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
+			context.getInputBuffer().addEvent(new Event<>(
+					Subsystem.FLOOR, request.floor,
+					Subsystem.SCHEDULER, 0,
+					SchedulerEventType.FLOOR_BUTTON_PRESSED, request.direction));
+		}
+		return null;
 	}
 }
