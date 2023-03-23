@@ -51,6 +51,7 @@ public class SchedulerWaitingState extends SchedulerState {
 				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.CLOSE_DOORS, null));
+		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
 		return new SchedulerProcessingState(context);
 	}
 	
@@ -62,6 +63,7 @@ public class SchedulerWaitingState extends SchedulerState {
 	
 	public SchedulerState handleElevatorBlocked(int elevatorId) {
 		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is blocked!!!");
 		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
 			context.getInputBuffer().addEvent(new Event<>(
 					Subsystem.FLOOR, request.floor,

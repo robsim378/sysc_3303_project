@@ -34,6 +34,7 @@ public class Scheduler implements Runnable {
 	private final EventBuffer<Enum<?>> outputBuffer; 
 	private SchedulerState state;
 	private ElevatorTracker tracker;
+	private ElevatorFaultDetector faultDetector;
 	
 	/**
 	 * Creates a new Scheduler with no requests, which interacts with an Elevator and a FloorSystem via buffers.
@@ -45,6 +46,7 @@ public class Scheduler implements Runnable {
 		this.outputBuffer = outputBuffer;
 
 		tracker = new ElevatorTracker(ResourceManager.get().getInt("count.elevators"));
+		faultDetector = new ElevatorFaultDetector(this);
 		
 		state = new SchedulerWaitingState(this);
 
@@ -64,6 +66,22 @@ public class Scheduler implements Runnable {
 	 */
 	public EventBuffer<Enum<?>> getOutputBuffer() {
 		return outputBuffer;
+	}
+	
+	/**
+	 * Gets the scheduler's elevator tracker.
+	 * @return this Scheduler's ElevatorTracker
+	 */
+	public ElevatorTracker getTracker() {
+		return tracker;
+	}
+	
+	/**
+	 * Gets the scheduler's fault detector for elevator blockage.
+	 * @return this Scheduler's ElevatorFaultDetector.
+	 */
+	public ElevatorFaultDetector getFaultDetector() {
+		return faultDetector;
 	}
 	
 	/**
@@ -185,14 +203,6 @@ public class Scheduler implements Runnable {
 		tracker.addLoadRequest(elevatorId, new LoadRequest(request.floor, request.direction));
 		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Assigned load request to elevator " + elevatorId + ": " + request.floor + " " + request.direction);
 		return elevatorId;
-	}
-	
-	/**
-	 * Gets the scheduler's elevator tracker.
-	 * @return this Scheduler's ElevatorTracker
-	 */
-	public ElevatorTracker getTracker() {
-		return tracker;
 	}
 	
 	/**
