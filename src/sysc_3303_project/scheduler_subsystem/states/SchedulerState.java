@@ -90,11 +90,20 @@ public abstract class SchedulerState implements State {
 	
 	/**
 	 * 
-	 * @param elevatorId
-	 * @param floorNumber
-	 * @return
+	 * @param elevatorId the ID of the elevator where the button was pressed
+	 * @param floorNumber the floor number of the pressed button
+	 * @return the next SchedulerState the state machine should proceed to
 	 */
 	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
+		throw new IllegalStateException();
+	}
+	
+	/**
+	 * Handle an elevator getting stuck.
+	 * @param elevatorId the ID of the stuck elevator
+	 * @return the next SchedulerState the state machine should proceed to
+	 */
+	public SchedulerState handleElevatorBlocked(int elevatorId) {
 		throw new IllegalStateException();
 	}
 

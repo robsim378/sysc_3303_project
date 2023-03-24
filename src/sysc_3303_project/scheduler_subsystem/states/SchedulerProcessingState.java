@@ -6,11 +6,14 @@
 
 package sysc_3303_project.scheduler_subsystem.states;
 
+import java.util.List;
+
 import logging.Logger;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
-import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
@@ -32,6 +35,7 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorDoorsClosed(int elevatorId, int floorNumber) {
+		context.getFaultDetector().clearTimers(elevatorId);
 		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		boolean hasRequestsAtCurrentFloor = contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0
 				|| contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId));
@@ -41,6 +45,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.OPEN_DOORS, null));
+			context.getFaultDetector().addTimer(elevatorId, 1000); //doors open timer
 			return null;
 		}
 		Direction moveDirection = context.directionToMove(elevatorId);
@@ -51,18 +56,21 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
+			context.getFaultDetector().addTimer(elevatorId, 1000); //expect reach next floor
 		} else { //failsafe, idle the elevator (if there are no requests)
 			Logger.getLogger().logError(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.OPEN_DOORS, null));
+			context.getFaultDetector().addTimer(elevatorId, 1000); //doors open timer
 		}
 		return null;
 	}
 	
 	@Override
 	public SchedulerState handleElevatorDoorsOpened(int elevatorId, int floorNumber) {
+		context.getFaultDetector().clearTimers(elevatorId);
 		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		int unloadCount = contextTracker.unloadElevator(elevatorId, floorNumber);
 		Direction loadDirection = contextTracker.loadElevator(elevatorId, floorNumber);
@@ -86,12 +94,13 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
+			context.getFaultDetector().addTimer(elevatorId, 1000); //doors close timer
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to close doors");
 			return null;
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
-			for (int i = 0; i < SystemProperties.MAX_ELEVATOR_NUMBER; i++) {
+			for (int i : contextTracker.getElevatorIds()) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
 			}
 			return new SchedulerWaitingState(context);
@@ -100,17 +109,20 @@ public class SchedulerProcessingState extends SchedulerState {
 	
 	@Override
 	public SchedulerState handleElevatorStopped(int elevatorId, int floorNumber) {
+		context.getFaultDetector().clearTimers(elevatorId);
 		contextTracker.updateElevatorFloor(elevatorId, floorNumber);
 		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to open doors");
 		context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 				Subsystem.ELEVATOR, elevatorId, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.OPEN_DOORS, null));
+		context.getFaultDetector().addTimer(elevatorId, 1000); //open doors timer
 		return null;
 	}
 	
 	@Override
 	public SchedulerState handleElevatorApproachingFloor(int elevatorId, int floorNumber) {
+		context.getFaultDetector().clearTimers(elevatorId);
 		boolean stopping = context.shouldStop(elevatorId, floorNumber);
 		if (stopping) {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to stop at next floor " + floorNumber);
@@ -118,19 +130,22 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.STOP_AT_NEXT_FLOOR, null));
+			context.getFaultDetector().addTimer(elevatorId, 1000); //this timer should maybe be lower
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to NOT stop at next floor " + floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CONTINUE_MOVING, null));
+			context.getFaultDetector().addTimer(elevatorId, 1000);
 		}
 		return null;
 	}
 	
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
-		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		LoadRequest request = new LoadRequest(floorNumber, direction);
+		int assignedElevator = context.assignLoadRequest(request);
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 				contextTracker.loadElevator(assignedElevator, floorNumber);
@@ -145,6 +160,8 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, assignedElevator, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
+			context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
+
 		}
 		return null;
 	}
@@ -152,6 +169,20 @@ public class SchedulerProcessingState extends SchedulerState {
 	@Override
 	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
 		contextTracker.addUnloadRequest(elevatorId, floorNumber);
+		return null;
+	}
+	
+	@Override
+	public SchedulerState handleElevatorBlocked(int elevatorId) {
+		context.getFaultDetector().clearTimers(elevatorId);
+		Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is blocked!!!");
+		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
+			context.getInputBuffer().addEvent(new Event<>(
+					Subsystem.FLOOR, request.floor,
+					Subsystem.SCHEDULER, 0,
+					SchedulerEventType.FLOOR_BUTTON_PRESSED, request.direction));
+		}
 		return null;
 	}
 }

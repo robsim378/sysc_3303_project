@@ -34,6 +34,7 @@ public class Scheduler implements Runnable {
 	private final EventBuffer<Enum<?>> outputBuffer; 
 	private SchedulerState state;
 	private ElevatorTracker tracker;
+	private ElevatorFaultDetector faultDetector;
 	
 	/**
 	 * Creates a new Scheduler with no requests, which interacts with an Elevator and a FloorSystem via buffers.
@@ -45,6 +46,7 @@ public class Scheduler implements Runnable {
 		this.outputBuffer = outputBuffer;
 
 		tracker = new ElevatorTracker(ResourceManager.get().getInt("count.elevators"));
+		faultDetector = new ElevatorFaultDetector(this);
 		
 		state = new SchedulerWaitingState(this);
 
@@ -64,6 +66,22 @@ public class Scheduler implements Runnable {
 	 */
 	public EventBuffer<Enum<?>> getOutputBuffer() {
 		return outputBuffer;
+	}
+	
+	/**
+	 * Gets the scheduler's elevator tracker.
+	 * @return this Scheduler's ElevatorTracker
+	 */
+	public ElevatorTracker getTracker() {
+		return tracker;
+	}
+	
+	/**
+	 * Gets the scheduler's fault detector for elevator blockage.
+	 * @return this Scheduler's ElevatorFaultDetector.
+	 */
+	public ElevatorFaultDetector getFaultDetector() {
+		return faultDetector;
 	}
 	
 	/**
@@ -148,20 +166,20 @@ public class Scheduler implements Runnable {
 	 * @param direction the direction that the new request is going in
 	 * @return the ID of the elevator that the request was assigned to
 	 */
-	public int assignLoadRequest(int floor, Direction direction) {
+	public int assignLoadRequest(LoadRequest request) {
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();
-		for (int id = 0; id < ResourceManager.get().getInt("count.elevators"); id++) {
-			if (tracker.hasLoadRequestInDirection(id, floor, direction)) {
-				Logger.getLogger().logNotification("Scheduler", "Load request already assigned to elevator " + id + ": " + floor + " " + direction);
+		for (int id : tracker.getElevatorIds()) {
+			if (tracker.hasLoadRequestInDirection(id, request.floor, request.direction)) {
+				Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Load request already assigned to elevator " + id + ": " + request.floor + " " + request.direction);
 				return id; // an elevator already has that request, don't add it again
 			}
 		}
 		for (int id = 0; id < ResourceManager.get().getInt("count.elevators"); id++) {
 			boolean elevatorOnTheWay = false;
 			for (int f : getFurtherFloors(id)) {
-				if (f == floor) {
+				if (f == request.floor) {
 					elevatorOnTheWay = true;
 				}
 			}
@@ -182,17 +200,9 @@ public class Scheduler implements Runnable {
 		priorityList.addAll(notOnTheWay);
 		//due to how the onTheWay/notOnTheWay lists are generated, ties are broken by lowest ID number first
 		int elevatorId = priorityList.get(0);
-		tracker.addLoadRequest(elevatorId, floor, direction);
-		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Assigned load request to elevator " + elevatorId + ": " + floor + " " + direction);
+		tracker.addLoadRequest(elevatorId, new LoadRequest(request.floor, request.direction));
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Assigned load request to elevator " + elevatorId + ": " + request.floor + " " + request.direction);
 		return elevatorId;
-	}
-	
-	/**
-	 * Gets the scheduler's elevator tracker.
-	 * @return this Scheduler's ElevatorTracker
-	 */
-	public ElevatorTracker getTracker() {
-		return tracker;
 	}
 	
 	/**
@@ -203,6 +213,7 @@ public class Scheduler implements Runnable {
 
 			Event<SchedulerEventType> evt = inputBuffer.getEvent();
 			SchedulerState newState = null;
+			int elevatorId;
 
 
     		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Event: " + evt.getEventType() + ", State: " + state.getClass().getName());    		
@@ -210,22 +221,30 @@ public class Scheduler implements Runnable {
 			
 			switch(evt.getEventType()) {
 				case ELEVATOR_DOORS_CLOSED:
-					newState = state.handleElevatorDoorsClosed(evt.getSourceID(), (int) evt.getPayload());
+					elevatorId = evt.getSourceID();
+					if (tracker.isActive(elevatorId)) newState = state.handleElevatorDoorsClosed(elevatorId, (int) evt.getPayload());
 					break;
 				case ELEVATOR_DOORS_OPENED:
-					newState = state.handleElevatorDoorsOpened(evt.getSourceID(), (int) evt.getPayload());
+					elevatorId = evt.getSourceID();
+					if (tracker.isActive(elevatorId)) newState = state.handleElevatorDoorsOpened(elevatorId, (int) evt.getPayload());
 					break;
 				case ELEVATOR_APPROACHING_FLOOR:
-					newState = state.handleElevatorApproachingFloor(evt.getSourceID(), (int) evt.getPayload());
+					elevatorId = evt.getSourceID();
+					if (tracker.isActive(elevatorId)) newState = state.handleElevatorApproachingFloor(elevatorId, (int) evt.getPayload());
 					break;
 				case ELEVATOR_STOPPED:
-					newState = state.handleElevatorStopped(evt.getSourceID(), (int) evt.getPayload());
+					elevatorId = evt.getSourceID();
+					if (tracker.isActive(elevatorId)) newState = state.handleElevatorStopped(elevatorId, (int) evt.getPayload());
 					break;
 				case FLOOR_BUTTON_PRESSED:
 					newState = state.handleFloorButtonPressed(evt.getSourceID(), (Direction) evt.getPayload());
 					break;
 				case ELEVATOR_BUTTON_PRESSED:
-					newState = state.handleElevatorButtonPressed(evt.getSourceID(), (int) evt.getPayload());
+					elevatorId = evt.getSourceID();
+					if (tracker.isActive(elevatorId)) newState = state.handleElevatorButtonPressed(elevatorId, (int) evt.getPayload());
+					break;
+				case ELEVATOR_BLOCKED:
+					newState = state.handleElevatorBlocked((int) evt.getPayload());
 					break;
 			}
 			

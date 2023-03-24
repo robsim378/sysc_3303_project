@@ -6,12 +6,15 @@
 
 package sysc_3303_project.scheduler_subsystem.states;
 
+import java.util.List;
+
 import logging.Logger;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
-import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 
@@ -33,7 +36,8 @@ public class SchedulerWaitingState extends SchedulerState {
 	@Override
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		// assign request and get assigned elevator ID
-		int assignedElevator = context.assignLoadRequest(floorNumber, direction);
+		LoadRequest request = new LoadRequest(floorNumber, direction);
+		int assignedElevator = context.assignLoadRequest(request);
 		if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 			contextTracker.loadElevator(assignedElevator, floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
@@ -47,6 +51,7 @@ public class SchedulerWaitingState extends SchedulerState {
 				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.CLOSE_DOORS, null));
+		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
 		return new SchedulerProcessingState(context);
 	}
 	
@@ -54,5 +59,17 @@ public class SchedulerWaitingState extends SchedulerState {
 	public SchedulerState handleElevatorButtonPressed(int elevatorId, int floorNumber) {
 		contextTracker.addUnloadRequest(elevatorId, floorNumber);
 		return new SchedulerProcessingState(context);
+	}
+	
+	public SchedulerState handleElevatorBlocked(int elevatorId) {
+		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is blocked!!!");
+		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
+			context.getInputBuffer().addEvent(new Event<>(
+					Subsystem.FLOOR, request.floor,
+					Subsystem.SCHEDULER, 0,
+					SchedulerEventType.FLOOR_BUTTON_PRESSED, request.direction));
+		}
+		return null;
 	}
 }
