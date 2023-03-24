@@ -157,5 +157,38 @@ class FloorSystemTest {
 		assertEquals("00:00:02.001 3 DOWN 2", current.toString());
 
 	}
+	
+	/**
+	 * Test method to check parsing of a file with a single valid entry.
+	 * Parses the file using the private method "parseData" through reflection,
+	 * and checks if the parsed data matches the expected output.
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	void testErrorInitiatingEntry() {
+		String floorFilePath = new File("").getAbsolutePath() + "\\resources-test\\testErrorInitiatingEntry.txt";
+		fileController = new InputFileController(floorFilePath, floors);
+
+		// Fixing the visibility of the method and calling it
+		@SuppressWarnings("rawtypes")
+		Class[] emptyArgs = new Class[0];
+		ArrayList<RequestData> requestData = null;
+		Method method = null;
+
+		try {
+			method = InputFileController.class.getDeclaredMethod("parseData", emptyArgs);
+			method.setAccessible(true);
+			requestData = (ArrayList<RequestData>) method.invoke(fileController);
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+
+		// Now for the actual tests
+		assertEquals(1, requestData.size());
+		RequestData current = requestData.get(0);
+		assertEquals("00:00:02.001 3 DOWN 2 2", current.toString());
+	}
+
 
 }
