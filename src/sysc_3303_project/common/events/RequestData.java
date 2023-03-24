@@ -27,6 +27,8 @@ public class RequestData implements Serializable{
 	
 	private final int destinationFloor;
 	
+	private final int error;
+	
 	/**
 	 * Creates a new RequestData corresponding to a line of text.
 	 * Example format:
@@ -42,7 +44,15 @@ public class RequestData implements Serializable{
 		Direction direction = Direction.valueOf(requestParameters[2]);
 		int destinationFloor = Integer.parseInt(requestParameters[3]);
 		
-		return new RequestData(time, currentFloor, direction, destinationFloor);
+		int errorType;
+		
+		try {
+			errorType = Integer.parseInt(requestParameters[4]);
+		} catch (Exception e) {
+			errorType = 0;
+		}
+		
+		return new RequestData(time, currentFloor, direction, destinationFloor, errorType);
 	}
 	
 	/**
@@ -52,11 +62,12 @@ public class RequestData implements Serializable{
 	 * @param direction the direction (UP/DOWN) associated with the request
 	 * @param destinationFloor the number of the floor to go to
 	 */
-	public RequestData(LocalTime requestTime, int currentFloor, Direction direction, int destinationFloor) {
+	public RequestData(LocalTime requestTime, int currentFloor, Direction direction, int destinationFloor, int errorType) {
 		this.requestTime=requestTime;
 		this.currentFloor=currentFloor;
 		this.direction=direction;
 		this.destinationFloor=destinationFloor;
+		this.error = errorType;
 	}
 	
 	/**
@@ -93,6 +104,46 @@ public class RequestData implements Serializable{
 	
 	@Override
 	public String toString() {
-		return requestTime.toString() + " " + currentFloor + " " + direction.toString() + " " + destinationFloor;
+		return requestTime.toString() + " " + currentFloor + " " + direction.toString() + " " + destinationFloor + (hasError()? " " + error : "");
 	}
+	
+	/**
+	 * Returns if the request has an error associated with it
+	 * @return		boolean, if the request has an error
+	 */
+	public boolean hasError() {
+		return error != 0;
+	}
+	
+	/**
+	 * Returns the value of the error ID
+	 * @return		int, error ID
+	 */
+	public int getError() {
+		return error;
+	}
+	
+	@Override
+	public int hashCode() {
+	    int hash = 7;
+	    hash = 31 * hash + (int) error;
+	    hash = 31 * hash + (requestTime == null ? 0 : requestTime.hashCode());
+	    hash = 31 * hash + (int) currentFloor;
+	    hash = 31 * hash + (direction == null ? 0 : direction.hashCode());
+	    hash = 31 * hash + (int) destinationFloor;
+	    return hash;
+	}
+	
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (this.getClass() != o.getClass()) return false;
+        RequestData data = (RequestData) o;
+        return error == data.error
+	    	&& currentFloor == data.currentFloor
+	        && destinationFloor == data.destinationFloor
+    		&& direction.equals(data.getDirection())
+			&& requestTime.equals(data.getRequestTime());
+    }
 }

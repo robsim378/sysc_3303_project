@@ -54,7 +54,7 @@ public class FloorSystem implements Runnable{
 	/**
 	 * The list of currently pending requests at this floor.
 	 */
-	private ArrayList<Integer> elevatorRequests;
+	private ArrayList<RequestData> elevatorRequests;
 
     /**
      * Event buffer for incoming messages to the floor system
@@ -93,15 +93,15 @@ public class FloorSystem implements Runnable{
 	 * Add a request to the list of pending destinations.
 	 * @param destinationFloor	int, the floor to add a request for.
 	 */
-	public void addElevatorRequest(int destinationFloor) {
-		elevatorRequests.add(destinationFloor);
+	public void addElevatorRequest(RequestData request) {
+		elevatorRequests.add(request);
 	}
 
 	/**
 	 * Get the list of pending floor requests
 	 * @return	ArrayList<Integer>, the list of floors that people are waiting to go to.
 	 */
-	public ArrayList<Integer> getElevatorRequests() {
+	public ArrayList<RequestData> getElevatorRequests() {
 		return elevatorRequests;
 	}
 
@@ -109,7 +109,7 @@ public class FloorSystem implements Runnable{
 	 * Remove a floor request from the list once it has been serviced.
 	 * @param destinationFloor	int, the floor number of the request to remove from the list
 	 */
-	public void removeElevatorRequest(Integer destinationFloor) {
+	public void removeElevatorRequest(RequestData destinationFloor) {
 		elevatorRequests.remove(destinationFloor);
 	}
 
