@@ -64,8 +64,64 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
         assertEquals(ElevatorEventType.CLOSE_DOORS_TIMER, newEvent.getEventType());
         assertNull(newEvent.getPayload());
     }
+    /**
+     * Tests the handleElevatorButtonPressed method of the ElevatorDoorsClosingState class
+     * When elevator doors are closing and an elevator button is pressed, the event should be sent to the scheduler.
+     * The state of the elevator should not change.
+     */
+    @Test
+    public void testHandleElevatorButtonPressed() {
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
 
-	@Override
+        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
+        testContext.setFloor(2);
+
+        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
+
+        ElevatorState newState = testState.handleElevatorButtonPressed(5);
+
+        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
+
+        assertEquals(SchedulerEventType.ELEVATOR_BUTTON_PRESSED, testEvent.getEventType());
+        assertEquals(5, testEvent.getPayload());
+        assertTrue(newState == null);
+    }
+
+    /**
+     * Tests reaction when the elevator doors are blocked.
+     * The blocked doors counter should be incremented by one, and the state should remain unchanged.
+     */
+    @Test
+    public void testHandleDoorsBlocked() {
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
+
+        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
+
+        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
+
+        ElevatorState newState = testState.handleDoorsBlocked();
+
+        assertEquals(1, testContext.getBlockedDoorsCounter());
+        assertTrue(newState == null);
+    }
+    
+    @Test
+    public void testHandleDoorsBlockedDetected() {
+        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
+
+        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
+
+        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
+
+        ElevatorState newState = testState.handleDoorsBlockedDetected();
+
+        assertTrue(newState == null);
+    }
+    
+    @Override
 	protected ElevatorState getState(Elevator context) {
 		return new ElevatorDoorsClosingState(context);
 	}
