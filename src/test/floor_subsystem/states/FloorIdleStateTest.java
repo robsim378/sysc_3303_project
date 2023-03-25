@@ -50,7 +50,7 @@ public class FloorIdleStateTest {
 		floors = new ArrayList<FloorSystem>();
 		floors.add(floor);
 
-		String floorFilePath = new File("").getAbsolutePath() + "/resources/testing_examples";
+		String floorFilePath = new File("").getAbsolutePath() + "/resources-test/floorStateMachineTest.txt";
 		fileController = new InputFileController(floorFilePath, floors);
 
 		// Create all necessary threads
@@ -71,14 +71,14 @@ public class FloorIdleStateTest {
 		setup();
 
 		// The requestData to test with
-		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.UP, 4);
+		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.UP, 4, 0);
 
 		FloorState newState = floor.getState().handleButtonPressed(testInput);
 
 		Event<?> testOutput = floor.getOutputBuffer().getEvent();
 
-		ArrayList<Integer> expectedElevatorRequests = new ArrayList<Integer>();
-		expectedElevatorRequests.add(4);
+		ArrayList<RequestData> expectedElevatorRequests = new ArrayList<RequestData>();
+		expectedElevatorRequests.add(testInput);
 
 		assertEquals(Subsystem.SCHEDULER,  testOutput.getDestinationSubsystem());
 		assertEquals(0,  testOutput.getDestinationID());
@@ -99,29 +99,56 @@ public class FloorIdleStateTest {
 		setup();
 
 		// The requestData to test with
-		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.UP, 4);
-
+		
+		//Normal elevator press
+		RequestData testInput = new RequestData(LocalTime.NOON, 0, Direction.UP, 4, 0);
 		floor.getState().handleButtonPressed(testInput);
-
 		floor.getOutputBuffer().getEvent();
 
-		ArrayList<Integer> expectedElevatorRequests = new ArrayList<Integer>();
+		// Normal elevator press, does not get satisfied
+		testInput = new RequestData(LocalTime.NOON, 0, Direction.DOWN, -1, 0);
+		floor.getState().handleButtonPressed(testInput);
+		floor.getOutputBuffer().getEvent();
+
+		// Error type 1
+		testInput = new RequestData(LocalTime.NOON, 0, Direction.UP, 4, 1);
+		floor.getState().handleButtonPressed(testInput);
+		floor.getOutputBuffer().getEvent();
+
+		// Error type 2
+		testInput = new RequestData(LocalTime.NOON, 0, Direction.UP, 4, 2);
+		floor.getState().handleButtonPressed(testInput);
+		floor.getOutputBuffer().getEvent();
+
+		ArrayList<RequestData> expectedElevatorRequests = new ArrayList<RequestData>();
+		expectedElevatorRequests.add((new RequestData(LocalTime.NOON, 0, Direction.DOWN, -1, 0)));
 
 
 		FloorState newState = floor.getState().handleElevatorArrived(Direction.UP, 2);
 
-		Event<?> testOutput = floor.getOutputBuffer().getEvent();
+		testEvent(floor.getOutputBuffer().getEvent(), Subsystem.FLOOR, 0, Subsystem.ELEVATOR, 2, ElevatorEventType.BLOCK_DOORS, null);
+		testEvent(floor.getOutputBuffer().getEvent(), Subsystem.FLOOR, 0, Subsystem.ELEVATOR, 2, ElevatorEventType.BLOCK_ELEVATOR, null);
 
-		assertEquals(Subsystem.FLOOR, testOutput.getSourceSubsystem());
-		assertEquals(0,  testOutput.getSourceID());
-		assertEquals(Subsystem.ELEVATOR,  testOutput.getDestinationSubsystem());
-		assertEquals(2,  testOutput.getDestinationID());
-		assertEquals(ElevatorEventType.ELEVATOR_BUTTON_PRESSED,  testOutput.getEventType());
-		assertEquals(4, (int) testOutput.getPayload());
+		testEvent(floor.getOutputBuffer().getEvent(), Subsystem.FLOOR, 0, Subsystem.ELEVATOR, 2, ElevatorEventType.ELEVATOR_BUTTON_PRESSED, 4);
+		testEvent(floor.getOutputBuffer().getEvent(), Subsystem.FLOOR, 0, Subsystem.ELEVATOR, 2, ElevatorEventType.ELEVATOR_BUTTON_PRESSED, 4);
+		testEvent(floor.getOutputBuffer().getEvent(), Subsystem.FLOOR, 0, Subsystem.ELEVATOR, 2, ElevatorEventType.ELEVATOR_BUTTON_PRESSED, 4);
+
 		assertEquals(floor.getElevatorRequests(), expectedElevatorRequests);
 
 		assertTrue(newState instanceof FloorIdleState);
 	}
+
+	private void testEvent(Event<?> testOutput, Subsystem sub1, int src, Subsystem sub2, int dest,
+			Enum<?> sentEvent, Object payload) {
+		assertEquals(sub1, testOutput.getSourceSubsystem());
+		assertEquals(src,  testOutput.getSourceID());
+		assertEquals(sub2,  testOutput.getDestinationSubsystem());
+		assertEquals(dest,  testOutput.getDestinationID());
+		assertEquals(sentEvent,  testOutput.getEventType());
+		assertEquals(payload, testOutput.getPayload());
+		
+	}
+
 
 	@Test
 	public void testHandleElevatorDirection() {

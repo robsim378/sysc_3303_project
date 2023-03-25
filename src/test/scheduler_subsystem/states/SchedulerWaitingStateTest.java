@@ -63,4 +63,24 @@ public class SchedulerWaitingStateTest extends SchedulerStateTest {
         assertTrue(newState instanceof SchedulerProcessingState);
         assertTrue(context.getTracker().hasRequests(0));
     }
+	/**
+     * @Khalid Merai
+     * Tests reaction when the valid event "handleElevatorBlocked" is triggered
+     */
+    @Test
+    public void handleElevatorBlockedTest() {
+        EventBuffer<SchedulerEventType> outputBuffer = new EventBuffer<>();
+        EventBuffer<Enum<?>> inputBuffer = new EventBuffer<>();
+
+        Scheduler context = new Scheduler(outputBuffer, inputBuffer);
+        context.getTracker().addLoadRequest(1, new LoadRequest(1, Direction.UP));
+
+        SchedulerState testState = new SchedulerWaitingState(context);
+
+        SchedulerState newState = testState.handleElevatorBlocked(0);
+
+        assertNull(newState);
+        assertFalse(context.getTracker().hasRequests(0));
+        assertTrue(context.getTracker().hasRequests(1));
+    }
 }
