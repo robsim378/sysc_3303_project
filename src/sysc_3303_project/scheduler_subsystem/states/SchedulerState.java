@@ -106,5 +106,11 @@ public abstract class SchedulerState implements State {
 	public SchedulerState handleElevatorBlocked(int elevatorId) {
 		throw new IllegalStateException();
 	}
+	
+	public SchedulerState handleElevatorPing(int elevatorId) {
+		context.getFaultDetector().clearTimers(elevatorId);
+		context.getFaultDetector().addTimer(elevatorId, (int) (1000*1.5));
+		return null;
+	}
 
 }

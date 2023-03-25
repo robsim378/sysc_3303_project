@@ -2,7 +2,7 @@
  * SYSC3303 Project
  * Group 1
  * @author khalid merai 101159203 & Andrei Popescu 101143798
- * @version 3.0
+ * @version 4.0
  */
 
 package test.scheduler_subsystem;
@@ -282,3 +282,4 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
     }
 }
+
