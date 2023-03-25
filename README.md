@@ -229,6 +229,9 @@ Iteration 3:
 - unit testing : maintained the test classes after changes made for iteration3
 - created junit test classes for the messager package (incoming and outgoing)
 
+Iteration 4:
+- unit testing : updated everything added in the milestone
+
 ### Andrei Popescu
 
 Iteration 1:
@@ -251,6 +254,7 @@ Iteration 3:
 Iteration 4:
 - Added fault detection and handling to Scheduler subsystem
 - Updated class and state diagrams
+- Designed integration/acceptance test scenarios
 
 ### Robert Simionescu
 
@@ -267,3 +271,6 @@ Iteration 3:
 - Helped with functional testing
 - Updated Floor unit testing
 - Separated input parsing into InputFileController class
+
+Iteration 4:
+- timing diagrams
