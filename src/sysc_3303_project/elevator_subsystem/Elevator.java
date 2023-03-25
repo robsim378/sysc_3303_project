@@ -21,7 +21,6 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.Lamps;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 /**
@@ -245,7 +244,7 @@ public class Elevator implements Runnable {
                 case STOP_AT_NEXT_FLOOR -> newState = state.stopAtNextFloor();
                 case PASSENGERS_UNLOADED -> newState = state.handlePassengersUnloaded();
                 case ELEVATOR_BUTTON_PRESSED -> newState = state.handleElevatorButtonPressed((int) event.getPayload());
-                case BLOCKED_DOORS -> newState = state.handleDoorsBlocked();
+                case BLOCK_DOORS -> newState = state.handleDoorsBlocked();
                 case BLOCKED_DOORS_DETECTED -> newState = state.handleDoorsBlockedDetected();
                 case BLOCK_ELEVATOR -> {
                     Logger.getLogger().logNotification(

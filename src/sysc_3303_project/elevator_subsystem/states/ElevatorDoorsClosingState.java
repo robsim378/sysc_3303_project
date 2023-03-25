@@ -71,13 +71,16 @@ public class ElevatorDoorsClosingState extends ElevatorState {
 
     @Override
     public ElevatorState handleDoorsBlockedDetected() {
-        Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + context.getElevatorID() + " doors are blocked!!!");
+        Logger.getLogger().logError(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " doors are blocked!!!");
+        Logger.getLogger().logNotification(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " retrying close doors...");
         this.doEntry();
         return null;
     }
 
     @Override
     public ElevatorState closeDoors() {
-    	return null;
+        return null;
     }
 }
