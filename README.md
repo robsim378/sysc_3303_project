@@ -215,6 +215,10 @@ Iteration 3:
 - Updated Elevator States unit tests
 - Updated sequence and class UML diagrams
 
+Iteration 4:
+- Added fault detection and handling to Elevator subsystem
+- Helped with functional testing and debugging
+
 ### Khalid Merai
 Iteration 1:
  - created the JUnit test classes for the Scheduler,requestData and Elevator
