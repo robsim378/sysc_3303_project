@@ -10,7 +10,7 @@ import java.util.TimerTask;
 public class FaultDetector {
 
     private final Elevator elevator;
-    private final Timer doorFaultTimer;
+    private Timer doorFaultTimer;
 
     public FaultDetector(Elevator elevator) {
         this.elevator = elevator;
@@ -19,6 +19,7 @@ public class FaultDetector {
     
     public void startDoorsTimer(int delay) {
         Logger.getLogger().logDebug(this.getClass().getSimpleName(), "Started timer for " + delay + "ms to monitor elevator " + elevator.getElevatorID());
+        doorFaultTimer = new Timer();
         doorFaultTimer.schedule(new TimerTask() {
             @Override
             public void run() {

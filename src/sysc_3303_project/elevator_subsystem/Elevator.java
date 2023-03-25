@@ -247,7 +247,7 @@ public class Elevator implements Runnable {
                 case BLOCK_DOORS -> newState = state.handleDoorsBlocked();
                 case BLOCKED_DOORS_DETECTED -> newState = state.handleDoorsBlockedDetected();
                 case BLOCK_ELEVATOR -> {
-                    Logger.getLogger().logNotification(
+                    Logger.getLogger().logError(
                             this.getClass().getSimpleName(),
                             "Elevator " + elevatorID + " shutting down...");
                     return;

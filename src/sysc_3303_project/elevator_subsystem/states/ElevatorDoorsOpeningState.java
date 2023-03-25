@@ -6,6 +6,9 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import logging.Logger;
 import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
@@ -32,19 +35,31 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
     @Override
     public void doEntry() {
         context.getFaultDetector().startDoorsTimer(1000);
-        if (context.getBlockedDoorsCounter() > 0) {
-            context.decrementBlockedDoorsCounter();
-            return;
-        }
-        new Thread(new DelayTimerThread<>(1000,
-                new Event<>(
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				if (context.getBlockedDoorsCounter() > 0) {
+		            context.decrementBlockedDoorsCounter();
+		            return;
+		        }
+				context.getInputBuffer().addEvent(new Event<>(
                         Subsystem.ELEVATOR,
                         context.getElevatorID(),
                         Subsystem.ELEVATOR,
                         context.getElevatorID(),
                         ElevatorEventType.OPEN_DOORS_TIMER,
-                        null),
-                context.getInputBuffer())).start();
+                        null));
+			}
+		}, 1000);
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.SCHEDULER,
+                0,
+                Subsystem.ELEVATOR,
+                context.getElevatorID(),
+                SchedulerEventType.ELEVATOR_PING,
+                null));
     }
 
     /**
