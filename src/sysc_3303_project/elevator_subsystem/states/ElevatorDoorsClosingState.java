@@ -10,7 +10,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import logging.Logger;
-import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.configuration.Subsystem;
 
@@ -86,6 +85,11 @@ public class ElevatorDoorsClosingState extends ElevatorState {
         return new ElevatorDoorsClosedState(context);
     }
 
+    /**
+     * Retry closing the doors when fault detected.
+     *
+     * @return null
+     */
     @Override
     public ElevatorState handleDoorsBlockedDetected() {
         Logger.getLogger().logError(context.getClass().getSimpleName(),

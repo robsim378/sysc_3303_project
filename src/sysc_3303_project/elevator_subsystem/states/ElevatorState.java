@@ -89,11 +89,21 @@ public abstract class ElevatorState implements State {
         return null;
     }
 
+    /**
+     * Handle a block doors event from the floor.
+     *
+     * @return null
+     */
     public ElevatorState handleDoorsBlocked() {
         context.incrementBlockedDoorsCounter();
         return null;
     }
 
+    /**
+     * Default for detected doors blocked handler.
+     *
+     * @return null
+     */
     public ElevatorState handleDoorsBlockedDetected() {
         return null;
     }

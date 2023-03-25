@@ -81,6 +81,11 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
         return new ElevatorDoorsOpenState(context);
     }
 
+    /**
+     * Retry opening the doors when fault detected.
+     *
+     * @return null
+     */
     @Override
     public ElevatorState handleDoorsBlockedDetected() {
         Logger.getLogger().logError(context.getClass().getSimpleName(),
