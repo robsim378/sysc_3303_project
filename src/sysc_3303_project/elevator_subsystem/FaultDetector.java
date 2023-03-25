@@ -25,7 +25,7 @@ public class FaultDetector {
                 elevator.getInputBuffer().addEvent(new Event<>(
                         Subsystem.ELEVATOR, elevator.getElevatorID(),
                         Subsystem.ELEVATOR, elevator.getElevatorID(),
-                        ElevatorEventType.BLOCKED_DOORS, null
+                        ElevatorEventType.BLOCKED_DOORS_DETECTED, null
                 ));
             }
         }, (long) (delay*1.5)); //replace 1000 with elevator doors closing/opening timer value once we get that into the resource manager

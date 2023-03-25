@@ -89,14 +89,12 @@ public abstract class ElevatorState implements State {
         return null;
     }
 
-    public ElevatorState handleDoorsBlocked(boolean openClose) {
-        Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + context.getElevatorID() + " doors are blocked!!!");
+    public ElevatorState handleDoorsBlocked() {
+        context.incrementBlockedDoorsCounter();
+        return null;
+    }
 
-        if (openClose) {
-            this.openDoors();
-        } else {
-            this.closeDoors();
-        }
+    public ElevatorState handleDoorsBlockedDetected() {
         return null;
     }
 

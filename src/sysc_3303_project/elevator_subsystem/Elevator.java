@@ -44,7 +44,7 @@ public class Elevator implements Runnable {
     private final Door door;
     private final Lamps directionLamps;
     private final FaultDetector faultDetector;
-
+    private int blockedDoorsCounter = 0;
 
     /**
      * Constructor for the Elevator class.
@@ -182,6 +182,18 @@ public class Elevator implements Runnable {
         return faultDetector;
     }
 
+    public void incrementBlockedDoorsCounter() {
+        blockedDoorsCounter++;
+    }
+
+    public void decrementBlockedDoorsCounter() {
+        blockedDoorsCounter--;
+    }
+
+    public int getBlockedDoorsCounter() {
+        return blockedDoorsCounter;
+    }
+
     /**
      * Move the elevator one floor towards its destination.
      */
@@ -233,7 +245,8 @@ public class Elevator implements Runnable {
                 case STOP_AT_NEXT_FLOOR -> newState = state.stopAtNextFloor();
                 case PASSENGERS_UNLOADED -> newState = state.handlePassengersUnloaded();
                 case ELEVATOR_BUTTON_PRESSED -> newState = state.handleElevatorButtonPressed((int) event.getPayload());
-                case BLOCKED_DOORS -> newState = state.handleDoorsBlocked((boolean) event.getPayload());
+                case BLOCKED_DOORS -> newState = state.handleDoorsBlocked();
+                case BLOCKED_DOORS_DETECTED -> newState = state.handleDoorsBlockedDetected();
                 case BLOCK_ELEVATOR -> {
                     Logger.getLogger().logNotification(
                             this.getClass().getSimpleName(),
