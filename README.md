@@ -153,17 +153,25 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 4. Click the "Select archive file:" option and click "Browse" or type the filepath into the box.
 5. Click "Finish".
 6. If you want to adjust the hosts running each procedure, navigate to resources -> config.properties and enter for each "XXX.hostname=" the host running that process. If this step is not done, all processes must be run on the same machine.
-7. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> scheduler_subsystem.
-8. Right click on "SchedulerMain.java" and select "Run As" -> "Java Application".
-9. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> elevator_subsystem.
-10. Right click on "ElevatorMain.java" and select "Run As" -> "Java Application".
-11. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> floor_subsystem.
-12. Right click on "FloorMain.java" and select "Run As" -> "Java Application".
+7. Copy the contents of a test file in `resources` (ex: `test6`) except the first two lines, into `testing_examples` in the resource folder.
+8. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> scheduler_subsystem.
+9. Right click on "SchedulerMain.java" and select "Run As" -> "Java Application".
+10. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> elevator_subsystem.
+11. Right click on "ElevatorMain.java" and select "Run As" -> "Java Application".
+12. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> floor_subsystem.
+13. Right click on "FloorMain.java" and select "Run As" -> "Java Application".
 
 ## Testing
+
+### Unit tests
+
 The `test` package includes the unit tests for all classes. To run multiple unit tests in Eclipse, right-click any of the `test` subpackages (such as `test.common`) in the Package Explorer or Packages window, then select "Run As" > "JUnit Test". Some tests may take longer to run than others.
 
 In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3303_project package in your workspace. In Eclipse, the tests can be run in the following ways: For the tests to function, the project classpath needs to contain all necessary dependencies, including JUnit and the sysc_3303_project package. When right-clicking a test class file, such as SchedulerTest.java, select "Run As" followed by "JUnit Test" from the context menu. The results of the tests, including any that were incorrect or failed, will be displayed in Eclipse's JUnit view.
+
+### Scenario tests
+
+The `resources` folder includes test input files for various scenarios, named `test1` etc. To test any one of these input files, copy its contents into the `testing_examples` file (except the first two lines). This must be done before running the program, by default `testing_examples` does not contain valid input data.
 
 ## Contributions
 
@@ -239,6 +247,10 @@ Iteration 3:
 - Rewrote Scheduler tests and state tests
 - Created ElevatorTracker class to manage elevators within the Scheduler Subsystem
 - Updated Scheduler unit testing
+
+Iteration 4:
+- Added fault detection and handling to Scheduler subsystem
+- Updated class and state diagrams
 
 ### Robert Simionescu
 
