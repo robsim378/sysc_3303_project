@@ -64,53 +64,8 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
         assertEquals(ElevatorEventType.CLOSE_DOORS_TIMER, newEvent.getEventType());
         assertNull(newEvent.getPayload());
     }
-    @Test
-    public void testHandleElevatorButtonPressed() {
-        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
-        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
 
-        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
-        testContext.setFloor(2);
-
-        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
-
-        ElevatorState newState = testState.handleElevatorButtonPressed(5);
-
-        Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
-
-        assertEquals(SchedulerEventType.ELEVATOR_BUTTON_PRESSED, testEvent.getEventType());
-        assertEquals(5, testEvent.getPayload());
-        assertTrue(newState == null);
-    }
-
-    @Test
-    public void testHandleDoorsBlocked() {
-        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
-        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
-
-        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
-
-        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
-
-        ElevatorState newState = testState.handleDoorsBlocked();
-
-        assertEquals(1, testContext.getBlockedDoorsCounter());
-        assertTrue(newState == null);
-    }
-    @Test
-    public void testHandleDoorsBlockedDetected() {
-        EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
-        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
-
-        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
-
-        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
-
-        ElevatorState newState = testState.handleDoorsBlockedDetected();
-
-        assertTrue(newState == null);
-    }
-    @Override
+	@Override
 	protected ElevatorState getState(Elevator context) {
 		return new ElevatorDoorsClosingState(context);
 	}
