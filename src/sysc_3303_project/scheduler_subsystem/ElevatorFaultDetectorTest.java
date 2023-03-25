@@ -1,6 +1,9 @@
 package sysc_3303_project.scheduler_subsystem;
 import org.junit.jupiter.api.Test;
 import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.scheduler_subsystem.ElevatorFaultDetector;
+import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
