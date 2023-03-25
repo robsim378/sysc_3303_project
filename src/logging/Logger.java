@@ -17,7 +17,7 @@ public class Logger {
 	
 	private static Logger singleton = null;
 	
-	private Level level = Level.NOTIFICATION;
+	private Level level = Level.DEBUG;
 	
 	/**
 	 * Creates a new Logger.

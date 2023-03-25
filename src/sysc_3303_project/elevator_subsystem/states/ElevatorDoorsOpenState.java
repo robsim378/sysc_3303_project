@@ -6,6 +6,7 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
+import logging.Logger;
 import sysc_3303_project.elevator_subsystem.Elevator;
 
 /**
@@ -30,7 +31,7 @@ public class ElevatorDoorsOpenState extends ElevatorState {
      */
     @Override
     public ElevatorState closeDoors() {
-        context.getFaultDetector().startDoorsTimer(1000);
+        Logger.getLogger().logDebug(this.getClass().getSimpleName(), "closeDoors() called");
         return new ElevatorDoorsClosingState(context);
     }
 

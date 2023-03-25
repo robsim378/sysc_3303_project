@@ -31,6 +31,7 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
      */
     @Override
     public void doEntry() {
+        context.getFaultDetector().startDoorsTimer(1000);
         if (context.getBlockedDoorsCounter() > 0) {
             context.decrementBlockedDoorsCounter();
             return;
@@ -61,6 +62,7 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
                 SchedulerEventType.ELEVATOR_DOORS_OPENED,
                 context.getFloor()));
         context.getDoor().setOpen();
+        context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsOpenState(context);
     }
 
