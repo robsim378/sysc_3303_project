@@ -17,18 +17,20 @@ import sysc_3303_project.common.events.Event;
  *
  */
 public class ElevatorFaultDetector {
-	
-	private class ElevatorMoveTimer {
+	protected class ElevatorMoveTimer {
 		public Timer timer;
 		public int elevatorId;
-		
 		private ElevatorMoveTimer(Timer timer, int elevatorId) {
 			this.timer = timer;
 			this.elevatorId = elevatorId;
 		}
+
+		public int getElevatorId() {
+			return elevatorId;
+		}
 	}
-	
-	private List<ElevatorMoveTimer> elevatorMoveTimers;
+
+	List<ElevatorMoveTimer> elevatorMoveTimers;
 	private Scheduler scheduler;
 	
 	public ElevatorFaultDetector(Scheduler scheduler) {
