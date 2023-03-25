@@ -7,12 +7,12 @@ import sysc_3303_project.common.events.Event;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FaultDetector {
+public class DoorFaultDetector {
 
     private final Elevator elevator;
     private final Timer doorFaultTimer;
 
-    public FaultDetector(Elevator elevator) {
+    public DoorFaultDetector(Elevator elevator) {
         this.elevator = elevator;
         doorFaultTimer = new Timer();
     }

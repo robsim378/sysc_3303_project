@@ -42,7 +42,7 @@ public class Elevator implements Runnable {
     private final Motor motor;
     private final Door door;
     private final Lamps directionLamps;
-    private final FaultDetector faultDetector;
+    private final DoorFaultDetector doorFaultDetector;
     private int blockedDoorsCounter = 0;
 
     /**
@@ -64,7 +64,7 @@ public class Elevator implements Runnable {
         this.motor = new Motor();
         this.door = new Door();
         this.directionLamps = new Lamps();
-        this.faultDetector = new FaultDetector(this);
+        this.doorFaultDetector = new DoorFaultDetector(this);
     }
 
     /**
@@ -177,8 +177,8 @@ public class Elevator implements Runnable {
         this.buttonLamps[lampNumber].turnOff();
     }
 
-    public FaultDetector getFaultDetector() {
-        return faultDetector;
+    public DoorFaultDetector getFaultDetector() {
+        return doorFaultDetector;
     }
 
     public void incrementBlockedDoorsCounter() {
