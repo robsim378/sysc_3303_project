@@ -176,7 +176,7 @@ public class Scheduler implements Runnable {
 				return id; // an elevator already has that request, don't add it again
 			}
 		}
-		for (int id = 0; id < ResourceManager.get().getInt("count.elevators"); id++) {
+		for (int id : tracker.getElevatorIds()) {
 			boolean elevatorOnTheWay = false;
 			for (int f : getFurtherFloors(id)) {
 				if (f == request.floor) {
@@ -245,6 +245,10 @@ public class Scheduler implements Runnable {
 					break;
 				case ELEVATOR_BLOCKED:
 					newState = state.handleElevatorBlocked((int) evt.getPayload());
+					break;
+				case ELEVATOR_PING:
+					elevatorId = evt.getSourceID();
+					if (tracker.isActive(elevatorId)) newState = state.handleElevatorPing(elevatorId);
 					break;
 			}
 			
