@@ -6,6 +6,7 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
+import logging.Logger;
 import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.configuration.Subsystem;
@@ -35,6 +36,11 @@ public class ElevatorDoorsClosingState extends ElevatorState {
      */
     @Override
     public void doEntry() {
+        context.getFaultDetector().startDoorsTimer(1000);
+        if (context.getBlockedDoorsCounter() > 0) {
+            context.decrementBlockedDoorsCounter();
+            return;
+        }
         new Thread(new DelayTimerThread<>(1000,
                 new Event<>(Subsystem.ELEVATOR,
                         context.getElevatorID(),
@@ -60,11 +66,22 @@ public class ElevatorDoorsClosingState extends ElevatorState {
                 SchedulerEventType.ELEVATOR_DOORS_CLOSED,
                 context.getFloor()));
         context.getDoor().setClosed();
+        context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsClosedState(context);
     }
-    
+
+    @Override
+    public ElevatorState handleDoorsBlockedDetected() {
+        Logger.getLogger().logError(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " doors are blocked!!!");
+        Logger.getLogger().logNotification(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " retrying close doors...");
+        this.doEntry();
+        return null;
+    }
+
     @Override
     public ElevatorState closeDoors() {
-    	return null;
+        return null;
     }
 }
