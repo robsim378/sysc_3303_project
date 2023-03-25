@@ -21,6 +21,6 @@ public enum ElevatorEventType {
 	MOVING_TIMER, //no payload
 	PASSENGERS_UNLOADED, //floor (int) payload, for lamps
 	ELEVATOR_BUTTON_PRESSED,
-	BLOCK_DOORS, //no payload
+	BLOCKED_DOORS, //boolean, true if blocked opening, false if blocked closing
 	BLOCK_ELEVATOR //no payload
 }

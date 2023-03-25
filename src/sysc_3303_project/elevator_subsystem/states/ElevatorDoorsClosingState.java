@@ -60,6 +60,7 @@ public class ElevatorDoorsClosingState extends ElevatorState {
                 SchedulerEventType.ELEVATOR_DOORS_CLOSED,
                 context.getFloor()));
         context.getDoor().setClosed();
+        context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsClosedState(context);
     }
     

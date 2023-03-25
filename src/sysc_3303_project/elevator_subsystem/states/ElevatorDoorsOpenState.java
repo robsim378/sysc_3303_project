@@ -30,6 +30,7 @@ public class ElevatorDoorsOpenState extends ElevatorState {
      */
     @Override
     public ElevatorState closeDoors() {
+        context.getFaultDetector().startDoorsTimer(1000);
         return new ElevatorDoorsClosingState(context);
     }
 
