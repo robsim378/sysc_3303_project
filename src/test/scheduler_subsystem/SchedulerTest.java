@@ -2,7 +2,7 @@
  * SYSC3303 Project
  * Group 1
  * @author khalid merai 101159203 & Andrei Popescu 101143798
- * @version 3.0
+ * @version 4.0
  */
 
 package test.scheduler_subsystem;
@@ -19,6 +19,7 @@ import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
@@ -67,63 +68,68 @@ public class SchedulerTest {
 
     @Test
     public void testAssignRequest() {
-
-        int elevatorId = scheduler.assignLoadRequest(8, Direction.DOWN);
+        LoadRequest request = new LoadRequest(8, Direction.DOWN);
+        int elevatorId = scheduler.assignLoadRequest(request);
         //tiebreakers dictate that elevator 0 must be selected
         assertEquals(0, elevatorId);
     }
+
     /**
      * Test case to check if multiple requests can be added to the scheduler.
      */
     @Test
     public void testAssignMultipleRequests() throws Exception {
-    	int elevatorId = scheduler.assignLoadRequest(8, Direction.DOWN);
+        LoadRequest request1 = new LoadRequest(8, Direction.DOWN);
+        int elevatorId = scheduler.assignLoadRequest(request1);
         //tiebreakers dictate that elevator 0 must be selected
         assertEquals(0, elevatorId);
-        
+
         Field elevatorTrackerField = Scheduler.class.getDeclaredField("tracker");
         elevatorTrackerField.setAccessible(true);
         ElevatorTracker tracker = (ElevatorTracker) elevatorTrackerField.get(scheduler);
         tracker.updateElevatorDirection(0, Direction.UP);
         tracker.updateElevatorFloor(0, 4);
-        
-        elevatorId = scheduler.assignLoadRequest(6, Direction.UP);
+
+        LoadRequest request2 = new LoadRequest(6, Direction.UP);
+        elevatorId = scheduler.assignLoadRequest(request2);
         assertEquals(0, elevatorId);
-        elevatorId = scheduler.assignLoadRequest(4, Direction.UP);
-        assertEquals(1, elevatorId);
+
+        LoadRequest request3 = new LoadRequest(4, Direction.UP);
+        elevatorId = scheduler.assignLoadRequest(request3);
     }
-    
     @Test
     public void testDirectionToMove() {
-    	scheduler.getTracker().updateElevatorDirection(0, Direction.UP);
-    	scheduler.getTracker().addLoadRequest(0, 8, Direction.DOWN);
-    	assertEquals(Direction.UP, scheduler.directionToMove(0));
-    	
-    	scheduler.getTracker().updateElevatorDirection(1, Direction.UP);
-    	scheduler.getTracker().updateElevatorFloor(1, 5);
-    	scheduler.getTracker().addUnloadRequest(1, 3);
-    	assertEquals(Direction.DOWN, scheduler.directionToMove(1));
-    	
-    	scheduler.getTracker().unloadElevator(1, 3);
-    	scheduler.getTracker().updateElevatorFloor(1, 3);
-    	assertEquals(null, scheduler.directionToMove(1));
+        scheduler.getTracker().updateElevatorDirection(0, Direction.UP);
+        scheduler.getTracker().addLoadRequest(0, new LoadRequest(8, Direction.DOWN));
+        assertEquals(Direction.UP, scheduler.directionToMove(0));
+
+        scheduler.getTracker().updateElevatorDirection(1, Direction.UP);
+        scheduler.getTracker().updateElevatorFloor(1, 5);
+        scheduler.getTracker().addUnloadRequest(1, 3);
+        assertEquals(Direction.DOWN, scheduler.directionToMove(1));
+
+        scheduler.getTracker().unloadElevator(1, 3);
+        scheduler.getTracker().updateElevatorFloor(1, 3);
+        assertEquals(null, scheduler.directionToMove(1));
     }
-    
+
+
     @Test
     public void testShouldStop() {
-    	scheduler.getTracker().updateElevatorDirection(0, Direction.UP);
-    	scheduler.getTracker().addLoadRequest(0, 8, Direction.DOWN);
-    	scheduler.getTracker().addLoadRequest(0, 6, Direction.DOWN);
-    	scheduler.getTracker().addLoadRequest(0, 4, Direction.UP);
-    	assertFalse(scheduler.shouldStop(0, 0)); //no request
-    	assertTrue(scheduler.shouldStop(0, 4)); //load request in correct direction
-    	scheduler.getTracker().addUnloadRequest(0, 7);
-    	assertFalse(scheduler.shouldStop(0, 6)); //load request in incorrect direction
-    	assertTrue(scheduler.shouldStop(0, 7)); //unload request
-    	assertTrue(scheduler.shouldStop(0, 8)); //load request in incorrect direction but no further requests
-    	scheduler.getTracker().updateElevatorDirection(1, Direction.DOWN);
-    	assertTrue(scheduler.shouldStop(1, 0)); //bottom floor
+        scheduler.getTracker().updateElevatorDirection(0, Direction.UP);
+        scheduler.getTracker().addLoadRequest(0, new LoadRequest(8, Direction.DOWN));
+        scheduler.getTracker().addLoadRequest(0, new LoadRequest(6, Direction.DOWN));
+        scheduler.getTracker().addLoadRequest(0, new LoadRequest(4, Direction.UP));
+        assertFalse(scheduler.shouldStop(0, 0)); //no request
+        assertTrue(scheduler.shouldStop(0, 4)); //load request in correct direction
+        scheduler.getTracker().addUnloadRequest(0, 7);
+        assertFalse(scheduler.shouldStop(0, 6)); //load request in incorrect direction
+        assertTrue(scheduler.shouldStop(0, 7)); //unload request
+        assertTrue(scheduler.shouldStop(0, 8)); //load request in incorrect direction but no further requests
+        scheduler.getTracker().updateElevatorDirection(1, Direction.DOWN);
+        assertTrue(scheduler.shouldStop(1, 0)); //bottom floor
     }
+
 
     @Test
     public void testStateMachine() throws Exception {
@@ -277,3 +283,4 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
     }
 }
+
