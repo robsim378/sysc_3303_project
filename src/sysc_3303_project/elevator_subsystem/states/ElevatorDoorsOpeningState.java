@@ -6,6 +6,10 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import logging.Logger;
 import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.configuration.Subsystem;
@@ -30,16 +34,32 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
      */
     @Override
     public void doEntry() {
-
-        new Thread(new DelayTimerThread<>(1000,
-                new Event<>(
+        context.getFaultDetector().startDoorsTimer(1000);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				if (context.getBlockedDoorsCounter() > 0) {
+		            context.decrementBlockedDoorsCounter();
+		            return;
+		        }
+				context.getInputBuffer().addEvent(new Event<>(
                         Subsystem.ELEVATOR,
                         context.getElevatorID(),
                         Subsystem.ELEVATOR,
                         context.getElevatorID(),
                         ElevatorEventType.OPEN_DOORS_TIMER,
-                        null),
-                context.getInputBuffer())).start();
+                        null));
+			}
+		}, 1000);
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.SCHEDULER,
+                0,
+                Subsystem.ELEVATOR,
+                context.getElevatorID(),
+                SchedulerEventType.ELEVATOR_PING,
+                null));
     }
 
     /**
@@ -57,11 +77,22 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
                 SchedulerEventType.ELEVATOR_DOORS_OPENED,
                 context.getFloor()));
         context.getDoor().setOpen();
+        context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsOpenState(context);
     }
-    
+
+    @Override
+    public ElevatorState handleDoorsBlockedDetected() {
+        Logger.getLogger().logError(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " doors are blocked!!!");
+        Logger.getLogger().logNotification(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " retrying open doors...");
+        this.doEntry();
+        return null;
+    }
+
     @Override
     public ElevatorState openDoors() {
-    	return null;
+        return null;
     }
 }

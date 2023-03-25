@@ -6,6 +6,7 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
+import logging.Logger;
 import sysc_3303_project.common.Direction;
 
 import sysc_3303_project.common.state.State;
@@ -85,6 +86,15 @@ public abstract class ElevatorState implements State {
                         SchedulerEventType.ELEVATOR_BUTTON_PRESSED,
                         destination));
         context.getButtons()[context.getFloor()].pushButton();
+        return null;
+    }
+
+    public ElevatorState handleDoorsBlocked() {
+        context.incrementBlockedDoorsCounter();
+        return null;
+    }
+
+    public ElevatorState handleDoorsBlockedDetected() {
         return null;
     }
 

@@ -6,6 +6,10 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import logging.Logger;
 import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.configuration.Subsystem;
@@ -35,15 +39,33 @@ public class ElevatorDoorsClosingState extends ElevatorState {
      */
     @Override
     public void doEntry() {
-        new Thread(new DelayTimerThread<>(1000,
-                new Event<>(Subsystem.ELEVATOR,
-                        context.getElevatorID(),
-                        Subsystem.ELEVATOR,
-                        context.getElevatorID(),
-                        ElevatorEventType.CLOSE_DOORS_TIMER,
-                        null),
-                context.getInputBuffer())).start();
-    }
+    	context.getFaultDetector().startDoorsTimer(1000);
+    	Timer timer = new Timer();
+    	timer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				if (context.getBlockedDoorsCounter() > 0) {
+		            context.decrementBlockedDoorsCounter();
+		            return;
+		        }
+				context.getInputBuffer().addEvent(new Event<>(
+	                  Subsystem.ELEVATOR,
+	                  context.getElevatorID(),
+	                  Subsystem.ELEVATOR,
+	                  context.getElevatorID(),
+	                  ElevatorEventType.CLOSE_DOORS_TIMER,
+	                  null));
+			}
+		}, 1000);
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.SCHEDULER,
+                0,
+                Subsystem.ELEVATOR,
+                context.getElevatorID(),
+                SchedulerEventType.ELEVATOR_PING,
+                null));
+	}
 
     /**
      * Send a message to the Scheduler that the elevator doors have closed.
@@ -60,11 +82,22 @@ public class ElevatorDoorsClosingState extends ElevatorState {
                 SchedulerEventType.ELEVATOR_DOORS_CLOSED,
                 context.getFloor()));
         context.getDoor().setClosed();
+        context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsClosedState(context);
     }
-    
+
+    @Override
+    public ElevatorState handleDoorsBlockedDetected() {
+        Logger.getLogger().logError(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " doors are blocked!!!");
+        Logger.getLogger().logNotification(context.getClass().getSimpleName(),
+                "Elevator " + context.getElevatorID() + " retrying close doors...");
+        this.doEntry();
+        return null;
+    }
+
     @Override
     public ElevatorState closeDoors() {
-    	return null;
+        return null;
     }
 }

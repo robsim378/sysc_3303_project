@@ -66,8 +66,8 @@ public class SchedulerWaitingState extends SchedulerState {
 		Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is blocked!!!");
 		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
 			context.getInputBuffer().addEvent(new Event<>(
-					Subsystem.FLOOR, request.floor,
 					Subsystem.SCHEDULER, 0,
+					Subsystem.FLOOR, request.floor,
 					SchedulerEventType.FLOOR_BUTTON_PRESSED, request.direction));
 		}
 		return null;

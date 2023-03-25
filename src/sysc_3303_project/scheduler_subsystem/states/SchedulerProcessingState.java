@@ -40,7 +40,7 @@ public class SchedulerProcessingState extends SchedulerState {
 		boolean hasRequestsAtCurrentFloor = contextTracker.countUnloadRequests(elevatorId, floorNumber) > 0
 				|| contextTracker.hasLoadRequestInDirection(elevatorId, floorNumber, contextTracker.getElevatorDirection(elevatorId));
 		if (hasRequestsAtCurrentFloor) {
-			Logger.getLogger().logError(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
+			Logger.getLogger().logNotification(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
@@ -94,8 +94,8 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
-			context.getFaultDetector().addTimer(elevatorId, 1000); //doors close timer
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to close doors");
+			context.getFaultDetector().addTimer(elevatorId, 1000); //doors close timer
 			return null;
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
@@ -160,9 +160,9 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, assignedElevator, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
-			context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
 
 		}
+		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
 		return null;
 	}
 
@@ -179,8 +179,8 @@ public class SchedulerProcessingState extends SchedulerState {
 		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
 		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
 			context.getInputBuffer().addEvent(new Event<>(
-					Subsystem.FLOOR, request.floor,
 					Subsystem.SCHEDULER, 0,
+					Subsystem.FLOOR, request.floor,
 					SchedulerEventType.FLOOR_BUTTON_PRESSED, request.direction));
 		}
 		return null;
