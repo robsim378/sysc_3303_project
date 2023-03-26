@@ -14,6 +14,7 @@ import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerProcessingState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
@@ -38,7 +39,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
         EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
     	
         Scheduler context = new Scheduler(null, outputBuffer);
-        context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+        context.getTracker().addLoadRequest(0, new LoadRequest(8, Direction.DOWN));
         SchedulerState testState = new SchedulerProcessingState(context);
 
         SchedulerState newState = testState.handleElevatorDoorsClosed(0, 0);
@@ -60,7 +61,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
 		Scheduler context = new Scheduler(null, outputBuffer);
-		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+		context.getTracker().addLoadRequest(0, new LoadRequest(8, Direction.DOWN));
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
@@ -106,7 +107,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
 		Scheduler context = new Scheduler(null, outputBuffer);
-		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+		context.getTracker().addLoadRequest(0, new LoadRequest(8, Direction.DOWN));
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
@@ -131,7 +132,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 		EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
 		Scheduler context = new Scheduler(null, outputBuffer);
-		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+		context.getTracker().addLoadRequest(0, new LoadRequest(8, Direction.DOWN));
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
@@ -179,7 +180,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
     	EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
 		Scheduler context = new Scheduler(null, outputBuffer);
-		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+		context.getTracker().addLoadRequest(0, new LoadRequest(8,Direction.DOWN));
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
@@ -199,7 +200,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
     	EventBuffer<Enum<?>> outputBuffer = new EventBuffer<>();
 
 		Scheduler context = new Scheduler(null, outputBuffer);
-		context.getTracker().addLoadRequest(0, 8, Direction.DOWN);
+		context.getTracker().addLoadRequest(0,new LoadRequest( 8, Direction.DOWN));
 
         SchedulerState testState = new SchedulerProcessingState(context);
 
@@ -251,3 +252,4 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
         assertTrue(context.getTracker().hasRequests(0));
     }
 }
+
