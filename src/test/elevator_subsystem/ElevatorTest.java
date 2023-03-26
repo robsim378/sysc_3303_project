@@ -97,6 +97,7 @@ public class ElevatorTest {
 			// Close the elevator doors and ensure that the close doors event is generated
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.CLOSE_DOORS, null));
 			TimeUnit.MILLISECONDS.sleep(500);
+			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_PING);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_CLOSED);
 
 			// Start moving the elevator up and ensure that the moving timer event is generated,
@@ -120,6 +121,7 @@ public class ElevatorTest {
 			// Open the elevator doors
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.OPEN_DOORS, null));
 			TimeUnit.MILLISECONDS.sleep(500);
+			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_PING);
 			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_OPENED);
 		}
 	}
