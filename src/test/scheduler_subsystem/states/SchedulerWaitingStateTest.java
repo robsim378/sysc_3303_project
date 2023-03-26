@@ -12,7 +12,9 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerProcessingState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
@@ -64,7 +66,7 @@ public class SchedulerWaitingStateTest extends SchedulerStateTest {
         assertTrue(context.getTracker().hasRequests(0));
     }
 	/**
-     * @Khalid Merai
+     * @author Khalid Merai
      * Tests reaction when the valid event "handleElevatorBlocked" is triggered
      */
     @Test

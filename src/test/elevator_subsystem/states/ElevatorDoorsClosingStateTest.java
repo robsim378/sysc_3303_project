@@ -50,14 +50,26 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
         
         assertFalse(testContext.getDoor().getIsOpen());
     }
+    
+    @Test
+    public void testCloseDoorsEvent() {
+    	EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
+
+        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
+
+        ElevatorState testState = new ElevatorDoorsClosingState(testContext);
+    	assertNull(testState.closeDoors());
+    }
 
     /**
      * Tests on entry for state
      */
     @Test
     public void testOnEntry() {
+    	EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
         EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
-        Elevator context = new Elevator(null, contextBuffer, 0);
+        Elevator context = new Elevator(schedulerBuffer, contextBuffer, 0);
         ElevatorState testState = new ElevatorDoorsClosingState(context);
 
         testState.doEntry();
@@ -87,8 +99,6 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
 			e.printStackTrace();
 			fail();
 		}
-        
-        testContext.setFloor(2);
 
         ElevatorState testState = new ElevatorDoorsClosingState(testContext);
 

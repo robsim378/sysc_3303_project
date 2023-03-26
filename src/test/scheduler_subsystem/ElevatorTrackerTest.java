@@ -13,6 +13,7 @@ import java.lang.NullPointerException;
 
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
+import sysc_3303_project.scheduler_subsystem.LoadRequest;
 /**
  * @author Andrei Popescu
  *
@@ -42,7 +43,7 @@ public class ElevatorTrackerTest {
 	@Test
 	public void getElevatorRequestCountTest() {
 		assertEquals(0, tracker.getElevatorRequestCount(0));
-		tracker.addLoadRequest(0, 0, Direction.UP);
+		tracker.addLoadRequest(0, new LoadRequest(0, Direction.UP));
 		tracker.addUnloadRequest(0, 0);
 		assertEquals(2, tracker.getElevatorRequestCount(0));
 	}
@@ -65,7 +66,7 @@ public class ElevatorTrackerTest {
 	public void checkAddLoadRequestTest() {
 		assertFalse(tracker.hasRequests(0));
 		assertEquals(0, tracker.getElevatorRequestCount(0));
-		tracker.addLoadRequest(0, 0, Direction.UP);
+		tracker.addLoadRequest(0, new LoadRequest(0, Direction.UP));
 		assertEquals(1, tracker.getElevatorRequestCount(0));
 		assertTrue(tracker.hasRequests(0));
 		assertTrue(tracker.hasLoadRequest(0, 0));
@@ -86,8 +87,8 @@ public class ElevatorTrackerTest {
 	
 	@Test
 	public void loadElevatorTest() {
-		tracker.addLoadRequest(0, 0, Direction.UP);
-		tracker.addLoadRequest(0, 0, Direction.DOWN);
+		tracker.addLoadRequest(0, new LoadRequest(0, Direction.UP));
+		tracker.addLoadRequest(0, new LoadRequest(0, Direction.DOWN));
 		tracker.updateElevatorDirection(0, Direction.DOWN);
 		assertTrue(tracker.hasRequests(0));
 		assertEquals(Direction.DOWN, tracker.loadElevator(0, 0));

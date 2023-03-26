@@ -249,6 +249,9 @@ public class ElevatorTracker {
 	 */
 	public boolean hasRequests(int elevatorId) {
 		ElevatorInfo info = elevatorTrackingInfo.get(elevatorId);
+		if (info == null) {
+			return false;
+		}
 		return !(info.loadRequests.isEmpty() && info.unloadRequests.isEmpty());
 	}
 	

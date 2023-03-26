@@ -16,6 +16,7 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
+import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpeningState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
@@ -55,8 +56,9 @@ public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
      */
     @Test
     public void testOnEntry() {
+    	EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
         EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<ElevatorEventType>();
-        Elevator context = new Elevator(null, contextBuffer, 0);
+        Elevator context = new Elevator(schedulerBuffer, contextBuffer, 0);
         ElevatorState testState = new ElevatorDoorsOpeningState(context);
         
         testState.doEntry();
@@ -66,6 +68,17 @@ public class ElevatorDoorsOpeningStateTest extends ElevatorStateTest{
         assertEquals(ElevatorEventType.OPEN_DOORS_TIMER, newEvent.getEventType());
         
         assertNull(newEvent.getPayload());
+    }
+    
+    @Test
+    public void testOpenDoorsEvent() {
+    	EventBuffer<Enum<?>> schedulerBuffer = new EventBuffer<>();
+        EventBuffer<ElevatorEventType> contextBuffer = new EventBuffer<>();
+
+        Elevator testContext = new Elevator(schedulerBuffer, contextBuffer, 0);
+
+        ElevatorState testState = new ElevatorDoorsOpeningState(testContext);
+    	assertNull(testState.openDoors());
     }
 
 	@Override
