@@ -71,30 +71,41 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
     - The Elevator is responsible for receiving requests from the Scheduler, moving
       to the appropriate floor, and then sending a response back to the Scheduler.
 
-- Door.java
-  - the elevator door.
-- Motor.java
-  - the elevator motor.
-- ElevatorLamp.java
-  - lamp class for the elevator buttons.
-- ElevatorButton.java
-  - the elevator buttons.
-
 - ElevatorEventType.java
      - an enumeration for the Elevator event types.
    
 - ElevatorMain.java
     - the main method for running the subsystem.
+    
+- DoorFaultDetector.java
+    - Detects faults in the elevator subsystem
+    
+
+#### /elevator_subsystem/physical_components
+
+- Door.java
+     - The static door object on the floor
+     
+- ElevatorButton.java
+     - the elevator buttons within the elevators
+     
+- ElevatorLamp.java
+     - the lamps in the elevator
+     
+- Motor.java
+     - the motor on the elevator
+     
+
 
 #### /elevator_subsystem/states
-- contains all Elevator state classes
-    - ElevatorApproachingFloorsState: Elevator is moving and approaching a door state
-    - ElevatorDoorsClosedState: Elevators doors are closed state
-    - ElevatorDoorsClosingState: Elevators doors are closing state
-    - ElevatorDoorsOpeningState: Elevators doors are opening state
-    - ElevatorDoorsOpenState: Elevator doors open state
-    - ElevatorMovingState: Elevator in movement state
-    - ElevatorState: Base abstract state 
+contains all Elevator state classes
+- ElevatorApproachingFloorsState: Elevator is moving and approaching a door state
+- ElevatorDoorsClosedState: Elevators doors are closed state
+- ElevatorDoorsClosingState: Elevators doors are closing state
+- ElevatorDoorsOpeningState: Elevators doors are opening state
+- ElevatorDoorsOpenState: Elevator doors open state
+- ElevatorMovingState: Elevator in movement state
+- ElevatorState: Base abstract state 
 
 
 ### ./scheduler_subsystem
@@ -111,7 +122,11 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
     - the main method for running the subsystem.
 - ElevatorTracker.java
     - manages elevators for the scheduler.
-
+- ElevatorFaultDetector.java
+    - detects faults that might occur in the elevator system
+- LoadRequest.java
+     - Class for storing requests on the scheduler end
+     
 #### ./scheduler_subsystem/states
 
 - contains all the classes for the Scheduler class's state machine.
@@ -194,6 +209,9 @@ Iteration 3:
 - Helped with functional testing
 - Developed test case files
 
+Iteration 4:
+- Helped design the flow for errors in the system
+- Implemented the main floor subsystem code for implementing and reading injected errors
 
 ### Ian Holmes
 
