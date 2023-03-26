@@ -167,6 +167,10 @@ public class Scheduler implements Runnable {
 	 * @return the ID of the elevator that the request was assigned to
 	 */
 	public int assignLoadRequest(LoadRequest request) {
+		if (tracker.getElevatorIds().isEmpty()) {
+			Logger.getLogger().logError(this.getClass().getSimpleName(), "No more elevators to assign tasks to!");
+			return -1;
+		}
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();

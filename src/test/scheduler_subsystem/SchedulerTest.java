@@ -18,6 +18,7 @@ import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.scheduler_subsystem.ElevatorFaultDetector;
 import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
@@ -138,6 +139,9 @@ public class SchedulerTest {
     	Field elevatorTrackerField = Scheduler.class.getDeclaredField("tracker");
         elevatorTrackerField.setAccessible(true);
         ElevatorTracker tracker = (ElevatorTracker) elevatorTrackerField.get(scheduler);
+        Field elevatorDetectorField = Scheduler.class.getDeclaredField("faultDetector");
+        elevatorDetectorField.setAccessible(true);
+        ElevatorFaultDetector detector = (ElevatorFaultDetector) elevatorDetectorField.get(scheduler);
         Event<Enum<?>> evt;
         
     	schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 8, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.DOWN));
@@ -146,6 +150,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID()); //request assigned to elevator 0
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 0));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -155,6 +161,8 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
         assertEquals(Direction.UP, evt.getPayload()); //elevator going up
         assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 1));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -163,6 +171,8 @@ public class SchedulerTest {
         assertEquals(ElevatorEventType.CONTINUE_MOVING, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
         assertEquals(1, tracker.getElevatorFloor(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         //assign extra requests partway
         tracker.updateElevatorFloor(0, 4); //skip ahead for testing: approaching floors 2-4 will work the same as the previous test case
@@ -176,6 +186,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(1, evt.getDestinationID()); //request assigned to elevator 1; elevator 0 receives no additional events
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
     	schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 5));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -184,6 +196,8 @@ public class SchedulerTest {
         assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
         assertEquals(5, tracker.getElevatorFloor(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
     	
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_STOPPED, 5));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -191,6 +205,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.OPEN_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 5));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -204,9 +220,13 @@ public class SchedulerTest {
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
         assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_BUTTON_PRESSED, 6));
         TimeUnit.MILLISECONDS.sleep(500);
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 5));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -216,6 +236,8 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
         assertEquals(Direction.UP, evt.getPayload()); //elevator going up
         assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 6));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -223,6 +245,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        detector.clearTimers(0);
+        detector.clearTimers(1);
     	
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_STOPPED, 6));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -230,6 +254,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.OPEN_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 6));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -244,6 +270,8 @@ public class SchedulerTest {
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
         assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_CLOSED, 6));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -253,6 +281,8 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
         assertEquals(Direction.UP, evt.getPayload()); //elevator going up
         assertEquals(Direction.UP, tracker.getElevatorDirection(0));
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         tracker.updateElevatorFloor(0, 7);
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, 8));
@@ -261,6 +291,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.STOP_AT_NEXT_FLOOR, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_STOPPED, 8));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -268,6 +300,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.OPEN_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        detector.clearTimers(0);
+        detector.clearTimers(1);
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 8));
         TimeUnit.MILLISECONDS.sleep(500);
@@ -281,6 +315,8 @@ public class SchedulerTest {
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
         assertEquals(0, evt.getDestinationID());
+        detector.clearTimers(0);
+        detector.clearTimers(1);
     }
 }
 
