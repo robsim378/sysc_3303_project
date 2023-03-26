@@ -1,4 +1,4 @@
-# L2G1_milestone_3
+# L2G1_milestone_4
 
 ## Group 1 
 - Liam Gaudet
@@ -169,11 +169,11 @@ contains all Elevator state classes
 5. Click "Finish".
 6. If you want to adjust the hosts running each procedure, navigate to resources -> config.properties and enter for each "XXX.hostname=" the host running that process. If this step is not done, all processes must be run on the same machine.
 7. Copy the contents of a test file in `resources` (ex: `test6`) except the first two lines, into `testing_examples` in the resource folder.
-8. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> scheduler_subsystem.
+8. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_4 -> src -> sysc_3303_project -> scheduler_subsystem.
 9. Right click on "SchedulerMain.java" and select "Run As" -> "Java Application".
-10. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> elevator_subsystem.
+10. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_4 -> src -> sysc_3303_project -> elevator_subsystem.
 11. Right click on "ElevatorMain.java" and select "Run As" -> "Java Application".
-12. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> floor_subsystem.
+12. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_4 -> src -> sysc_3303_project -> floor_subsystem.
 13. Right click on "FloorMain.java" and select "Run As" -> "Java Application".
 
 ## Testing
