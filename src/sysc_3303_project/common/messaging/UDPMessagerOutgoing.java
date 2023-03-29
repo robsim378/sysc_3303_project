@@ -13,11 +13,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import logging.Logger;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.Event;
@@ -26,7 +28,14 @@ import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 
 public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 
+	// Event buffer for events to send
 	private EventBuffer<?> eventBuffer;
+	
+	// Retries limit. Determined by system configuration
+	private static final int RETRIES = ResourceManager.get().getInt("messaging.retries");
+	
+	// Timeout limit. Determined by system configuration
+	private static final int TIMEOUT= ResourceManager.get().getInt("messaging.timeout");;
 	
 	/**
 	 * Constructor for class
@@ -52,26 +61,60 @@ public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 			
 			// Build data to send
 			int port = getPort(ev.getDestinationSubsystem());
-			
 			InetAddress addr = getHost(ev.getDestinationSubsystem());
-			
 			byte[] msg = generateByteArray(ev);
-			
+			DatagramPacket sendPacket = generateDatagramPacket(msg, addr, port);
+
+			// Generate a socket
 			DatagramSocket sendSocket = generateDatagramSocket();
 			
-			DatagramPacket sendPacket = generateDatagramPacket(msg, addr, port);
+			// Send packet
+			sendPacket(sendSocket, sendPacket, ev, 0);
 			
-			// Send data
-			try {
-				sendSocket.send(sendPacket);
-				Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent datagram packet to " + ev.getDestinationSubsystem().toString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Logger.getLogger().logError(this.getClass().toString(), e.getMessage());
-			}			
-			
+			// Close the socket
 			sendSocket.close();
 		}
+	}
+	
+	/**
+	 * Sends a packet to a destination. Repeats up to 5 times, 
+	 * @param sendRecieveSocket		DatagramSocket, the socket to send and receive on
+	 * @param sendPacket			DatagramPacket, the packet to send
+	 * @param ev					ev, the event being sent
+	 * @param attempts				int, attempts made trying to send
+	 */
+	private void sendPacket(DatagramSocket sendRecieveSocket, DatagramPacket sendPacket, Event<?> ev, int attempts) {
+		
+		// Send data
+		try {
+			sendRecieveSocket.send(sendPacket);
+			Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent datagram packet to " + ev.getDestinationSubsystem().toString());
+		} catch (IOException e) {
+			Logger.getLogger().logError(this.getClass().toString(), e.getMessage());
+		}		
+		
+		// Await response
+		DatagramPacket responsePacket = new DatagramPacket(new byte[] {0}, 1);
+
+		try {
+			sendRecieveSocket.receive(responsePacket);
+		} catch (SocketTimeoutException e) {
+			/* If fail to get a response, retry sending the message if fewer than 5 attempts
+			    have been made*/
+			Logger.getLogger().logError(this.getClass().toString(), e.getMessage());
+
+			if(attempts < RETRIES) {
+				Logger.getLogger().logError(this.getClass().toString(), "Outgoing packet failed to send. Attempting retry#" + attempts + 1);
+				sendPacket(sendRecieveSocket, sendPacket, ev, attempts + 1);
+			} else {
+				Logger.getLogger().logError(this.getClass().toString(), "Limit of retry's has been reached. System termination inevidable");
+				System.exit(-1);
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	/**
@@ -80,7 +123,9 @@ public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 	 */
 	private DatagramSocket generateDatagramSocket() {
 		try {
-			return new DatagramSocket();
+			DatagramSocket socket = new DatagramSocket();
+			socket.setSoTimeout(TIMEOUT);
+			return socket;
 		} catch (SocketException e) {
 			Logger.getLogger().logError(this.getClass().toString(), e.getMessage());
 		}
