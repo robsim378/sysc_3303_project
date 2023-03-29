@@ -6,12 +6,10 @@
 package test.floor_subsystem.states;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import sysc_3303_project.common.Direction;
@@ -154,7 +152,7 @@ public class FloorIdleStateTest {
 	public void testHandleElevatorDirection() {
 		setup();
 
-		FloorState newState = floor.getState().handleElevatorDirection(Direction.UP, 1);
+		floor.getState().handleElevatorDirection(Direction.UP, 1);
 		
 		assertEquals(true, floor.getUpDirectionalLampStatus(1));
 		

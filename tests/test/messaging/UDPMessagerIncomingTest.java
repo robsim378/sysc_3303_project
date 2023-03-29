@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public class UDPMessagerIncomingTest {
 
     private List<EventBuffer<TestEnum>> eventBuffers;
     private int listeningPort = 5000;
-    private UDPMessagerIncoming<TestEnum> udpMessagerIncoming;
 
     // Define TestEnum at the top of the file
     private enum TestEnum {
@@ -39,7 +37,6 @@ public class UDPMessagerIncomingTest {
             eventBuffers.add(new EventBuffer<TestEnum>());
 
         }
-        udpMessagerIncoming = new UDPMessagerIncoming<>(eventBuffers, Subsystem.FLOOR);
     }
 
     @Test
@@ -55,7 +52,7 @@ public class UDPMessagerIncomingTest {
         byte[] eventBytes = eventToBytes(event);
         DatagramPacket packet = new DatagramPacket(eventBytes, eventBytes.length, InetAddress.getLocalHost(), listeningPort);
 
-        UDPMessagerIncoming thing = new UDPMessagerIncoming(eventBuffers, Subsystem.FLOOR);
+        UDPMessagerIncoming<TestEnum> thing = new UDPMessagerIncoming<TestEnum>(eventBuffers, Subsystem.FLOOR);
         // wait for event to be added to the correct buffer
         Event<TestEnum> actualEvent = thing.parseEvent(packet);
 

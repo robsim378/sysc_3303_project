@@ -27,7 +27,6 @@ import sysc_3303_project.floor_subsystem.InputFileController;
  */
 class FloorSystemTest {
 	private InputFileController fileController;
-	private int numFloors;
 	EventBuffer<Enum<?>> outgoingBuffer;
 	FloorSystem floor;
 	ArrayList<FloorSystem> floors;

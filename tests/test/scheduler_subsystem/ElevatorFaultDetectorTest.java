@@ -1,6 +1,9 @@
-package sysc_3303_project.scheduler_subsystem;
+package test.scheduler_subsystem;
 import org.junit.jupiter.api.Test;
 import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.scheduler_subsystem.ElevatorFaultDetector;
+import sysc_3303_project.scheduler_subsystem.Scheduler;
+import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,14 +20,15 @@ class ElevatorFaultDetectorTest {
         faultDetector.addTimer(1, 500);
 
         // Verify that the timer was added
-        assertEquals(1, faultDetector.elevatorMoveTimers.size());
-        assertEquals(1, faultDetector.elevatorMoveTimers.get(0).getElevatorId());
+        assertEquals(1, faultDetector.getElevatorMoveTimers().size());
+        assertEquals(1, faultDetector.getElevatorMoveTimers().get(0).getElevatorId());
+
 
         // Clear the timers for elevator 1
         faultDetector.clearTimers(1);
 
         // Verify that the timer was cleared
-        assertEquals(0, faultDetector.elevatorMoveTimers.size());
+        assertEquals(0, faultDetector.getElevatorMoveTimers().size());
     }
 
 }

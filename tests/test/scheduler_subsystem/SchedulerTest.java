@@ -14,8 +14,6 @@ import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
-import sysc_3303_project.common.events.RequestData;
-import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.scheduler_subsystem.ElevatorFaultDetector;
@@ -25,10 +23,7 @@ import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import java.lang.reflect.Field;
-import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
