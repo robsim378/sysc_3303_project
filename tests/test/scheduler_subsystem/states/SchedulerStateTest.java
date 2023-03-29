@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import sysc_3303_project.common.Direction;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;

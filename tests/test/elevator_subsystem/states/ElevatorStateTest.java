@@ -10,7 +10,6 @@ import sysc_3303_project.elevator_subsystem.states.*;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class ElevatorStateTest {
     ElevatorState testState;

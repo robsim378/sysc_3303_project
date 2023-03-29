@@ -7,7 +7,6 @@ package test.elevator_subsystem.states;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
-import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpeningState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;

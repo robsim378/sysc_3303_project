@@ -6,7 +6,6 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
-import logging.Logger;
 import sysc_3303_project.common.Direction;
 
 import sysc_3303_project.common.state.State;

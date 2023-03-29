@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 3.0
+ * @version 4.0
  */
 package sysc_3303_project.common.messaging;
 
@@ -53,7 +53,6 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 
@@ -118,6 +117,7 @@ public class UDPMessagerIncoming<T extends Enum<?>> extends UDPMessager implemen
 	 * @param packet		DatagramPacket, packet to parse
 	 * @return				Event<T>, event that was parsed
 	 */
+	@SuppressWarnings("unchecked")
 	public Event<T> parseEvent(DatagramPacket packet){
 		ByteArrayInputStream bis = new ByteArrayInputStream(packet.getData());
 		ObjectInput in = null;

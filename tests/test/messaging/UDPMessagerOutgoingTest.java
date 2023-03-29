@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import sysc_3303_project.common.configuration.Subsystem;
-import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.messaging.UDPMessagerOutgoing;
 

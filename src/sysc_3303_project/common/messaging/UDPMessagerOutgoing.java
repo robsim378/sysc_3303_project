@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 3.0
+ * @version 4.0
  */
 
 package sysc_3303_project.common.messaging;
@@ -14,18 +14,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import logging.Logger;
-import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
-import sysc_3303_project.common.configuration.Subsystem;
-import sysc_3303_project.common.configuration.SystemProperties;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
-import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 
+/**
+ * A thread used to facilitate outoging messages in a subsystem
+ * @author Liam
+ */
 public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 
 	// Event buffer for events to send
@@ -104,10 +102,10 @@ public class UDPMessagerOutgoing extends UDPMessager implements Runnable {
 			Logger.getLogger().logError(this.getClass().toString(), e.getMessage());
 
 			if(attempts < RETRIES) {
-				Logger.getLogger().logError(this.getClass().toString(), "Outgoing packet failed to send. Attempting retry#" + attempts + 1);
+				Logger.getLogger().logError(this.getClass().toString(), "Outgoing packet failed to send. Attempting retry#" + (attempts + 1));
 				sendPacket(sendRecieveSocket, sendPacket, ev, attempts + 1);
 			} else {
-				Logger.getLogger().logError(this.getClass().toString(), "Limit of retry's has been reached. System termination inevidable");
+				Logger.getLogger().logError(this.getClass().toString(), "Limit of retry's has been reached. Terminators deployed.");
 				System.exit(-1);
 
 			}

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
-import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
@@ -19,7 +18,6 @@ import sysc_3303_project.scheduler_subsystem.states.SchedulerProcessingState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 
-import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 

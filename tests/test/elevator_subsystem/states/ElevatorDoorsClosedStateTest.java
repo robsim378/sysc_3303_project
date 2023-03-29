@@ -10,7 +10,6 @@ import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
-import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpeningState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorMovingState;

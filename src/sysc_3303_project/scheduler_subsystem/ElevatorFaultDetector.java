@@ -17,7 +17,7 @@ import sysc_3303_project.common.events.Event;
  *
  */
 public class ElevatorFaultDetector {
-	protected class ElevatorMoveTimer {
+	public class ElevatorMoveTimer {
 		public Timer timer;
 		public int elevatorId;
 		private ElevatorMoveTimer(Timer timer, int elevatorId) {
@@ -30,7 +30,7 @@ public class ElevatorFaultDetector {
 		}
 	}
 
-	List<ElevatorMoveTimer> elevatorMoveTimers;
+	private List<ElevatorMoveTimer> elevatorMoveTimers;
 	private Scheduler scheduler;
 	
 	public ElevatorFaultDetector(Scheduler scheduler) {
@@ -65,5 +65,9 @@ public class ElevatorFaultDetector {
 		for (ElevatorMoveTimer timer : toRemove) {
 			elevatorMoveTimers.remove(timer);
 		}
+	}
+	
+	public List<ElevatorMoveTimer> getElevatorMoveTimers(){
+		return elevatorMoveTimers;
 	}
 }

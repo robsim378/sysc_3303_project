@@ -14,7 +14,6 @@ import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
-import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
