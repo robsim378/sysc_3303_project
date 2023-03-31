@@ -9,8 +9,11 @@ package sysc_3303_project.floor_subsystem;
 import java.util.ArrayList;
 import logging.Logger;
 import sysc_3303_project.floor_subsystem.states.FloorState;
+import sysc_3303_project.ui_subsystem.FloorLampStatus;
+import sysc_3303_project.ui_subsystem.GuiEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.common.events.RequestData;
@@ -200,6 +203,10 @@ public class FloorSystem implements Runnable{
 		} else {
 			floorLamps[1].turnOn();
 		}
+		outputBuffer.addEvent(new Event<Enum<?>>(
+				Subsystem.GUI, 0, 
+				Subsystem.FLOOR, floorID, 
+				GuiEventType.FLOOR_LAMP_STATUS_CHANGE, new FloorLampStatus(direction, true)));
 	}
 	
 	/**
@@ -237,6 +244,10 @@ public class FloorSystem implements Runnable{
 		} else {
 			floorLamps[1].turnOff();
 		}
+		outputBuffer.addEvent(new Event<Enum<?>>(
+				Subsystem.GUI, 0, 
+				Subsystem.FLOOR, floorID, 
+				GuiEventType.FLOOR_LAMP_STATUS_CHANGE, new FloorLampStatus(direction, false)));
 	}
 
 	/**
