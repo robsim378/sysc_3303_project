@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package sysc_3303_project.ui_subsystem;
+
+/**
+ * @author apope
+ *
+ */
+public enum GuiEventType {
+	FLOOR_LAMP_STATUS_CHANGE,
+	DIRECTIONAL_LAMP_STATUS_CHANGE,
+	ELEVATOR_AT_FLOOR,
+	ELEVATOR_DOORS_FAULT,
+	ELEVATOR_SHUTDOWN_FAULT,
+	ELEVATOR_LAMP_STATUS_CHANGE,
+	ELEVATOR_DOOR_STATUS_CHANGE
+}
