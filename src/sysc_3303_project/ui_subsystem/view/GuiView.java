@@ -1,4 +1,4 @@
-package sysc_3303_project.ui_subsystem;
+package sysc_3303_project.ui_subsystem.view;
 
 public interface GuiView {
     public void updateFloorPanel(int floorID);

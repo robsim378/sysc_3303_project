@@ -1,6 +1,7 @@
-package sysc_3303_project.ui_subsystem;
+package sysc_3303_project.ui_subsystem.view;
 
 import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.ui_subsystem.GuiModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,23 +23,45 @@ public class SystemFrame extends JFrame implements GuiView {
         generateElevatorPanels();
         generateFloorPanels();
 
+        
+        
+        // Floors side
+        
+        JPanel floorsSection = new JPanel();
+        floorsSection.setLayout(new BorderLayout());
+        floorsSection.add(new JLabel("Floors"), BorderLayout.NORTH);
+        
         JPanel floorsPanel = new JPanel();
-        floorsPanel.add(new JLabel("Floors"));
         for (int i = 0; i < ResourceManager.get().getInt("count.floors"); i++) {
             floorsPanel.add(floorPanels.get(i));
         }
         floorsPanel.setBackground(new Color(100, 100, 20));
-        floorsPanel.setLayout(new GridLayout());
-        this.add(floorsPanel);
+        floorsPanel.setLayout(new GridLayout(22,1));
+        
+        JScrollPane scrollPaneFloors = new JScrollPane(floorsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        floorsSection.add(scrollPaneFloors, BorderLayout.CENTER);
+        
+        this.add(floorsSection);
 
+        
+        
+        // Elevators side
+        JPanel elevatorsSection = new JPanel();
+        elevatorsSection.setLayout(new BorderLayout());
+        elevatorsSection.add(new JLabel("Elevators"), BorderLayout.NORTH);
+        
         JPanel elevatorsPanel = new JPanel();
-        elevatorsPanel.add(new JLabel("Elevators"));
         for (int i = 0; i < ResourceManager.get().getInt("count.elevators"); i++) {
             elevatorsPanel.add(elevatorPanels.get(i));
         }
         elevatorsPanel.setBackground(new Color(200, 50, 200));
-        elevatorsPanel.setLayout(new GridLayout());
-        this.add(elevatorsPanel);
+        elevatorsPanel.setLayout(new GridLayout(2,2));
+        
+        JScrollPane scrollPaneElevators = new JScrollPane(elevatorsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        elevatorsSection.add(scrollPaneElevators, BorderLayout.CENTER);
+        
+        this.add(elevatorsSection);
 
 
 
