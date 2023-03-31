@@ -13,20 +13,44 @@ public class ElevatorPanel extends JPanel {
     private JLabel[] lamps;
     private JLabel direction;
     private JLabel position;
+    private JPanel directionUpIcon;
+    private JPanel directionDownIcon;
 
     public ElevatorPanel(int elevatorID) {
         this.setMinimumSize(new Dimension(200, 200));
-        this.setLayout(new GridLayout());
-        this.setBackground(new Color(100, 200, 50));
-        Border blackline = BorderFactory.createLineBorder(Color.black);
-        setBorder(blackline);
+        this.setLayout(new GridLayout(3,1));
+        this.setBackground(Color.CYAN);
+        Border blackLine = BorderFactory.createLineBorder(Color.black);
+        this.setBorder(blackLine);
 
-        
-        this.direction = new JLabel("Direction: ");
+        this.elevatorID = elevatorID;
+        this.add(new JLabel("Elevator " + elevatorID));
+
         this.position = new JLabel("Floor: 0");
-        
+
+        JPanel directionIcons = new JPanel();
+        directionIcons.setLayout(new GridLayout());
+
+        directionUpIcon = new JPanel();
+        JLabel upLabel = new JLabel("⬆️");
+        upLabel.setFont(new Font("Serif", Font.PLAIN, 70));
+        directionUpIcon.setBackground(Color.darkGray);
+        directionUpIcon.setBorder(blackLine);
+        //directionUpIcon.setBackground(new Color(255, 231, 113));
+        directionUpIcon.add(upLabel);
+
+
+        directionDownIcon = new JPanel();
+        JLabel downLabel = new JLabel("⬇️");
+        downLabel.setFont(new Font("Serif", Font.PLAIN, 70));
+        directionDownIcon.setBackground(Color.darkGray);
+        directionDownIcon.setBorder(blackLine);
+        directionDownIcon.add(downLabel);
+        directionIcons.add(directionUpIcon);
+        directionIcons.add(directionDownIcon);
+
         this.add(position);
-        this.add(direction);
+        this.add(directionIcons);
     }
 
     public void updatePanel(GuiModel model) {

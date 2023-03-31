@@ -14,10 +14,10 @@ public class SystemFrame extends JFrame implements GuiView {
     private ArrayList<FloorPanel> floorPanels;
 
     public SystemFrame() {
-        this.setMinimumSize(new Dimension(500, 500));
+        this.setMinimumSize(new Dimension(900, 800));
         this.setLayout(new GridLayout());
         GridBagConstraints c = new GridBagConstraints();
-        //model = new GuiModel();
+        //model = new GuiModel(22,4,null,null);
         elevatorPanels = new ArrayList<>();
         floorPanels = new ArrayList<>();
         generateElevatorPanels();
@@ -62,6 +62,7 @@ public class SystemFrame extends JFrame implements GuiView {
         elevatorsSection.add(scrollPaneElevators, BorderLayout.CENTER);
         
         this.add(elevatorsSection);
+
 
 
 
