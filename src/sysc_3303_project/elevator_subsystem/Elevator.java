@@ -20,6 +20,8 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.Lamps;
+import sysc_3303_project.ui_subsystem.ElevatorLampStatus;
+import sysc_3303_project.ui_subsystem.GuiEventType;
 
 import java.util.Arrays;
 
@@ -166,7 +168,14 @@ public class Elevator implements Runnable {
         directionLamps.lightDirectionalLamp(direction);
         this.direction = direction;
         
-        outputBuffer.addEvent(new Event<Enum<?>>(Subsystem.FLOOR, -1, Subsystem.ELEVATOR, elevatorID, FloorEventType.UPDATE_ELEVATOR_DIRECTION, direction));
+        outputBuffer.addEvent(new Event<>(
+        		Subsystem.FLOOR, -1,
+        		Subsystem.ELEVATOR, elevatorID, 
+        		FloorEventType.UPDATE_ELEVATOR_DIRECTION, direction));
+        outputBuffer.addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, elevatorID,
+                GuiEventType.DIRECTIONAL_LAMP_STATUS_CHANGE, direction));
     }
     
     public Direction getDirection() {
@@ -175,6 +184,10 @@ public class Elevator implements Runnable {
 
     public void turnOffLamp(int lampNumber) {
         this.buttonLamps[lampNumber].turnOff();
+        outputBuffer.addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, elevatorID,
+                GuiEventType.ELEVATOR_LAMP_STATUS_CHANGE, new ElevatorLampStatus(lampNumber, false)));
     }
 
     public DoorFaultDetector getFaultDetector() {
@@ -206,6 +219,10 @@ public class Elevator implements Runnable {
         }
         Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Elevator " + elevatorID + " moving from floor " + elevatorFloor + " to floor " + resultFloor);
         elevatorFloor = resultFloor;
+        outputBuffer.addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, elevatorID,
+                GuiEventType.ELEVATOR_AT_FLOOR, elevatorFloor));
     }
 
 
@@ -219,12 +236,6 @@ public class Elevator implements Runnable {
 
         while (true) {
             event = inputBuffer.getEvent();
-
-            if (event.getPayload() instanceof Integer) {    // this should be moved to a better location
-                int lampNumber = (int) event.getPayload();  // I'm sorry Liam :(
-                buttonLamps[lampNumber].turnOn();
-            }
-
             ElevatorState newState = null;
 
             Logger.getLogger().logDebug(this.getClass().getSimpleName(),"Elevator " + elevatorID

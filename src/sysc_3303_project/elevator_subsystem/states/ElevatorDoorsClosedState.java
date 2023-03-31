@@ -7,7 +7,11 @@
 package sysc_3303_project.elevator_subsystem.states;
 
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.ui_subsystem.DoorStatus;
+import sysc_3303_project.ui_subsystem.GuiEventType;
 
 /**
  * The state in which the elevator is idle with its doors closed.
@@ -23,6 +27,14 @@ public class ElevatorDoorsClosedState extends ElevatorState {
      */
     public ElevatorDoorsClosedState(Elevator context) {
         super(context);
+    }
+    
+    @Override
+    public void doEntry() {
+    	context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOOR_STATUS_CHANGE, DoorStatus.DOORS_CLOSED));
     }
 
     /**

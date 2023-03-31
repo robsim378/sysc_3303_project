@@ -16,6 +16,8 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
+import sysc_3303_project.ui_subsystem.DoorStatus;
+import sysc_3303_project.ui_subsystem.GuiEventType;
 
 public class ElevatorDoorsOpeningState extends ElevatorState{
 
@@ -33,6 +35,10 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
      */
     @Override
     public void doEntry() {
+    	context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOOR_STATUS_CHANGE, DoorStatus.DOORS_OPENING));
         context.getFaultDetector().startDoorsTimer(1000);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -75,6 +81,10 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
                 context.getElevatorID(),
                 SchedulerEventType.ELEVATOR_DOORS_OPENED,
                 context.getFloor()));
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOORS_FAULT, false)); //sometimes redundant but low cost
         context.getDoor().setOpen();
         context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsOpenState(context);
@@ -91,6 +101,10 @@ public class ElevatorDoorsOpeningState extends ElevatorState{
                 "Elevator " + context.getElevatorID() + " doors are blocked!!!");
         Logger.getLogger().logNotification(context.getClass().getSimpleName(),
                 "Elevator " + context.getElevatorID() + " retrying open doors...");
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOORS_FAULT, true));
         this.doEntry();
         return null;
     }
