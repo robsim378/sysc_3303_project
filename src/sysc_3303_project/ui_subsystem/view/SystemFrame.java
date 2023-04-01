@@ -9,21 +9,24 @@ import java.util.ArrayList;
 
 public class SystemFrame extends JFrame implements GuiView {
 
-    private GuiModel model;
+    private final GuiModel model;
     private ArrayList<ElevatorPanel> elevatorPanels;
     private ArrayList<FloorPanel> floorPanels;
 
-    public SystemFrame() {
+    public SystemFrame(GuiModel model) {
+    	this.model = model;
+        elevatorPanels = new ArrayList<>();
+        floorPanels = new ArrayList<>();
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         this.setMinimumSize(new Dimension(900, 800));
         this.setLayout(new GridLayout());
         GridBagConstraints c = new GridBagConstraints();
-        //model = new GuiModel(22,4,null,null);
-        elevatorPanels = new ArrayList<>();
-        floorPanels = new ArrayList<>();
+        
         generateElevatorPanels();
         generateFloorPanels();
 
-        
         
         // Floors side
         
@@ -90,6 +93,16 @@ public class SystemFrame extends JFrame implements GuiView {
 
 
     public static void main(String[] args) {
-        new SystemFrame();
+    	GuiModel model = new GuiModel(null, null);
+        SystemFrame f = new SystemFrame(model);
+        try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        model.
+        
     }
 }

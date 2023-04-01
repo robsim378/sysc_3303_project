@@ -5,6 +5,7 @@ package sysc_3303_project.ui_subsystem;
 
 import logging.Logger;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 
@@ -50,9 +51,12 @@ public class GuiModel {
 	private final ElevatorInfo[] elevators;
 	private final FloorInfo[] floors;
 	
-	public GuiModel(int floorsCount, int elevatorsCount, EventBuffer<GuiEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
+	public GuiModel(EventBuffer<GuiEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
 		this.inputBuffer = inputBuffer;
 		this.outputBuffer = outputBuffer;
+		ResourceManager mngr = ResourceManager.get();
+		int elevatorsCount = mngr.getInt("count.elevators");
+		int floorsCount = mngr.getInt("count.floors");
 		this.elevators = new ElevatorInfo[elevatorsCount];
 		this.floors = new FloorInfo[floorsCount];
 		for (int i = 0; i < elevatorsCount; i++) {
