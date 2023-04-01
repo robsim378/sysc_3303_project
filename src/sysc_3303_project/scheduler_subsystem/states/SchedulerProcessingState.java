@@ -12,6 +12,7 @@ import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
+import sysc_3303_project.ui_subsystem.GuiEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
@@ -177,6 +178,10 @@ public class SchedulerProcessingState extends SchedulerState {
 		context.getFaultDetector().clearTimers(elevatorId);
 		Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is blocked!!!");
 		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.SCHEDULER, 0,
+                GuiEventType.ELEVATOR_SHUTDOWN_FAULT, elevatorId));
 		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
 			context.getInputBuffer().addEvent(new Event<>(
 					Subsystem.SCHEDULER, 0,

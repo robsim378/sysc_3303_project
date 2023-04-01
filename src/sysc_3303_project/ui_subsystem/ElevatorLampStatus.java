@@ -3,11 +3,13 @@
  */
 package sysc_3303_project.ui_subsystem;
 
+import java.io.Serializable;
+
 /**
  * @author apope
  *
  */
-public class ElevatorLampStatus {
+public class ElevatorLampStatus implements Serializable {
 	
 	private final int floorNumber;
 	private final boolean status;
