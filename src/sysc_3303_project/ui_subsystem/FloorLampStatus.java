@@ -3,13 +3,15 @@
  */
 package sysc_3303_project.ui_subsystem;
 
+import java.io.Serializable;
+
 import sysc_3303_project.common.Direction;
 
 /**
  * @author Andrei Popescu
  *
  */
-public class FloorLampStatus {
+public class FloorLampStatus implements Serializable {
 	
 	private final Direction direction;
 	private final boolean status;

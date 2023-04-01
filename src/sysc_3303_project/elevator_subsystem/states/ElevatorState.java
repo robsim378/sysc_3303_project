@@ -14,6 +14,8 @@ import sysc_3303_project.common.events.Event;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
+import sysc_3303_project.ui_subsystem.ElevatorLampStatus;
+import sysc_3303_project.ui_subsystem.GuiEventType;
 
 /**
  * State class for the elevator state machine.
@@ -76,6 +78,11 @@ public abstract class ElevatorState implements State {
      * @return ElevatorState, next state
      */
     public ElevatorState handleElevatorButtonPressed(int destination) {
+    	context.getButtonLamps()[destination].turnOn();
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_LAMP_STATUS_CHANGE, new ElevatorLampStatus(destination, true)));
         context.getOutputBuffer().addEvent(
                 new Event<Enum<?>>(
                         Subsystem.SCHEDULER,
