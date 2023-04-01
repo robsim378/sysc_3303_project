@@ -2,6 +2,7 @@ package sysc_3303_project.ui_subsystem.view;
 import javax.swing.*;
 import javax.swing.border.Border;
 
+import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.ui_subsystem.GuiModel;
 
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 public class FloorPanel extends JPanel {
 	
 	private static final int DIRECTION_FONT_SIZE = 20;
+	
+	private static final Color ON = new Color(0, 255, 0); 
+	private static final Color OFF = Color.darkGray; 
 
     private final int floorID;
 
@@ -43,13 +47,13 @@ public class FloorPanel extends JPanel {
 
         floorButtonUp = new JPanel();
         floorButtonUp.add(new JLabel("UP"));
-        floorButtonUp.setBackground(Color.darkGray);
+        floorButtonUp.setBackground(OFF);
         floorButtonUp.setBorder(blackLine);
 
 
         floorButtonDown = new JPanel();
         floorButtonDown.add(new JLabel("DOWN"));
-        floorButtonDown.setBackground(Color.darkGray);
+        floorButtonDown.setBackground(OFF);
         floorButtonDown.setBorder(blackLine);
 
         
@@ -81,7 +85,7 @@ public class FloorPanel extends JPanel {
             JPanel directionUpIcon = new JPanel();
             JLabel upLabel = new JLabel("⬆️");
             upLabel.setFont(new Font("Serif", Font.PLAIN, DIRECTION_FONT_SIZE));
-            directionUpIcon.setBackground(Color.darkGray);
+            directionUpIcon.setBackground(OFF);
             directionUpIcon.setBorder(blackLine);
             directionUpIcon.add(upLabel);
 
@@ -89,7 +93,7 @@ public class FloorPanel extends JPanel {
             JPanel directionDownIcon = new JPanel();
             JLabel downLabel = new JLabel("⬇️");
             downLabel.setFont(new Font("Serif", Font.PLAIN, DIRECTION_FONT_SIZE));
-            directionDownIcon.setBackground(Color.darkGray);
+            directionDownIcon.setBackground(OFF);
             directionDownIcon.setBorder(blackLine);
             directionDownIcon.add(downLabel);
             
@@ -107,6 +111,27 @@ public class FloorPanel extends JPanel {
     }
 
     public void updatePanel(GuiModel model) {
-        this.updateUI();
+    	System.out.println("Doing shit");
+
+    	// Floor button up
+    	
+    	floorButtonUp.setBackground(Boolean.TRUE.equals(model.getFloorUpLamp(floorID)) ? ON : OFF);
+
+    	// Floor button down
+    	floorButtonDown.setBackground(Boolean.TRUE.equals(model.getFloorDownLamp(floorID)) ? ON : OFF);
+
+    	
+    	// Floor directional lamps
+    	for(int i = 0; i < directionalLampsUp.size(); i++) {
+    		directionalLampsUp.get(i).setBackground(model.getElevatorDirection(i) == Direction.UP ? ON : OFF);
+    		directionalLampsDown.get(i).setBackground(model.getElevatorDirection(i) == Direction.DOWN ? ON : OFF);
+    	}
+    	System.out.println("Updated");
+    	this.updateUI();
+    }
+    
+    public void updateDirectionalLamp(int elevator, GuiModel model) {
+		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP ? ON : OFF);
+		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? ON : OFF);
     }
 }

@@ -1,9 +1,14 @@
 package sysc_3303_project.ui_subsystem.view;
 
+import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
+import sysc_3303_project.ui_subsystem.FloorLampStatus;
 import sysc_3303_project.ui_subsystem.GuiModel;
 
 import javax.swing.*;
+
+import logging.Logger;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -15,6 +20,7 @@ public class SystemFrame extends JFrame implements GuiView {
 
     public SystemFrame(GuiModel model) {
     	this.model = model;
+    	model.addView(this);
         elevatorPanels = new ArrayList<>();
         floorPanels = new ArrayList<>();
         
@@ -66,9 +72,6 @@ public class SystemFrame extends JFrame implements GuiView {
         
         this.add(elevatorsSection);
 
-
-
-
         setVisible(true);
     }
 
@@ -86,6 +89,12 @@ public class SystemFrame extends JFrame implements GuiView {
     public void updateFloorPanel(int floorID) {
         floorPanels.get(floorID).updatePanel(model);
     }
+    
+    public void updateElevatorDirectionalLamps(int elevatorID) {
+    	for(FloorPanel p : floorPanels) {
+    		p.updateDirectionalLamp(elevatorID, model);
+    	}
+    }
 
     public void updateElevatorPanel(int elevatorID) {
         elevatorPanels.get(elevatorID).updatePanel(model);
@@ -93,16 +102,31 @@ public class SystemFrame extends JFrame implements GuiView {
 
 
     public static void main(String[] args) {
+    	System.out.println("Doing shit");
+
     	GuiModel model = new GuiModel(null, null);
-        SystemFrame f = new SystemFrame(model);
+        new SystemFrame(model);
+    	System.out.println("Doing shit");
+
         try {
-			Thread.sleep(10000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        model.
-        
+    	System.out.println("Doing shit");
+
+        model.handleFloorLampStatusChange(1, new FloorLampStatus(Direction.UP, true));
+
+        try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	System.out.println("Doing shit");
+
+        model.handleDirectionalLampStatusChange(1, Direction.UP);
+
     }
 }

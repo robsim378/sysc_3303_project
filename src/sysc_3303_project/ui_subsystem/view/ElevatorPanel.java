@@ -11,7 +11,6 @@ public class ElevatorPanel extends JPanel {
 
     private int elevatorID;
     private JLabel[] lamps;
-    private JLabel direction;
     private JLabel position;
     private JPanel directionUpIcon;
     private JPanel directionDownIcon;
@@ -36,7 +35,6 @@ public class ElevatorPanel extends JPanel {
         upLabel.setFont(new Font("Serif", Font.PLAIN, 70));
         directionUpIcon.setBackground(Color.darkGray);
         directionUpIcon.setBorder(blackLine);
-        //directionUpIcon.setBackground(new Color(255, 231, 113));
         directionUpIcon.add(upLabel);
 
 
@@ -56,7 +54,6 @@ public class ElevatorPanel extends JPanel {
     public void updatePanel(GuiModel model) {
 
         position.setText("Floor: " + model.getElevatorPosition(elevatorID));
-        direction.setText("Direction: " + model.getElevatorDirection(elevatorID));
         this.updateUI();
     }
 }
