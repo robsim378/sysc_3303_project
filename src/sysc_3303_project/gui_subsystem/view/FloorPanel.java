@@ -1,14 +1,25 @@
-package sysc_3303_project.ui_subsystem.view;
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 5.0
+ */
+
+package sysc_3303_project.gui_subsystem.view;
 import javax.swing.*;
 import javax.swing.border.Border;
 
+import logging.Logger;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
-import sysc_3303_project.ui_subsystem.GuiModel;
+import sysc_3303_project.gui_subsystem.model.SystemModel;
 
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Represents an floor panel to display
+ * @author Liam and Ian
+ */
 public class FloorPanel extends JPanel {
 	
 	/**
@@ -16,29 +27,47 @@ public class FloorPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Static data for these panel
+	 */
 	private static final int DIRECTION_FONT_SIZE = 20;
 	
-
+	/**
+	 * ID of the floor
+	 */
     private final int floorID;
 
+    /**
+     * Floor button lamps
+     */
     private JPanel floorButtonUp;
     private JPanel floorButtonDown;
 
+    /**
+     * Directional lamps for all elevators on this floor
+     */
     private ArrayList<JPanel> directionalLampsUp;
     private ArrayList<JPanel> directionalLampsDown;
 
+    /**
+     * Constructor for the floor panel. Initializes data
+     * @param floorID	int, ID of the floor and its current floor
+     */
     public FloorPanel(int floorID) {
+    	// Initializing basic panel data
         this.floorID = floorID;
         this.directionalLampsUp = new ArrayList<JPanel>();
         this.directionalLampsDown = new ArrayList<JPanel>();
+        
+        // Setting basic panel architecture
         this.setMinimumSize(new Dimension(200, 200));
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(255, 112, 112));
         Border blackLine = BorderFactory.createLineBorder(Color.black);
         this.setBorder(blackLine);
         
-
-        this.add(new JLabel("Floor " + (this.floorID==0? "B" : this.floorID)), BorderLayout.NORTH);
+        // Set the label for the floor
+        this.add(new JLabel("Floor " + ViewCommon.floorIDToString(floorID)), BorderLayout.NORTH);
 
         // All information related to adding the directional button lamps to the left side
         JPanel floorButtonsSection = new JPanel();
@@ -50,16 +79,14 @@ public class FloorPanel extends JPanel {
 
         floorButtonUp = new JPanel();
         floorButtonUp.add(new JLabel("UP"));
-        floorButtonUp.setBackground(SystemFrame.OFF);
+        floorButtonUp.setBackground(ViewCommon.OFF);
         floorButtonUp.setBorder(blackLine);
-
 
         floorButtonDown = new JPanel();
         floorButtonDown.add(new JLabel("DOWN"));
-        floorButtonDown.setBackground(SystemFrame.OFF);
+        floorButtonDown.setBackground(ViewCommon.OFF);
         floorButtonDown.setBorder(blackLine);
 
-        
         floorButtons.add(floorButtonUp);
         floorButtons.add(floorButtonDown);
 
@@ -69,7 +96,6 @@ public class FloorPanel extends JPanel {
 
         // All information related to adding teh directional buttons on the elevators for this floor
         //   to the right side
-
         JPanel directionalLampsSection = new JPanel();
         directionalLampsSection.setLayout(new BorderLayout());
         directionalLampsSection.add(new JLabel("Directional Lamps", SwingConstants.CENTER), BorderLayout.NORTH);
@@ -83,12 +109,12 @@ public class FloorPanel extends JPanel {
         	JPanel subPanel = new JPanel();
         	subPanel.setLayout(new GridLayout(3, 1));
         	
-        	subPanel.add(new JLabel("Elevator#" + (i+1)));
+        	subPanel.add(new JLabel("Elevator#" + ViewCommon.elevatorIDToString(i)));
         	
             JPanel directionUpIcon = new JPanel();
             JLabel upLabel = new JLabel("⬆️");
             upLabel.setFont(new Font("Serif", Font.PLAIN, DIRECTION_FONT_SIZE));
-            directionUpIcon.setBackground(SystemFrame.OFF);
+            directionUpIcon.setBackground(ViewCommon.OFF);
             directionUpIcon.setBorder(blackLine);
             directionUpIcon.add(upLabel);
 
@@ -96,7 +122,7 @@ public class FloorPanel extends JPanel {
             JPanel directionDownIcon = new JPanel();
             JLabel downLabel = new JLabel("⬇️");
             downLabel.setFont(new Font("Serif", Font.PLAIN, DIRECTION_FONT_SIZE));
-            directionDownIcon.setBackground(SystemFrame.OFF);
+            directionDownIcon.setBackground(ViewCommon.OFF);
             directionDownIcon.setBorder(blackLine);
             directionDownIcon.add(downLabel);
             
@@ -108,26 +134,29 @@ public class FloorPanel extends JPanel {
         }
         directionalLampsSection.add(directionalLampsSubsection, BorderLayout.CENTER);
         this.add(directionalLampsSection);
-        
-
-
     }
 
-    public void updatePanel(GuiModel model) {
-    	System.out.println("Doing shit");
-
-    	// Floor button up
+    /**
+     * Updates the floor button status of the floor
+     * @param model		GuiModel, the model to reference
+     */
+    public void updatePanel(SystemModel model) {
+    	Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Updating floor panel #" + floorID);
     	
-    	floorButtonUp.setBackground(Boolean.TRUE.equals(model.getFloorUpLamp(floorID)) ? SystemFrame.ON : SystemFrame.OFF);
-
-    	// Floor button down
-    	floorButtonDown.setBackground(Boolean.TRUE.equals(model.getFloorDownLamp(floorID)) ? SystemFrame.ON : SystemFrame.OFF);
-
+    	floorButtonUp.setBackground(Boolean.TRUE.equals(model.getFloorUpLamp(floorID)) ? ViewCommon.ON : ViewCommon.OFF);
+    	floorButtonDown.setBackground(Boolean.TRUE.equals(model.getFloorDownLamp(floorID)) ? ViewCommon.ON : ViewCommon.OFF);
        	this.updateUI();
     }
     
-    public void updateDirectionalLamp(int elevator, GuiModel model) {
-		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP ? SystemFrame.ON : SystemFrame.OFF);
-		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? SystemFrame.ON : SystemFrame.OFF);
+    /**
+     * Updates the directional lamps of the floor. Separate to reduce execution time
+     * @param elevator	int, elevator to refresh directional lamps of
+     * @param model		GuiModel, backing model to use
+     */
+    public void updateDirectionalLamp(int elevator, SystemModel model) {
+    	Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Updating directional lamps on floor #" + floorID);
+		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP ? ViewCommon.ON : ViewCommon.OFF);
+		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? ViewCommon.ON : ViewCommon.OFF);
+       	this.updateUI();
     }
 }

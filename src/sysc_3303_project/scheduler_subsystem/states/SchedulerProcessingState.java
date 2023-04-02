@@ -12,12 +12,12 @@ import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
-import sysc_3303_project.ui_subsystem.GuiEventType;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 
 /**
  * @author Andrei Popescu

@@ -1,41 +1,92 @@
-package sysc_3303_project.ui_subsystem.view;
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 5.0
+ */
+
+package sysc_3303_project.gui_subsystem.view;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
-import sysc_3303_project.ui_subsystem.GuiModel;
+import sysc_3303_project.gui_subsystem.model.SystemModel;
 
 import java.awt.*;
 
+/**
+ * Represents an elevator panel to display
+ * @author Liam and Ian
+ */
 public class ElevatorPanel extends JPanel {
 	
+	/**
+	 * Default serial ID
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Static data for these panel
+	 */
 	private static final int LAMP_COLUMNS = 5;
 	private static final int ARROW_SIZE = 20;
 
+	/**
+	 * ID of the elevator
+	 */
     private int elevatorID;
+    
+    /**
+     * Lamps array for this elevator
+     */
     private JPanel[] lamps;
+    
+    /**
+     * Position label of the elevator
+     */
     private JLabel position;
+    
+    /**
+     * Directional arrows for the elevator's movement
+     */
     private JPanel directionUpIcon;
     private JPanel directionDownIcon;
+    
+    /**
+     * Label for motor information. Not sure what its purpose is
+     */
     private JLabel motorLabel;
+    
+    /**
+     * Label for faults occuring in the system
+     */
     private JLabel faultsLabel;
+    
+    /**
+     * Label for the status of the door
+     */
     private JLabel doorStatus;
 
+    /**
+     * Constructor for the elevator
+     * @param elevatorID	int, elevator ID
+     */
     public ElevatorPanel(int elevatorID) {
     	// Setting ID
     	this.elevatorID = elevatorID;
         
     	// Setting panel informations
-        this.setMinimumSize(new Dimension(200, 200));
-        this.setLayout(new BorderLayout());
-        this.setBackground(Color.CYAN);
-        Border blackLine = BorderFactory.createLineBorder(Color.black);
-        this.setBorder(blackLine);
-
+	    this.setMinimumSize(new Dimension(200, 200));
+	    this.setLayout(new BorderLayout());
+	    this.setBackground(Color.CYAN);
+	    Border blackLine = BorderFactory.createLineBorder(Color.black);
+	    this.setBorder(blackLine);
+    	
+    	
         // Setting the title of the panel
-        this.add(new JLabel("Elevator " + (elevatorID+1)), BorderLayout.NORTH);
+        this.add(new JLabel("Elevator " + ViewCommon.elevatorIDToString(elevatorID)), BorderLayout.NORTH);
+        
         
         // The main section of the panel
         JPanel information = new JPanel();
@@ -122,9 +173,9 @@ public class ElevatorPanel extends JPanel {
         
         lamps = new JPanel[floorCount];
         for(int i = 0; i < floorCount; i++) {
-        	JLabel lampLabel = new JLabel((i==0? "B" : ""+i));
+        	JLabel lampLabel = new JLabel(ViewCommon.floorIDToString(i));
         	JPanel lampPanel = new JPanel();
-        	lampPanel.setBackground(SystemFrame.OFF);
+        	lampPanel.setBackground(ViewCommon.OFF);
         	lampPanel.add(lampLabel);
         	lamps[i] = lampPanel;
         	lampsSubsection.add(lampPanel);
@@ -140,31 +191,43 @@ public class ElevatorPanel extends JPanel {
         this.add(information, BorderLayout.CENTER);
     }
 
-    public void updatePanel(GuiModel model) {
+    /**
+     * Updates the entire panel
+     * @param model		GuiModel, reference to the backing model
+     */
+    public void updatePanel(SystemModel model) {
     	
+    	// Update door status tag
     	doorStatus.setText("Door Status: " + model.getElevatorDoorStatus(elevatorID).toString());
 
+    	// Update faults tag
     	boolean isShutdown = model.isElevatorShutdown(elevatorID);
     	boolean doorsFault = model.hasElevatorDoorsFault(elevatorID);
     	String faultsLabelString = "";
     	if(isShutdown) {
-    		faultsLabelString = "ELEVATOR DISABLED";
+    		faultsLabelString = "DISABLED";
     	} else if(doorsFault) {
-    		faultsLabelString = "ELEVATOR DOOR BLOCKED";
+    		faultsLabelString = "DOOR BLOCKED";
     	}
-    	faultsLabel.setText("Door Status: " + faultsLabelString);
+    	faultsLabel.setText("Elevator Fault Status: " + faultsLabelString);
     	
+    	// Update motor status tag
     	motorLabel.setText("Motor: " + model.getElevatorDirection(elevatorID));
 
-    	directionUpIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.UP ? SystemFrame.ON : SystemFrame.OFF);
-    	directionDownIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.DOWN ? SystemFrame.ON : SystemFrame.OFF);
+    	// Update directional lamp tag
+    	directionUpIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.UP ? ViewCommon.ON : ViewCommon.OFF);
+    	directionDownIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.DOWN ? ViewCommon.ON : ViewCommon.OFF);
 
-    	
-        position.setText("Floor: " + model.getElevatorPosition(elevatorID));
+    	// Update the current floor tag
+        position.setText("Floor: " + ViewCommon.floorIDToString(model.getElevatorPosition(elevatorID)));
+        
+        // Update all floor destination button lamps
         boolean[] lampStatus = model.getElevatorButtonLamps(elevatorID);
         for(int i = 0; i < lamps.length; i++) {
-        	lamps[i].setBackground(lampStatus[i] ? SystemFrame.ON : SystemFrame.OFF);
+        	lamps[i].setBackground(lampStatus[i] ? ViewCommon.ON : ViewCommon.OFF);
         }
+        
+        // Refresh the panel on the UI end
         this.updateUI();
     }
 }
