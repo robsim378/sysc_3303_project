@@ -8,14 +8,16 @@ import java.util.List;
 
 import logging.Logger;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
+import sysc_3303_project.ui_subsystem.view.GuiView;
 
 /**
  * @author Andrei Popescu
  *
  */
-public class GuiModel {
+public class GuiModel implements Runnable{
 	
 	private class ElevatorInfo {
 		
@@ -39,8 +41,8 @@ public class GuiModel {
 	}
 	
 	private class FloorInfo {
-		private boolean upButton;
-		private boolean downButton;
+		private Boolean upButton;
+		private Boolean downButton;
 		
 		public FloorInfo(int floorNumber, int floors) {
 			downButton = (floorNumber == 0) ? null : false;
@@ -54,10 +56,13 @@ public class GuiModel {
 	private final FloorInfo[] floors;
 	private List<GuiView> registeredViews;
 	
-	public GuiModel(int floorsCount, int elevatorsCount, EventBuffer<GuiEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
+	public GuiModel(EventBuffer<GuiEventType> inputBuffer, EventBuffer<Enum<?>> outputBuffer) {
 		this.registeredViews = new LinkedList<>();
 		this.inputBuffer = inputBuffer;
 		this.outputBuffer = outputBuffer;
+		ResourceManager mngr = ResourceManager.get();
+		int elevatorsCount = mngr.getInt("count.elevators");
+		int floorsCount = mngr.getInt("count.floors");
 		this.elevators = new ElevatorInfo[elevatorsCount];
 		this.floors = new FloorInfo[floorsCount];
 		for (int i = 0; i < elevatorsCount; i++) {
@@ -72,11 +77,11 @@ public class GuiModel {
 		registeredViews.add(view);
 	}
 	
-	public boolean getFloorUpLamp(int floor) {
+	public Boolean getFloorUpLamp(int floor) {
 		return floors[floor].upButton;
 	}
 	
-	public boolean getFloorDownLamp(int floor) {
+	public Boolean getFloorDownLamp(int floor) {
 		return floors[floor].downButton;
 	}
 	
@@ -104,7 +109,8 @@ public class GuiModel {
 		return elevators[elevatorId].isShutdown;
 	}
 	
-	private void handleFloorLampStatusChange(int floor, FloorLampStatus lampStatus) {
+	public void handleFloorLampStatusChange(int floor, FloorLampStatus lampStatus) {
+    	System.out.println("Doing shit");
 		if (lampStatus.getDirection() == Direction.UP) {
 			this.floors[floor].upButton = lampStatus.getStatus();
 		} else {
@@ -113,31 +119,29 @@ public class GuiModel {
 		for (GuiView view: registeredViews) view.updateFloorPanel(floor);
 	}
 	
-	private void handleDirectionalLampStatusChange(int elevatorId, Direction direction) {
+	public void handleDirectionalLampStatusChange(int elevatorId, Direction direction) {
 		this.elevators[elevatorId].direction = direction;
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 		//update all floors since they also have directional lamps
-		for (GuiView view: registeredViews) {
-			for (int i = 0; i < floors.length; i++) view.updateFloorPanel(i);
-		}
+		for (GuiView view: registeredViews) view.updateElevatorDirectionalLamps(elevatorId);
 	}
 	
-	private void handleElevatorAtFloor(int elevatorId, int floor) {
+	public void handleElevatorAtFloor(int elevatorId, int floor) {
 		this.elevators[elevatorId].position = floor;
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 	}
 	
-	private void handleElevatorDoorsFault(int elevatorId, boolean isBlocked) {
+	public void handleElevatorDoorsFault(int elevatorId, boolean isBlocked) {
 		this.elevators[elevatorId].hasDoorsFault = isBlocked;
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 	}
 	
-	private void handleElevatorShutdownFault(int elevatorId) {
+	public void handleElevatorShutdownFault(int elevatorId) {
 		this.elevators[elevatorId].isShutdown = true;
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 	}
 	
-	private void handleElevatorLampStatusChange(int elevatorId, ElevatorLampStatus lampStatus) {
+	public void handleElevatorLampStatusChange(int elevatorId, ElevatorLampStatus lampStatus) {
 		this.elevators[elevatorId].floorLamps[lampStatus.getFloorNumber()] = lampStatus.getStatus();
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 	}
@@ -163,5 +167,10 @@ public class GuiModel {
 				case ELEVATOR_DOOR_STATUS_CHANGE -> handleDoorStatusChange(evt.getSourceID(), (DoorStatus) evt.getPayload());
 			}
 		}
+	}
+
+	@Override
+	public void run() {
+		eventLoop();
 	}
 }
