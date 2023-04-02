@@ -24,6 +24,7 @@ public class SchedulerMain {
 	 * Runs the Scheduler subsystem program.
 	 * @param args command line arguments
 	 */
+	@SuppressWarnings("serial")
 	public static void main(String[] args) {
 		EventBuffer<Enum<?>> outgoingBuffer = new EventBuffer<>();
 		EventBuffer<SchedulerEventType> schedulerBuffer = new EventBuffer<>();

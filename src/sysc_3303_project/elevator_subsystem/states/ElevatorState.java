@@ -13,9 +13,9 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.gui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.transfer_data.ElevatorLampStatus;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
-import sysc_3303_project.ui_subsystem.ElevatorLampStatus;
-import sysc_3303_project.ui_subsystem.GuiEventType;
 
 /**
  * State class for the elevator state machine.

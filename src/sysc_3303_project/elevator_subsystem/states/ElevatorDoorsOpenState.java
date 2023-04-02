@@ -10,8 +10,8 @@ import logging.Logger;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.Elevator;
-import sysc_3303_project.ui_subsystem.DoorStatus;
-import sysc_3303_project.ui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.transfer_data.DoorStatus;
 
 /**
  * The state in which the elevator is idle with its doors open.

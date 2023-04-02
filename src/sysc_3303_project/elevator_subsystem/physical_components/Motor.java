@@ -10,6 +10,7 @@ package sysc_3303_project.elevator_subsystem.physical_components;
  *
  * @author Ian Holmes
  */
+@SuppressWarnings("unused")
 public class Motor {
 
     private boolean isRunning;

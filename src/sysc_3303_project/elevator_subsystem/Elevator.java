@@ -20,8 +20,8 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.Lamps;
-import sysc_3303_project.ui_subsystem.ElevatorLampStatus;
-import sysc_3303_project.ui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.transfer_data.ElevatorLampStatus;
 
 import java.util.Arrays;
 
