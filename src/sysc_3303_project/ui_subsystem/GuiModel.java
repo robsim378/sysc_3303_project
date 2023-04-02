@@ -17,7 +17,7 @@ import sysc_3303_project.ui_subsystem.view.GuiView;
  * @author Andrei Popescu
  *
  */
-public class GuiModel {
+public class GuiModel implements Runnable{
 	
 	private class ElevatorInfo {
 		
@@ -123,9 +123,7 @@ public class GuiModel {
 		this.elevators[elevatorId].direction = direction;
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 		//update all floors since they also have directional lamps
-		for (GuiView view: registeredViews) {
-			for (int i = 0; i < floors.length; i++) view.updateFloorPanel(i);
-		}
+		for (GuiView view: registeredViews) view.updateElevatorDirectionalLamps(elevatorId);
 	}
 	
 	public void handleElevatorAtFloor(int elevatorId, int floor) {
@@ -169,5 +167,10 @@ public class GuiModel {
 				case ELEVATOR_DOOR_STATUS_CHANGE -> handleDoorStatusChange(evt.getSourceID(), (DoorStatus) evt.getPayload());
 			}
 		}
+	}
+
+	@Override
+	public void run() {
+		eventLoop();
 	}
 }

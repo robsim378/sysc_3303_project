@@ -11,10 +11,13 @@ import java.util.ArrayList;
 
 public class FloorPanel extends JPanel {
 	
+	/**
+	 * Default serial UID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final int DIRECTION_FONT_SIZE = 20;
 	
-	private static final Color ON = new Color(0, 255, 0); 
-	private static final Color OFF = Color.darkGray; 
 
     private final int floorID;
 
@@ -26,8 +29,8 @@ public class FloorPanel extends JPanel {
 
     public FloorPanel(int floorID) {
         this.floorID = floorID;
-        this.directionalLampsUp = new ArrayList();
-        this.directionalLampsDown = new ArrayList();
+        this.directionalLampsUp = new ArrayList<JPanel>();
+        this.directionalLampsDown = new ArrayList<JPanel>();
         this.setMinimumSize(new Dimension(200, 200));
         this.setLayout(new BorderLayout());
         this.setBackground(new Color(255, 112, 112));
@@ -35,7 +38,7 @@ public class FloorPanel extends JPanel {
         this.setBorder(blackLine);
         
 
-        this.add(new JLabel("Floor " + this.floorID), BorderLayout.NORTH);
+        this.add(new JLabel("Floor " + (this.floorID==0? "B" : this.floorID)), BorderLayout.NORTH);
 
         // All information related to adding the directional button lamps to the left side
         JPanel floorButtonsSection = new JPanel();
@@ -47,13 +50,13 @@ public class FloorPanel extends JPanel {
 
         floorButtonUp = new JPanel();
         floorButtonUp.add(new JLabel("UP"));
-        floorButtonUp.setBackground(OFF);
+        floorButtonUp.setBackground(SystemFrame.OFF);
         floorButtonUp.setBorder(blackLine);
 
 
         floorButtonDown = new JPanel();
         floorButtonDown.add(new JLabel("DOWN"));
-        floorButtonDown.setBackground(OFF);
+        floorButtonDown.setBackground(SystemFrame.OFF);
         floorButtonDown.setBorder(blackLine);
 
         
@@ -80,12 +83,12 @@ public class FloorPanel extends JPanel {
         	JPanel subPanel = new JPanel();
         	subPanel.setLayout(new GridLayout(3, 1));
         	
-        	subPanel.add(new JLabel("Elevator#" + i));
+        	subPanel.add(new JLabel("Elevator#" + (i+1)));
         	
             JPanel directionUpIcon = new JPanel();
             JLabel upLabel = new JLabel("⬆️");
             upLabel.setFont(new Font("Serif", Font.PLAIN, DIRECTION_FONT_SIZE));
-            directionUpIcon.setBackground(OFF);
+            directionUpIcon.setBackground(SystemFrame.OFF);
             directionUpIcon.setBorder(blackLine);
             directionUpIcon.add(upLabel);
 
@@ -93,7 +96,7 @@ public class FloorPanel extends JPanel {
             JPanel directionDownIcon = new JPanel();
             JLabel downLabel = new JLabel("⬇️");
             downLabel.setFont(new Font("Serif", Font.PLAIN, DIRECTION_FONT_SIZE));
-            directionDownIcon.setBackground(OFF);
+            directionDownIcon.setBackground(SystemFrame.OFF);
             directionDownIcon.setBorder(blackLine);
             directionDownIcon.add(downLabel);
             
@@ -115,23 +118,16 @@ public class FloorPanel extends JPanel {
 
     	// Floor button up
     	
-    	floorButtonUp.setBackground(Boolean.TRUE.equals(model.getFloorUpLamp(floorID)) ? ON : OFF);
+    	floorButtonUp.setBackground(Boolean.TRUE.equals(model.getFloorUpLamp(floorID)) ? SystemFrame.ON : SystemFrame.OFF);
 
     	// Floor button down
-    	floorButtonDown.setBackground(Boolean.TRUE.equals(model.getFloorDownLamp(floorID)) ? ON : OFF);
+    	floorButtonDown.setBackground(Boolean.TRUE.equals(model.getFloorDownLamp(floorID)) ? SystemFrame.ON : SystemFrame.OFF);
 
-    	
-    	// Floor directional lamps
-    	for(int i = 0; i < directionalLampsUp.size(); i++) {
-    		directionalLampsUp.get(i).setBackground(model.getElevatorDirection(i) == Direction.UP ? ON : OFF);
-    		directionalLampsDown.get(i).setBackground(model.getElevatorDirection(i) == Direction.DOWN ? ON : OFF);
-    	}
-    	System.out.println("Updated");
-    	this.updateUI();
+       	this.updateUI();
     }
     
     public void updateDirectionalLamp(int elevator, GuiModel model) {
-		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP ? ON : OFF);
-		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? ON : OFF);
+		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP ? SystemFrame.ON : SystemFrame.OFF);
+		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? SystemFrame.ON : SystemFrame.OFF);
     }
 }

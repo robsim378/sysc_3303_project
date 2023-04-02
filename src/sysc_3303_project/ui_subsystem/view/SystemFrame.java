@@ -13,6 +13,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class SystemFrame extends JFrame implements GuiView {
+	
+	public static final Color ON = new Color(0, 255, 0); 
+	public static final Color OFF = Color.darkGray; 
+
 
     private final GuiModel model;
     private ArrayList<ElevatorPanel> elevatorPanels;
@@ -28,7 +32,6 @@ public class SystemFrame extends JFrame implements GuiView {
 
         this.setMinimumSize(new Dimension(900, 800));
         this.setLayout(new GridLayout());
-        GridBagConstraints c = new GridBagConstraints();
         
         generateElevatorPanels();
         generateFloorPanels();
@@ -43,6 +46,7 @@ public class SystemFrame extends JFrame implements GuiView {
         JPanel floorsPanel = new JPanel();
         for (int i = 0; i < ResourceManager.get().getInt("count.floors"); i++) {
             floorsPanel.add(floorPanels.get(i));
+            updateFloorPanel(i);
         }
         floorsPanel.setBackground(new Color(100, 100, 20));
         floorsPanel.setLayout(new GridLayout(22,1));
@@ -60,11 +64,17 @@ public class SystemFrame extends JFrame implements GuiView {
         elevatorsSection.add(new JLabel("Elevators"), BorderLayout.NORTH);
         
         JPanel elevatorsPanel = new JPanel();
+        elevatorsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
         for (int i = 0; i < ResourceManager.get().getInt("count.elevators"); i++) {
-            elevatorsPanel.add(elevatorPanels.get(i));
+            c.fill=GridBagConstraints.HORIZONTAL;
+            c.weightx = 1;
+            c.gridx=i%2;
+            c.gridy=i/2;
+            elevatorsPanel.add(elevatorPanels.get(i), c);
+            updateElevatorPanel(i);
         }
-        elevatorsPanel.setBackground(new Color(200, 50, 200));
-        elevatorsPanel.setLayout(new GridLayout(2,2));
         
         JScrollPane scrollPaneElevators = new JScrollPane(elevatorsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         
