@@ -91,7 +91,7 @@ public class SystemModel {
 	 * @return				Direction, direction elevator is moving
 	 */
 	public Direction getElevatorDirection(int elevatorId) {
-		return getElevators()[elevatorId].getDirection();
+		return isElevatorShutdown(elevatorId) ? null : getElevators()[elevatorId].getDirection();
 	}
 	
 	/**

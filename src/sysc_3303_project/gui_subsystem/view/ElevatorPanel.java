@@ -215,8 +215,8 @@ public class ElevatorPanel extends JPanel {
     	motorLabel.setText("Motor: " + model.getElevatorDirection(elevatorID));
 
     	// Update directional lamp tag
-    	directionUpIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.UP && !isShutdown ? ViewCommon.ON : ViewCommon.OFF);
-    	directionDownIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.DOWN && !isShutdown ? ViewCommon.ON : ViewCommon.OFF);
+    	directionUpIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.UP ? ViewCommon.ON : ViewCommon.OFF);
+    	directionDownIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.DOWN ? ViewCommon.ON : ViewCommon.OFF);
 
     	// Update the current floor tag
         position.setText("Floor: " + ViewCommon.floorIDToString(model.getElevatorPosition(elevatorID)));
@@ -224,7 +224,7 @@ public class ElevatorPanel extends JPanel {
         // Update all floor destination button lamps
         boolean[] lampStatus = model.getElevatorButtonLamps(elevatorID);
         for(int i = 0; i < lamps.length; i++) {
-        	lamps[i].setBackground(lampStatus[i] && !isShutdown ? ViewCommon.ON : ViewCommon.OFF);
+        	lamps[i].setBackground(lampStatus[i] ? ViewCommon.ON : ViewCommon.OFF);
         }
         
         // Refresh the panel on the UI end
