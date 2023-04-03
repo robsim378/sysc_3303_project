@@ -118,7 +118,7 @@ public class GuiContext implements Runnable{
 	 */
 	public void handleElevatorShutdownFault(int elevatorId) {
 		model.getElevators()[elevatorId].setShutdown(true);
-		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
+		for (GuiView view: registeredViews) view.updateElevatorDirectionalLamps(elevatorId);
 	}
 	
 	/**

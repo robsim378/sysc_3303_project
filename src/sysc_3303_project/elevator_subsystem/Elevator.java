@@ -165,7 +165,9 @@ public class Elevator implements Runnable {
      * @param direction Direction, the direction to move the elevator
      */
     public void setDirection(Direction direction) {
-        directionLamps.lightDirectionalLamp(direction);
+    	if (direction != null) {
+    		directionLamps.lightDirectionalLamp(direction);
+    	}
         this.direction = direction;
         
         outputBuffer.addEvent(new Event<>(
@@ -250,6 +252,7 @@ public class Elevator implements Runnable {
                 case CLOSE_DOORS -> newState = state.closeDoors();
                 case CLOSE_DOORS_TIMER -> newState = state.closeDoorsTimer();
                 case START_MOVING_IN_DIRECTION -> newState = state.setDirection((Direction) event.getPayload());
+                case SET_IDLE -> newState = state.handleSetIdle();
                 case MOVING_TIMER -> newState = state.travelThroughFloorsTimer();
                 case CONTINUE_MOVING -> newState = state.continueMoving();
                 case STOP_AT_NEXT_FLOOR -> newState = state.stopAtNextFloor();

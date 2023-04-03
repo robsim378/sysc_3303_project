@@ -154,9 +154,10 @@ public class FloorPanel extends JPanel {
      * @param model		GuiModel, backing model to use
      */
     public void updateDirectionalLamp(int elevator, SystemModel model) {
+    	boolean isShutdown = model.isElevatorShutdown(elevator);
     	Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Updating directional lamps on floor #" + floorID);
-		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP ? ViewCommon.ON : ViewCommon.OFF);
-		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? ViewCommon.ON : ViewCommon.OFF);
+		directionalLampsUp.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.UP && !isShutdown ? ViewCommon.ON : ViewCommon.OFF);
+		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN && !isShutdown ? ViewCommon.ON : ViewCommon.OFF);
        	this.updateUI();
     }
 }
