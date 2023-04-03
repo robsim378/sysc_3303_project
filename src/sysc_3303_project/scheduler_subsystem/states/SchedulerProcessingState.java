@@ -59,6 +59,10 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
 			context.getFaultDetector().addTimer(elevatorId, 1000); //expect reach next floor
 		} else { //failsafe, idle the elevator (if there are no requests)
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.SET_IDLE, null)); //set direction to null but do nothing
 			Logger.getLogger().logError(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
@@ -101,6 +105,10 @@ public class SchedulerProcessingState extends SchedulerState {
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.SET_IDLE, null)); //set direction to null but do nothing
 			for (int i : contextTracker.getElevatorIds()) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
 			}

@@ -70,6 +70,11 @@ public abstract class ElevatorState implements State {
     public ElevatorState handlePassengersUnloaded() {
         throw new IllegalStateException("handlePassengersUnloaded must be called from the ElevatorDoorsOpenState.");
     }
+    
+    public ElevatorState handleSetIdle() {
+    	context.setDirection(null);
+		return null;
+    }
 
     /**
      * When an elevator button is pressed during any state, send an event to the Scheduler.
