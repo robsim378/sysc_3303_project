@@ -11,6 +11,7 @@ import sysc_3303_project.common.Direction;
  * @author Robert Simionescu
  * Represents all the directional lamps on the current floor and their current status.
  */
+@SuppressWarnings("unused")
 public class Lamps {
 	
 	private static final boolean ON = true;
@@ -28,7 +29,7 @@ public class Lamps {
     /**
      * Lamp indicating that an elevator going up has arrived
      */
-    private boolean upButtonLamp = OFF;
+	private boolean upButtonLamp = OFF;
     /**
      * Lamp indicating that an elevator going down has arrived
      */

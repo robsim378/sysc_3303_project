@@ -11,13 +11,11 @@ import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 
-import sysc_3303_project.floor_subsystem.FloorSystem;
 
 import sysc_3303_project.scheduler_subsystem.states.SchedulerState;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerWaitingState;
 import logging.Logger;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -167,6 +165,10 @@ public class Scheduler implements Runnable {
 	 * @return the ID of the elevator that the request was assigned to
 	 */
 	public int assignLoadRequest(LoadRequest request) {
+		if (tracker.getElevatorIds().isEmpty()) {
+			Logger.getLogger().logError(this.getClass().getSimpleName(), "No more elevators to assign tasks to!");
+			return -1;
+		}
 		List<Integer> onTheWay = new LinkedList<>();
 		List<Integer> notOnTheWay = new LinkedList<>();
 		List<Integer> priorityList = new LinkedList<>();

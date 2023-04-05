@@ -6,7 +6,6 @@
 
 package sysc_3303_project.elevator_subsystem.states;
 
-import logging.Logger;
 import sysc_3303_project.common.Direction;
 
 import sysc_3303_project.common.state.State;
@@ -14,6 +13,8 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.gui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.transfer_data.ElevatorLampStatus;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -69,6 +70,11 @@ public abstract class ElevatorState implements State {
     public ElevatorState handlePassengersUnloaded() {
         throw new IllegalStateException("handlePassengersUnloaded must be called from the ElevatorDoorsOpenState.");
     }
+    
+    public ElevatorState handleSetIdle() {
+    	context.setDirection(null);
+		return null;
+    }
 
     /**
      * When an elevator button is pressed during any state, send an event to the Scheduler.
@@ -77,6 +83,11 @@ public abstract class ElevatorState implements State {
      * @return ElevatorState, next state
      */
     public ElevatorState handleElevatorButtonPressed(int destination) {
+    	context.getButtonLamps()[destination].turnOn();
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_LAMP_STATUS_CHANGE, new ElevatorLampStatus(destination, true)));
         context.getOutputBuffer().addEvent(
                 new Event<Enum<?>>(
                         Subsystem.SCHEDULER,
@@ -89,11 +100,21 @@ public abstract class ElevatorState implements State {
         return null;
     }
 
+    /**
+     * Handle a block doors event from the floor.
+     *
+     * @return null
+     */
     public ElevatorState handleDoorsBlocked() {
         context.incrementBlockedDoorsCounter();
         return null;
     }
 
+    /**
+     * Default for detected doors blocked handler.
+     *
+     * @return null
+     */
     public ElevatorState handleDoorsBlockedDetected() {
         return null;
     }

@@ -10,12 +10,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import logging.Logger;
-import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.configuration.Subsystem;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.transfer_data.DoorStatus;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -39,6 +40,10 @@ public class ElevatorDoorsClosingState extends ElevatorState {
      */
     @Override
     public void doEntry() {
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOOR_STATUS_CHANGE, DoorStatus.DOORS_CLOSING));
     	context.getFaultDetector().startDoorsTimer(1000);
     	Timer timer = new Timer();
     	timer.schedule(new TimerTask() {
@@ -81,17 +86,30 @@ public class ElevatorDoorsClosingState extends ElevatorState {
                 context.getElevatorID(),
                 SchedulerEventType.ELEVATOR_DOORS_CLOSED,
                 context.getFloor()));
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOORS_FAULT, false)); //sometimes redundant but low cost
         context.getDoor().setClosed();
         context.getFaultDetector().resetDoorFaultTimer();
         return new ElevatorDoorsClosedState(context);
     }
 
+    /**
+     * Retry closing the doors when fault detected.
+     *
+     * @return null
+     */
     @Override
     public ElevatorState handleDoorsBlockedDetected() {
         Logger.getLogger().logError(context.getClass().getSimpleName(),
                 "Elevator " + context.getElevatorID() + " doors are blocked!!!");
         Logger.getLogger().logNotification(context.getClass().getSimpleName(),
                 "Elevator " + context.getElevatorID() + " retrying close doors...");
+        context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOORS_FAULT, true));
         this.doEntry();
         return null;
     }

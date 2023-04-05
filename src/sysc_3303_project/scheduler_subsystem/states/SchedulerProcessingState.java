@@ -17,6 +17,7 @@ import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 
 /**
  * @author Andrei Popescu
@@ -58,6 +59,10 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
 			context.getFaultDetector().addTimer(elevatorId, 1000); //expect reach next floor
 		} else { //failsafe, idle the elevator (if there are no requests)
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.SET_IDLE, null)); //set direction to null but do nothing
 			Logger.getLogger().logError(context.getClass().getName(), "Ordering elevator " + elevatorId + " to open doors");
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
@@ -100,6 +105,10 @@ public class SchedulerProcessingState extends SchedulerState {
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
 			contextTracker.updateElevatorDirection(elevatorId, null); //elevator now idle
+			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
+					Subsystem.ELEVATOR, elevatorId, 
+					Subsystem.SCHEDULER, 0, 
+					ElevatorEventType.SET_IDLE, null)); //set direction to null but do nothing
 			for (int i : contextTracker.getElevatorIds()) {
 				if (contextTracker.getElevatorRequestCount(i) > 0) return null;
 			}
@@ -177,6 +186,10 @@ public class SchedulerProcessingState extends SchedulerState {
 		context.getFaultDetector().clearTimers(elevatorId);
 		Logger.getLogger().logError(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is blocked!!!");
 		List<LoadRequest> toAssign = contextTracker.shutdownElevator(elevatorId);
+		context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.SCHEDULER, 0,
+                GuiEventType.ELEVATOR_SHUTDOWN_FAULT, elevatorId));
 		for (LoadRequest request : toAssign) { //reassign the requests by sending the floor button presses to the scheduler again
 			context.getInputBuffer().addEvent(new Event<>(
 					Subsystem.SCHEDULER, 0,

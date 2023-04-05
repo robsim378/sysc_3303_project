@@ -19,7 +19,9 @@ public class Event<T extends Enum<?>> implements Serializable {
 	
 	private static final long serialVersionUID = 4717946647791314554L;
 	
+	private static int counter = 1;
 	
+	private final int ID; 
 	private Subsystem destinationSubsystem;
 	private int destinationID;
 	private Subsystem sourceSubsystem;
@@ -43,6 +45,7 @@ public class Event<T extends Enum<?>> implements Serializable {
 		this.sourceID = srcID;
 		this.eventType = type;
 		this.payload = payload;
+		this.ID = getNewID(src);
 	}
 	
 	/**
@@ -86,6 +89,14 @@ public class Event<T extends Enum<?>> implements Serializable {
 	}
 	
 	/**
+	 * Getter for ID
+	 * @return int, ID of the event
+	 */
+	public int getID() {
+		return ID;
+	}
+	
+	/**
 	 * Getter for payload
 	 * @return Serializable, payload
 	 */
@@ -97,7 +108,9 @@ public class Event<T extends Enum<?>> implements Serializable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("{Destination: [");
+		builder.append("{ID: ");
+		builder.append(ID);
+		builder.append(", Destination: [");
 		builder.append(destinationSubsystem.name());
 		builder.append(",");
 		builder.append(destinationID);
@@ -111,6 +124,25 @@ public class Event<T extends Enum<?>> implements Serializable {
 		builder.append(payload==null? "null": payload.toString());
 		builder.append("}");
 		return builder.toString();
-
+	}
+	
+	/**
+	 * Determines an ID for a new subsystem.
+	 * Must be synchronized as the counter is a critical section which should not
+	 *   be accessed by multiple threads simultaneously
+	 * @param src		Subsystem, the sender of the event. Helps determine ID
+	 * @return			int, ID of the new event;
+	 */
+	private static synchronized int getNewID(Subsystem src) {
+		Subsystem[] values = Subsystem.values();
+		int toReturn=-1;
+		for(int i = 0; i < values.length; i++) {
+			if(src.equals(values[i])) {
+				toReturn = counter*3 + i;
+			}
+		}
+		counter++;
+		
+		return toReturn;
 	}
 }

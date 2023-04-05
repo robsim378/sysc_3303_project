@@ -7,7 +7,11 @@
 package sysc_3303_project.elevator_subsystem.states;
 
 import logging.Logger;
+import sysc_3303_project.common.configuration.Subsystem;
+import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.Elevator;
+import sysc_3303_project.gui_subsystem.GuiEventType;
+import sysc_3303_project.gui_subsystem.transfer_data.DoorStatus;
 
 /**
  * The state in which the elevator is idle with its doors open.
@@ -22,6 +26,14 @@ public class ElevatorDoorsOpenState extends ElevatorState {
      */
     public ElevatorDoorsOpenState(Elevator context) {
         super(context);
+    }
+    
+    @Override
+    public void doEntry() {
+    	context.getOutputBuffer().addEvent(new Event<>(
+                Subsystem.GUI, 0,
+                Subsystem.ELEVATOR, context.getElevatorID(),
+                GuiEventType.ELEVATOR_DOOR_STATUS_CHANGE, DoorStatus.DOORS_OPEN));
     }
 
     /**

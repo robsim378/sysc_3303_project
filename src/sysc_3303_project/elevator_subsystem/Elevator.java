@@ -20,7 +20,6 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsOpenState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.floor_subsystem.FloorEventType;
 import sysc_3303_project.floor_subsystem.Lamps;
-import test.elevator_subsystem.ElevatorTest;
 
 import java.util.Arrays;
 
@@ -45,7 +44,6 @@ public class Elevator implements Runnable {
     private final Lamps directionLamps;
     private final FaultDetector faultDetector;
     private int blockedDoorsCounter = 0;
-    private int currentFloor;
 
     /**
      * Constructor for the Elevator class.
@@ -263,9 +261,4 @@ public class Elevator implements Runnable {
             }
         }
     }
-
-    public void setFloor(int floor) {
-        this.currentFloor = floor;
-    }
-
 }
