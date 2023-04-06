@@ -127,7 +127,6 @@ public class ElevatorInformation {
 	public void setPosition(int position) {
 		this.position = position;
 	}
-
 	public int getCurrentFloor() {
 		int floorHeight = ResourceManager.get().getInt("floor.height");
 		int position = getPosition();
