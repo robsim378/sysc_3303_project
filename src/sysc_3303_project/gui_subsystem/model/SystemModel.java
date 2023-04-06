@@ -77,7 +77,6 @@ public class SystemModel {
 	public void setElevators(ElevatorInformation[] elevators) {
 		System.arraycopy(elevators, 0, this.elevators, 0, elevators.length);
 	}
-	
 	/**
 	 * Gets the elevators position
 	 * @param elevatorId	int, elevator to check
