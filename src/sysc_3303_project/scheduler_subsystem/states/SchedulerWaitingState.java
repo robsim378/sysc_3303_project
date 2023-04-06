@@ -53,7 +53,7 @@ public class SchedulerWaitingState extends SchedulerState {
 				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.CLOSE_DOORS, null));
-		context.getFaultDetector().addTimer(assignedElevator, ResourceManager.get().getInt("timing.doors")); //doors close timer
+		context.getFaultDetector().addTimer(assignedElevator, ResourceManager.get().getInt("timing.doors") + ResourceManager.get().getInt("timing.load")); //doors close timer
 		return new SchedulerProcessingState(context);
 	}
 	
