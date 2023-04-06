@@ -13,6 +13,7 @@ import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
@@ -52,7 +53,7 @@ public class SchedulerWaitingState extends SchedulerState {
 				Subsystem.ELEVATOR, assignedElevator, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.CLOSE_DOORS, null));
-		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
+		context.getFaultDetector().addTimer(assignedElevator, ResourceManager.get().getInt("timing.doors")); //doors close timer
 		return new SchedulerProcessingState(context);
 	}
 	

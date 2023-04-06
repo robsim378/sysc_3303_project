@@ -11,6 +11,7 @@ import java.util.TimerTask;
 
 import logging.Logger;
 import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.configuration.Subsystem;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
@@ -44,7 +45,7 @@ public class ElevatorDoorsClosingState extends ElevatorState {
                 Subsystem.GUI, 0,
                 Subsystem.ELEVATOR, context.getElevatorID(),
                 GuiEventType.ELEVATOR_DOOR_STATUS_CHANGE, DoorStatus.DOORS_CLOSING));
-    	context.getFaultDetector().startDoorsTimer(1000);
+    	context.getFaultDetector().startDoorsTimer((int) (ResourceManager.get().getInt("timing.doors") * 1.5));
     	Timer timer = new Timer();
     	timer.schedule(new TimerTask() {
 			
@@ -62,7 +63,7 @@ public class ElevatorDoorsClosingState extends ElevatorState {
 	                  ElevatorEventType.CLOSE_DOORS_TIMER,
 	                  null));
 			}
-		}, 1000);
+		}, ResourceManager.get().getInt("timing.doors"));
         context.getOutputBuffer().addEvent(new Event<>(
                 Subsystem.SCHEDULER,
                 0,

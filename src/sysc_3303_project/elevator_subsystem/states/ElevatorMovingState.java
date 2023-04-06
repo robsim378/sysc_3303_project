@@ -10,6 +10,7 @@ import sysc_3303_project.common.Direction;
 
 import sysc_3303_project.common.events.DelayTimerThread;
 import sysc_3303_project.common.events.Event;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.configuration.Subsystem;
 
 import sysc_3303_project.elevator_subsystem.Elevator;
@@ -37,7 +38,7 @@ public class ElevatorMovingState extends ElevatorState {
     @Override
     public void doEntry() {
         context.getMotor().turnOn();
-        new Thread(new DelayTimerThread<>(1000,
+        new Thread(new DelayTimerThread<>(ResourceManager.get().getInt("timing.move"),
                 new Event<>(
                         Subsystem.ELEVATOR,
                         context.getElevatorID(),

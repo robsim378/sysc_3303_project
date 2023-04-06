@@ -7,12 +7,15 @@
 package sysc_3303_project.scheduler_subsystem.states;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import logging.Logger;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import sysc_3303_project.common.Direction;
+import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.common.configuration.Subsystem;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.elevator_subsystem.*;
@@ -46,7 +49,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.OPEN_DOORS, null));
-			context.getFaultDetector().addTimer(elevatorId, 1000); //doors open timer
+			context.getFaultDetector().addTimer(elevatorId, ResourceManager.get().getInt("timing.doors")); //doors open timer
 			return null;
 		}
 		Direction moveDirection = context.directionToMove(elevatorId);
@@ -57,7 +60,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.START_MOVING_IN_DIRECTION, moveDirection));
-			context.getFaultDetector().addTimer(elevatorId, 1000); //expect reach next floor
+			context.getFaultDetector().addTimer(elevatorId, ResourceManager.get().getInt("timing.move")); //expect reach next floor
 		} else { //failsafe, idle the elevator (if there are no requests)
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
@@ -68,7 +71,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.OPEN_DOORS, null));
-			context.getFaultDetector().addTimer(elevatorId, 1000); //doors open timer
+			context.getFaultDetector().addTimer(elevatorId, ResourceManager.get().getInt("timing.doors")); //doors open timer
 		}
 		return null;
 	}
@@ -94,13 +97,14 @@ public class SchedulerProcessingState extends SchedulerState {
 					FloorEventType.PASSENGERS_LOADED, loadDirection));
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Loading passengers at floor " + floorNumber + " into elevator " + elevatorId);
 		}
-		if (loaded || contextTracker.hasRequests(elevatorId)) { //if we expect more requests close doors (the requests may not have come in yet)
+		if (loaded || contextTracker.hasRequests(elevatorId)) { //if we expect more requests wait and close doors (the requests may not have come in yet)
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CLOSE_DOORS, null));
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to close doors");
-			context.getFaultDetector().addTimer(elevatorId, 1000); //doors close timer
+			context.getFaultDetector().addTimer(elevatorId,
+					(ResourceManager.get().getInt("timing.load") + ResourceManager.get().getInt("timing.doors"))); //doors close timer
 			return null;
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Elevator " + elevatorId + " is idle, keep doors open");
@@ -125,7 +129,7 @@ public class SchedulerProcessingState extends SchedulerState {
 				Subsystem.ELEVATOR, elevatorId, 
 				Subsystem.SCHEDULER, 0, 
 				ElevatorEventType.OPEN_DOORS, null));
-		context.getFaultDetector().addTimer(elevatorId, 1000); //open doors timer
+		context.getFaultDetector().addTimer(elevatorId, ResourceManager.get().getInt("timing.doors")); //open doors timer
 		return null;
 	}
 	
@@ -139,14 +143,14 @@ public class SchedulerProcessingState extends SchedulerState {
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.STOP_AT_NEXT_FLOOR, null));
-			context.getFaultDetector().addTimer(elevatorId, 1000); //this timer should maybe be lower
+			context.getFaultDetector().addTimer(elevatorId, 1000); //short timer to catch shutdowns but this operation should take ~0 time
 		} else {
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Ordering elevator " + elevatorId + " to NOT stop at next floor " + floorNumber);
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.ELEVATOR, elevatorId, 
 					Subsystem.SCHEDULER, 0, 
 					ElevatorEventType.CONTINUE_MOVING, null));
-			context.getFaultDetector().addTimer(elevatorId, 1000);
+			context.getFaultDetector().addTimer(elevatorId, ResourceManager.get().getInt("timing.move"));
 		}
 		return null;
 	}
@@ -171,7 +175,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.CLOSE_DOORS, null));
 
 		}
-		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
+		context.getFaultDetector().addTimer(assignedElevator, ResourceManager.get().getInt("timing.doors")); //doors close timer
 		return null;
 	}
 

@@ -38,7 +38,7 @@ public class ElevatorFaultDetector {
 		this.elevatorMoveTimers = new LinkedList<>();
 	}
 	
-	public void addTimer(int elevatorId, int delay) {
+	public void addTimer(int elevatorId, double delay) {
 		Timer timer = new Timer();
 		elevatorMoveTimers.add(new ElevatorMoveTimer(timer, elevatorId));
 		Logger.getLogger().logDebug(this.getClass().getSimpleName(), "Started timer for " + delay + "ms to monitor elevator " + elevatorId);
@@ -50,7 +50,7 @@ public class ElevatorFaultDetector {
 						Subsystem.SCHEDULER, 0,
 						SchedulerEventType.ELEVATOR_BLOCKED, elevatorId));
 			}
-		}, (long) (delay*1.5)); //replace 1000 with elevator move timer value once we get that into the resource manager
+		}, (long) (delay*2));
 	}
 	
 	public void clearTimers(int elevatorId) {
