@@ -127,6 +127,11 @@ public class SystemFrame extends JFrame implements GuiView {
     	}
     }
 
+    @Override
+    public void updateFloorPanel(int floorNumber, FloorPanel floorPanel) {
+
+    }
+
     public void updateElevatorPanel(int elevatorID) {
         elevatorPanels.get(elevatorID).updatePanel(model);
     }

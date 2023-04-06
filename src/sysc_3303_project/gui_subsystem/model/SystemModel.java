@@ -39,8 +39,7 @@ public class SystemModel {
 		for (int i = 0; i < floorsCount; i++) {
 			this.floors[i] = new FloorInformation(i); 
 		}
-
-	}
+		}
 
 	/**
 	 * Get floors
@@ -74,6 +73,9 @@ public class SystemModel {
 	 */
 	public Boolean getFloorDownLamp(int floor) {
 		return getFloors()[floor].getDownButton();
+	}
+	public void setElevators(ElevatorInformation[] elevators) {
+		System.arraycopy(elevators, 0, this.elevators, 0, elevators.length);
 	}
 	
 	/**

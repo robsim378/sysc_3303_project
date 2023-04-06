@@ -38,7 +38,8 @@ public class GuiContext implements Runnable{
 	 * List of all views to publish information to
 	 */
 	private List<GuiView> registeredViews;
-	
+	private List<GuiView> views;
+
 	/**
 	 * Constructs a GUI model with an input buffer to recieve information from 
 	 * @param inputBuffer	EventBuffer<>, buffer to process info from
@@ -166,4 +167,9 @@ public class GuiContext implements Runnable{
 	public void run() {
 		eventLoop();
 	}
+
+	public void setViews(List<GuiView> views) {
+		this.views = views;
+	}
+
 }
