@@ -65,7 +65,6 @@ public class SystemModel {
 	public Boolean getFloorUpLamp(int floor) {
 		return getFloors()[floor].getUpButton();
 	}
-	
 	/**
 	 * Gets the floor's "down" button lamp status
 	 * @param floor		int, floor to check

@@ -88,7 +88,6 @@ public class GuiContextTest {
 
         // Ensure that the model has been updated correctly
         assertEquals(lampStatus.getStatus(), model.getFloors()[0].getUpButton());
-
         // Set the status of the down button on the floor to ON
         lampStatus = new FloorLampStatus(Direction.DOWN, true);
         guiContext.handleFloorLampStatusChange(0, lampStatus);
