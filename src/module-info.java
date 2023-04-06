@@ -10,6 +10,7 @@ module sysc_3303_project {
     exports sysc_3303_project.common;
     exports sysc_3303_project.common.configuration;
     exports sysc_3303_project.common.events;
+    exports test.gui_subsystem;
 
     requires junit;
     requires org.junit.jupiter.api;

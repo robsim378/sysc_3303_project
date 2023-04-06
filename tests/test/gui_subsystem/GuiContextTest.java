@@ -1,21 +1,18 @@
-package sysc_3303_project.gui_subsystem;
+package test.gui_subsystem;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.LinkedList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.gui_subsystem.model.FloorInformation;
-import sysc_3303_project.gui_subsystem.view.FloorPanel;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.gui_subsystem.model.SystemModel;
 import sysc_3303_project.gui_subsystem.transfer_data.FloorLampStatus;
+import sysc_3303_project.gui_subsystem.GuiContext;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.gui_subsystem.model.ElevatorInformation;
-import sysc_3303_project.gui_subsystem.transfer_data.ElevatorLampStatus;
 import sysc_3303_project.gui_subsystem.view.GuiView;
 
 public class GuiContextTest {
@@ -29,8 +26,7 @@ public class GuiContextTest {
     public void setUp() {
         // Set up input buffer and views
         inputBuffer = new EventBuffer<>();
-        views = new LinkedList<>();
-        views.add(new GuiView() {
+        GuiView view = (new GuiView() {
             @Override
             public void updateFloorPanel(int floorID) {
 
@@ -45,16 +41,11 @@ public class GuiContextTest {
             public void updateElevatorDirectionalLamps(int elevatorID) {
 
             }
-
-            @Override
-            public void updateFloorPanel(int floorNumber, FloorPanel floorPanel) {
-                // Do nothing in the test implementation
-            }
         });
 
         // Create a new GuiContext with input buffer
         guiContext = new GuiContext(inputBuffer);
-        guiContext.setViews(views);
+        guiContext.addView(view);
 
         // Create a new system model with a single floor and elevator
         FloorInformation[][] floors = {
@@ -63,7 +54,7 @@ public class GuiContextTest {
         };
         ElevatorInformation elevatorInfo = new ElevatorInformation();
 
-        model = new SystemModel();
+        model = guiContext.getModel();
 
     }
     @Test
@@ -102,19 +93,19 @@ public class GuiContextTest {
         guiContext.handleElevatorAtFloor(0, 0);
 
         // Ensure that the model has been updated correctly
-        assertEquals(0, model.getElevators()[0].getCurrentFloor());
+        assertEquals(0, model.getElevators()[0].getPosition());
 
         // Move the elevator to floor 1
         guiContext.handleElevatorAtFloor(0, 1);
 
         // Ensure that the model has been updated correctly
-        assertEquals(1, model.getElevators()[0].getCurrentFloor());
+        assertEquals(1, model.getElevators()[0].getPosition());
 
         // Move the elevator to floor 2
         guiContext.handleElevatorAtFloor(0, 2);
 
         // Ensure that the model has been updated correctly
-        assertEquals(2, model.getElevators()[0].getCurrentFloor());
+        assertEquals(2, model.getElevators()[0].getPosition());
 
     }
     @Test
@@ -125,7 +116,6 @@ public class GuiContextTest {
                 {new FloorInformation(3), new FloorInformation(4)}
         };
         ElevatorInformation[] elevators = {new ElevatorInformation(), new ElevatorInformation()};
-        SystemModel model = new SystemModel();
 
         // Set the position of the first elevator to floor 0
         guiContext.handleElevatorAtFloor(0, 0);
@@ -134,23 +124,23 @@ public class GuiContextTest {
         guiContext.handleElevatorAtFloor(1, 2);
 
         // Ensure that the model has been updated correctly
-        assertEquals(0, model.getElevators()[0].getCurrentFloor());
-        assertEquals(2, model.getElevators()[1].getCurrentFloor());
+        assertEquals(0, model.getElevators()[0].getPosition());
+        assertEquals(2, model.getElevators()[1].getPosition());
 
         // Move both elevators to floor 1 simultaneously
         guiContext.handleElevatorAtFloor(0, 1);
         guiContext.handleElevatorAtFloor(1, 1);
 
         // Ensure that the model has been updated correctly
-        assertEquals(1, model.getElevators()[0].getCurrentFloor());
-        assertEquals(1, model.getElevators()[1].getCurrentFloor());
+        assertEquals(1, model.getElevators()[0].getPosition());
+        assertEquals(1, model.getElevators()[1].getPosition());
 
         // Move both elevators to floor 2 simultaneously
         guiContext.handleElevatorAtFloor(0, 2);
         guiContext.handleElevatorAtFloor(1, 2);
 
         // Ensure that the model has been updated correctly
-        assertEquals(2, model.getElevators()[0].getCurrentFloor());
-        assertEquals(2, model.getElevators()[1].getCurrentFloor());
+        assertEquals(2, model.getElevators()[0].getPosition());
+        assertEquals(2, model.getElevators()[1].getPosition());
     }
 }
