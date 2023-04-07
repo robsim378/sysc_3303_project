@@ -22,6 +22,5 @@ public class PerformanceMain {
         Thread inUdpThread = new Thread(in);
         inUdpThread.start();
         performanceThread.start();
-
     }
 }

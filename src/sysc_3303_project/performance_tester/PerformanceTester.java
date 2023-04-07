@@ -1,9 +1,11 @@
 package sysc_3303_project.performance_tester;
 
+import logging.Logger;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
-import sysc_3303_project.floor_subsystem.FloorEventType;
 
+import java.io.*;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -17,35 +19,83 @@ public class PerformanceTester implements Runnable {
     /**
      * The filepath for the output file containing the time taken to service a request
      */
-    public static final String REQUEST_TIME_FILEPATH = "";
+    public static final String SERVICED_TIME_FILEPATH = System.getProperty("user.dir") + "\\src\\sysc_3303_project\\performance_tester\\output\\service_times.csv";
 
     /**
      * The filepath for the output file containing the time taken to schedule a request
      */
-    public static final String SCHEDULER_TIME_FILEPATH = "";
+    public static final String SCHEDULED_TIME_FILEPATH = System.getProperty("user.dir") + "\\src\\sysc_3303_project\\performance_tester\\output\\schedule_times.csv";
 
     /**
      * EventBuffer for receiving performance data
      */
-    private EventBuffer<PerformanceEventType> inputBuffer;
+    private final EventBuffer<PerformanceEventType> inputBuffer;
 
     /**
      * List of requests that have not finished being serviced.
      */
-    private ArrayList<PerformanceRequestData> ongoingRequests;
+    private final ArrayList<PerformanceRequestData> ongoingRequests;
 
     /**
      * List of requests that have been read from the input file but not yet scheduled
      */
-    private ArrayList<PerformanceRequestData> pendingRequests;
+    private final ArrayList<PerformanceRequestData> pendingRequests;
 
     public PerformanceTester(EventBuffer<PerformanceEventType> inputBuffer) {
         this.inputBuffer = inputBuffer;
+        ongoingRequests = new ArrayList<>();
+        pendingRequests = new ArrayList<>();
 
+        try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(SCHEDULED_TIME_FILEPATH, true)))) {
+            out.println("request made,request scheduled,time elapsed");
+            Logger.getLogger().logNotification(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " created.");
+        } catch (IOException e) {
+            Logger.getLogger().logError(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " creation failed.");
+            e.printStackTrace();
+        }
+        try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(SERVICED_TIME_FILEPATH, true)))) {
+            out.println("request scheduled,request serviced,time elapsed");
+            Logger.getLogger().logNotification(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " created.");
+        } catch (IOException e) {
+            Logger.getLogger().logError(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " creation failed.");
+            e.printStackTrace();
+        }
+
+//        try {
+//            FileWriter myWriter = new FileWriter(SCHEDULED_TIME_FILEPATH);
+//            myWriter.write("request made,request scheduled,time elapsed");
+//            myWriter.close();
+//            Logger.getLogger().logNotification(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " created.");
+//        } catch (IOException e) {
+//            Logger.getLogger().logError(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " creation failed.");
+//            e.printStackTrace();
+//        }
+//        try {
+//            FileWriter myWriter = new FileWriter(SERVICED_TIME_FILEPATH);
+//            myWriter.write("request scheduled,request serviced,time elapsed");
+//            myWriter.close();
+//            Logger.getLogger().logNotification(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " created.");
+//        } catch (IOException e) {
+//            Logger.getLogger().logError(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " creation failed.");
+//            e.printStackTrace();
+//        }
     }
 
-    private void outputToFile(String filePath, PerformanceRequestData data, LocalTime servicedTime) {
+    private void outputToFile(String filePath, PerformanceRequestData requestData, LocalTime endTime) {
+        String newLine = "";
+        LocalTime startTime = requestData.getRequestTime();
 
+        newLine += startTime.toString() + ",";
+        newLine += endTime.toString() + ",";
+        newLine += Duration.between(startTime, endTime);
+
+        try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, true)))) {
+            out.println(newLine);
+            Logger.getLogger().logDebug(getClass().getSimpleName(), "appended new line to " + filePath);
+        } catch (IOException e) {
+            Logger.getLogger().logError(getClass().getSimpleName(), "failed to write to " + filePath);
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -98,7 +148,7 @@ public class PerformanceTester implements Runnable {
         pendingRequests.remove(request);
         request.setElevatorID(elevatorID);
         ongoingRequests.add(request);
-        outputToFile(SCHEDULER_TIME_FILEPATH, request, scheduledTime);
+        outputToFile(SCHEDULED_TIME_FILEPATH, request, scheduledTime);
     }
 
     /**
@@ -111,12 +161,12 @@ public class PerformanceTester implements Runnable {
 
         PerformanceRequestData request = findOngoingRequest(destinationFloor, elevatorID);
         ongoingRequests.remove(request);
-        outputToFile(REQUEST_TIME_FILEPATH, request, servicedTime);
+        outputToFile(SERVICED_TIME_FILEPATH, request, servicedTime);
 
         while (request != null) {
             request = findOngoingRequest(destinationFloor, elevatorID);
             ongoingRequests.remove(request);
-            outputToFile(REQUEST_TIME_FILEPATH, request, servicedTime);
+            outputToFile(SERVICED_TIME_FILEPATH, request, servicedTime);
         }
     }
 
@@ -128,8 +178,8 @@ public class PerformanceTester implements Runnable {
         createOngoingRequest(destinationFloor, elevatorID, scheduledTime);
     }
 
-    private void handleRequestServiced(LocalTime scheduledTime, int destinationFloor, int elevatorID) {
-        ongoingRequestServiced(destinationFloor, elevatorID, scheduledTime);
+    private void handleRequestServiced(LocalTime servicedTime, int destinationFloor, int elevatorID) {
+        ongoingRequestServiced(destinationFloor, elevatorID, servicedTime);
     }
 
     @Override

@@ -11,12 +11,12 @@ public class PerformanceRequestData {
     /**
      * The time the request began
      */
-    private LocalTime requestTime;
+    private final LocalTime requestTime;
 
     /**
      * The destination floor of the request
      */
-    private int destinationFloor;
+    private final int destinationFloor;
 
     /**
      * The elevator servicing the request.
@@ -27,7 +27,6 @@ public class PerformanceRequestData {
      * Constructor for a PerformanceRequestData
      * @param requestTime   LocalTime, the time the request was made
      * @param destinationFloor  int, the destination floor of the request.
-     * @param elevatorID    int, the ID of the elevator servicing the request.
      */
     PerformanceRequestData(LocalTime requestTime, int destinationFloor){
         this.requestTime = requestTime;
@@ -65,4 +64,5 @@ public class PerformanceRequestData {
     public int getElevatorID() {
         return elevatorID;
     }
+
 }
