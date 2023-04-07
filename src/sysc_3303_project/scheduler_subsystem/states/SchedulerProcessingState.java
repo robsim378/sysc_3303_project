@@ -6,11 +6,13 @@
 
 package sysc_3303_project.scheduler_subsystem.states;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import logging.Logger;
+import sysc_3303_project.performance_tester.PerformanceEventType;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -90,6 +92,17 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.PASSENGERS_UNLOADED, floorNumber));
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Unloading passenger at floor " + floorNumber + " from elevator " + elevatorId);
 		}
+
+		Event<Enum<?>> performanceEvent = new Event<>(
+				Subsystem.PERFORMANCE,
+				elevatorId,
+				Subsystem.SCHEDULER,
+				floorNumber,
+				PerformanceEventType.REQUEST_SERVICED,
+				LocalTime.now()
+		);
+		context.getOutputBuffer().addEvent(performanceEvent);
+
 		if (loaded) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.FLOOR, floorNumber, 
@@ -159,6 +172,19 @@ public class SchedulerProcessingState extends SchedulerState {
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		LoadRequest request = new LoadRequest(floorNumber, direction);
 		int assignedElevator = context.assignLoadRequest(request);
+
+
+		Event<Enum<?>> performanceEvent = new Event<>(
+				Subsystem.PERFORMANCE,
+				assignedElevator,
+				Subsystem.SCHEDULER,
+				floorNumber,
+				PerformanceEventType.REQUEST_SCHEDULED,
+				LocalTime.now()
+		);
+		context.getOutputBuffer().addEvent(performanceEvent);
+
+
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 				contextTracker.loadElevator(assignedElevator, floorNumber);
@@ -175,7 +201,14 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.CLOSE_DOORS, null));
 
 		}
+<<<<<<< HEAD
 		context.getFaultDetector().addTimer(assignedElevator, ResourceManager.get().getInt("timing.doors")); //doors close timer
+=======
+
+
+
+		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
+>>>>>>> a54dd2f (created the performance subsystem)
 		return null;
 	}
 
