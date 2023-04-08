@@ -16,13 +16,16 @@ import sysc_3303_project.gui_subsystem.transfer_data.DoorStatus;
  *
  */
 public class SystemModel {
-	
+
+	private int currentFloor;
+	private boolean doorOpen;
+
 	/**
 	 * Backing information for floor and elevator information
 	 */
 	private final ElevatorInformation[] elevators;
 	private final FloorInformation[] floors;
-	
+
 	/**
 	 * Constructor for the system model
 	 */
@@ -30,14 +33,14 @@ public class SystemModel {
 		ResourceManager mngr = ResourceManager.get();
 		int elevatorsCount = mngr.getInt("count.elevators");
 		int floorsCount = mngr.getInt("count.floors");
-		
+
 		this.elevators = new ElevatorInformation[elevatorsCount];
 		this.floors = new FloorInformation[floorsCount];
 		for (int i = 0; i < elevatorsCount; i++) {
 			this.elevators[i] = new ElevatorInformation();
 		}
 		for (int i = 0; i < floorsCount; i++) {
-			this.floors[i] = new FloorInformation(i); 
+			this.floors[i] = new FloorInformation(i);
 		}
 
 	}
@@ -57,7 +60,7 @@ public class SystemModel {
 	public ElevatorInformation[] getElevators() {
 		return elevators;
 	}
-	
+
 	/**
 	 * Gets the floor's "up" button lamp status
 	 * @param floor		int, floor to check
@@ -66,7 +69,7 @@ public class SystemModel {
 	public Boolean getFloorUpLamp(int floor) {
 		return getFloors()[floor].getUpButton();
 	}
-	
+
 	/**
 	 * Gets the floor's "down" button lamp status
 	 * @param floor		int, floor to check
@@ -75,7 +78,7 @@ public class SystemModel {
 	public Boolean getFloorDownLamp(int floor) {
 		return getFloors()[floor].getDownButton();
 	}
-	
+
 	/**
 	 * Gets the elevators position
 	 * @param elevatorId	int, elevator to check
@@ -84,7 +87,7 @@ public class SystemModel {
 	public int getElevatorPosition(int elevatorId) {
 		return getElevators()[elevatorId].getPosition();
 	}
-	
+
 	/**
 	 * Direction an elvator is going
 	 * @param elevatorId	int, elevator
@@ -93,7 +96,7 @@ public class SystemModel {
 	public Direction getElevatorDirection(int elevatorId) {
 		return isElevatorShutdown(elevatorId) ? null : getElevators()[elevatorId].getDirection();
 	}
-	
+
 	/**
 	 * Status of an elevator's door
 	 * @param elevatorId	int, elevator to check
@@ -102,7 +105,7 @@ public class SystemModel {
 	public DoorStatus getElevatorDoorStatus(int elevatorId) {
 		return getElevators()[elevatorId].getDoorStatus();
 	}
-	
+
 	/**
 	 * Returns all button lamps associated with an elevator
 	 * @param elevatorId	int, elevator to check
@@ -111,7 +114,7 @@ public class SystemModel {
 	public boolean[] getElevatorButtonLamps(int elevatorId) {
 		return getElevators()[elevatorId].getFloorLamps();
 	}
-	
+
 	/**
 	 * Checks if an elevator's door has done goofed
 	 * @param elevatorId	int, elevator to check
@@ -120,7 +123,7 @@ public class SystemModel {
 	public boolean hasElevatorDoorsFault(int elevatorId) {
 		return getElevators()[elevatorId].isHasDoorsFault();
 	}
-	
+
 	/**
 	 * Checks if an elevator has shut down
 	 * @param elevatorId	int, elevator to check
@@ -129,4 +132,12 @@ public class SystemModel {
 	public boolean isElevatorShutdown(int elevatorId) {
 		return getElevators()[elevatorId].isShutdown();
 	}
+	public void setCurrentFloor(int currentFloor) {
+		this.currentFloor = currentFloor;
+	}
+
+	public void setDoorStatus(boolean doorOpen) {
+		this.doorOpen = doorOpen;
+	}
+
 }
