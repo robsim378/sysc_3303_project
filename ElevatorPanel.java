@@ -20,6 +20,7 @@ import java.awt.*;
  * @author Liam and Ian
  */
 public class ElevatorPanel extends JPanel {
+	private JLabel floorLabel;
 	
 	/**
 	 * Default serial ID
@@ -67,8 +68,6 @@ public class ElevatorPanel extends JPanel {
      * Label for the status of the door
      */
     private JLabel doorStatus;
-    private JLabel floorLabel;
-
 
     /**
      * Constructor for the elevator
@@ -236,5 +235,4 @@ public class ElevatorPanel extends JPanel {
 
         return floorLabel;
     }
-
 }

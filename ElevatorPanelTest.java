@@ -1,7 +1,8 @@
-package sysc_3303_project.gui_subsystem.view;
+package test.gui_subsystem;
 
 import org.junit.jupiter.api.Test;
 import sysc_3303_project.gui_subsystem.model.SystemModel;
+import sysc_3303_project.gui_subsystem.view.ElevatorPanel;
 
 import static org.junit.jupiter.api.Assertions.*;
 
