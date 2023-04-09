@@ -32,6 +32,7 @@ public class ViewCommon {
 
 	/**
 	 * Static method for transforming a floor ID into a user friendly format
+	 * Does not handle any floor that is below 0
 	 * @param floorID		int, Floor ID being stringified
 	 * @return				String, stringified floor ID
 	 */

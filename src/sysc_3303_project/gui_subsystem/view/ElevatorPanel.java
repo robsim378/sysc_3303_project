@@ -236,4 +236,20 @@ public class ElevatorPanel extends JPanel {
         // Refresh the panel on the UI end
         this.updateUI();
     }
+    
+    /**
+     * ----------------- Getters ----------------
+     */
+    
+    /**
+     * Getter
+     * @return int, ID
+     */
+    public int getID() {
+    	return elevatorID;
+    }
+    
+    public String getFloorText() {
+    	return position.getText();
+    }
 }

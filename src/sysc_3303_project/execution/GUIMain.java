@@ -29,7 +29,9 @@ public class GUIMain {
     	// Initializing the UI and model
 		EventBuffer<GuiEventType> guiBuffer = new EventBuffer<>();
     	GuiContext model = new GuiContext(guiBuffer);
-        new SystemFrame(model);
+        SystemFrame sysFrame = new SystemFrame(model);
+        sysFrame.buildSystemFrame();
+        sysFrame.setVisible(true);
         Thread modelThread = new Thread(model);
         modelThread.start();
 
