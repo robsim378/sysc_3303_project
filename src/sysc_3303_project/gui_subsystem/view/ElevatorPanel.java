@@ -12,6 +12,7 @@ import javax.swing.border.Border;
 import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.configuration.ResourceManager;
 import sysc_3303_project.gui_subsystem.model.SystemModel;
+import sysc_3303_project.gui_subsystem.transfer_data.DoorStatus;
 
 import java.awt.*;
 
@@ -21,6 +22,11 @@ import java.awt.*;
  */
 public class ElevatorPanel extends JPanel {
 	
+	/**
+	 * Reference to the resource manager for building stuff
+	 */
+	private static final ResourceManager rm = ResourceManager.get();
+
 	/**
 	 * Default serial ID
 	 */
@@ -85,7 +91,7 @@ public class ElevatorPanel extends JPanel {
     	
     	
         // Setting the title of the panel
-        this.add(new JLabel("Elevator " + ViewCommon.elevatorIDToString(elevatorID)), BorderLayout.NORTH);
+        this.add(new JLabel(rm.get("elevatorframe.elevator") + ViewCommon.elevatorIDToString(elevatorID)), BorderLayout.NORTH);
         
         
         // The main section of the panel
@@ -98,7 +104,7 @@ public class ElevatorPanel extends JPanel {
         c.gridy=0;
 
         // Displaying the position of the elevator in the panel
-        this.position = new JLabel("Floor: 0");
+        this.position = new JLabel(rm.get("elevatorframe.floor") + "0");
         information.add(position, c);
         
         // Displaying the directional lamps of the elevator
@@ -108,7 +114,7 @@ public class ElevatorPanel extends JPanel {
         JPanel directionIcons = new JPanel();
         directionIcons.setLayout(new GridLayout(1,2));
         
-        JLabel directionalLampsLabel = new JLabel("Directional Lamps:");
+        JLabel directionalLampsLabel = new JLabel(rm.get("elevatorframe.directional"));
         directionsSection.add(directionalLampsLabel, BorderLayout.NORTH);
         
         directionUpIcon = new JPanel();
@@ -137,7 +143,7 @@ public class ElevatorPanel extends JPanel {
         information.add(directionsSection, c);
         
         // Displaying the motor information?
-        motorLabel = new JLabel("Motor: ");
+        motorLabel = new JLabel(rm.get("elevatorframe.motor"));
         c.fill=GridBagConstraints.HORIZONTAL;
         c.weightx = 1;
         c.gridx=0;
@@ -145,7 +151,7 @@ public class ElevatorPanel extends JPanel {
         information.add(motorLabel, c);
         
         // Displaying the faults information
-        faultsLabel = new JLabel("Faults: ");
+        faultsLabel = new JLabel(rm.get("elevatorframe.faults"));
         c.fill=GridBagConstraints.HORIZONTAL;
         c.weightx = 1;
         c.gridx=0;
@@ -153,7 +159,7 @@ public class ElevatorPanel extends JPanel {
         information.add(faultsLabel, c);
 
         // Displaying the door information
-        doorStatus = new JLabel("Door Status: ");
+        doorStatus = new JLabel(rm.get("elevatorframe.door"));
         c.fill=GridBagConstraints.HORIZONTAL;
         c.weightx = 1;
         c.gridx=0;
@@ -164,7 +170,7 @@ public class ElevatorPanel extends JPanel {
         // Displaying the Lamps information on los buttons
         JPanel lampsSection = new JPanel();
         lampsSection.setLayout(new BorderLayout());
-        lampsSection.add(new JLabel("LOS POLLOS HERMANOS"), BorderLayout.NORTH);
+        lampsSection.add(new JLabel(rm.get("elevatorframe.lamps")), BorderLayout.NORTH);
         
         JPanel lampsSubsection = new JPanel();
         
@@ -198,7 +204,7 @@ public class ElevatorPanel extends JPanel {
     public void updatePanel(SystemModel model) {
     	
     	// Update door status tag
-    	doorStatus.setText("Door Status: " + model.getElevatorDoorStatus(elevatorID).toString());
+    	doorStatus.setText(rm.get("elevatorframe.door") + model.getElevatorDoorStatus(elevatorID).toString());
 
     	// Update faults tag
     	boolean isShutdown = model.isElevatorShutdown(elevatorID);
@@ -209,17 +215,17 @@ public class ElevatorPanel extends JPanel {
     	} else if(doorsFault) {
     		faultsLabelString = "DOOR BLOCKED";
     	}
-    	faultsLabel.setText("Elevator Fault Status: " + faultsLabelString);
+    	faultsLabel.setText(rm.get("elevatorframe.faults") + faultsLabelString);
     	
     	// Update motor status tag
-    	motorLabel.setText("Motor: " + model.getElevatorDirection(elevatorID));
+    	motorLabel.setText(rm.get("elevatorframe.motor") + ((DoorStatus.DOORS_CLOSED.equals(model.getElevatorDoorStatus(elevatorID))) ? rm.get("elevatorframe.motor.on") + ": " + model.getElevatorDirection(elevatorID): rm.get("elevatorframe.motor.off")));
 
     	// Update directional lamp tag
     	directionUpIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.UP ? ViewCommon.ON : ViewCommon.OFF);
     	directionDownIcon.setBackground(model.getElevatorDirection(elevatorID) == Direction.DOWN ? ViewCommon.ON : ViewCommon.OFF);
 
     	// Update the current floor tag
-        position.setText("Floor: " + ViewCommon.floorIDToString(model.getElevatorPosition(elevatorID)));
+        position.setText(rm.get("elevatorframe.floor") + ViewCommon.floorIDToString(model.getElevatorPosition(elevatorID)));
         
         // Update all floor destination button lamps
         boolean[] lampStatus = model.getElevatorButtonLamps(elevatorID);

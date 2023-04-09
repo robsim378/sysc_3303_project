@@ -28,10 +28,15 @@ public class ResourceManager {
 	private Properties prop = null;
 	
 	/**
-	 * A path that has the properties file
+	 * A path that has the configuration properties file
 	 */
-	private String path = "resources/config.properties";
-	
+	private final String configPath = "resources/config.properties";
+
+	/**
+	 * A path that has the configuration properties file
+	 */
+	private final String labelsPath = "resources/labels.properties";
+
 	/**
 	 * Constructor
 	 */
@@ -63,12 +68,15 @@ public class ResourceManager {
 	 * @return	Properties, a properties file for configuration details
 	 */
 	private Properties buildProperties() {
-        try (InputStream input = new FileInputStream(path)) {
-
+        try {
+        	InputStream inputConfig = new FileInputStream(configPath);
+        	InputStream inputLabels = new FileInputStream(labelsPath);
+        	
             Properties prop = new Properties();
 
             // load a properties file
-            prop.load(input);
+            prop.load(inputConfig);
+            prop.load(inputLabels);
             
             return prop;
 
@@ -78,16 +86,7 @@ public class ResourceManager {
         
         return null;
 	}
-	
-	/**
-	 * For testing purposes. Changes path file to use
-	 * @param s	String, path tile to use
-	 */
-	public void changePath(String s) {
-		prop = null;
-		path = s;
-	}
-	
+		
 	/**
 	 * returns the singular instance of the projects ResourcceManager
 	 * @return		ResourceManager, the singleton object
