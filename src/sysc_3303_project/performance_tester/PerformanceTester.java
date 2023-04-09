@@ -47,14 +47,14 @@ public class PerformanceTester implements Runnable {
         pendingRequests = new ArrayList<>();
 
         try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(SCHEDULED_TIME_FILEPATH, true)))) {
-            out.println("request made,request scheduled,time elapsed");
+            out.println("srcFloor,destFloor,elevatorID,request made,request scheduled,time elapsed");
             Logger.getLogger().logNotification(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " created.");
         } catch (IOException e) {
             Logger.getLogger().logError(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " creation failed.");
             e.printStackTrace();
         }
         try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(SERVICED_TIME_FILEPATH, true)))) {
-            out.println("request scheduled,request serviced,time elapsed");
+            out.println("srcFloor,destFloor,elevatorID,request scheduled,request serviced,time elapsed");
             Logger.getLogger().logNotification(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " created.");
         } catch (IOException e) {
             Logger.getLogger().logError(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " creation failed.");
@@ -86,6 +86,9 @@ public class PerformanceTester implements Runnable {
         Logger.getLogger().logNotification(getClass().getSimpleName(), requestData.toString());
         LocalTime startTime = requestData.getRequestTime();
 
+        newLine += requestData.getSourceFloor() + ",\t";
+        newLine += requestData.getDestinationFloor() + ",\t";
+        newLine += requestData.getElevatorID() + ",\t";
         newLine += startTime.toString() + ",\t";
         newLine += endTime.toString() + ",\t";
         newLine += Duration.between(startTime, endTime);

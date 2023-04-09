@@ -175,17 +175,6 @@ public class SchedulerProcessingState extends SchedulerState {
 		LoadRequest request = new LoadRequest(floorNumber, direction);
 		int assignedElevator = context.assignLoadRequest(request);
 
-		Event<Enum<?>> performanceEvent = new Event<>(
-				Subsystem.PERFORMANCE,
-				0,
-				Subsystem.SCHEDULER,
-				0,
-				PerformanceEventType.REQUEST_SCHEDULED,
-				new PerformancePayload(-1, floorNumber, assignedElevator, LocalTime.now())
-		);
-		context.getOutputBuffer().addEvent(performanceEvent);
-		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Sending event to PERFORMANCE: " + PerformanceEventType.REQUEST_SCHEDULED);
-
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 				contextTracker.loadElevator(assignedElevator, floorNumber);
