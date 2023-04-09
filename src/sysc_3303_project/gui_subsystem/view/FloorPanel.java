@@ -23,6 +23,11 @@ import java.util.ArrayList;
 public class FloorPanel extends JPanel {
 	
 	/**
+	 * Reference to the resource manager for building stuff
+	 */
+	private static final ResourceManager rm = ResourceManager.get();
+
+	/**
 	 * Default serial UID
 	 */
 	private static final long serialVersionUID = 1L;
@@ -67,23 +72,23 @@ public class FloorPanel extends JPanel {
         this.setBorder(blackLine);
         
         // Set the label for the floor
-        this.add(new JLabel("Floor " + ViewCommon.floorIDToString(floorID)), BorderLayout.NORTH);
+        this.add(new JLabel(rm.get("floorframe.name") + ViewCommon.floorIDToString(floorID)), BorderLayout.NORTH);
 
         // All information related to adding the directional button lamps to the left side
         JPanel floorButtonsSection = new JPanel();
         floorButtonsSection.setLayout(new BorderLayout());
-        floorButtonsSection.add(new JLabel("Floor Buttons", SwingConstants.CENTER), BorderLayout.NORTH);
+        floorButtonsSection.add(new JLabel(rm.get("floorframe.buttons"), SwingConstants.CENTER), BorderLayout.NORTH);
 
         JPanel floorButtons = new JPanel();
         floorButtons.setLayout(new GridLayout(2, 1));
 
         floorButtonUp = new JPanel();
-        floorButtonUp.add(new JLabel("UP"));
+        floorButtonUp.add(new JLabel(rm.get("floorframe.up")));
         floorButtonUp.setBackground(ViewCommon.OFF);
         floorButtonUp.setBorder(blackLine);
 
         floorButtonDown = new JPanel();
-        floorButtonDown.add(new JLabel("DOWN"));
+        floorButtonDown.add(new JLabel(rm.get("floorframe.down")));
         floorButtonDown.setBackground(ViewCommon.OFF);
         floorButtonDown.setBorder(blackLine);
 
@@ -98,7 +103,7 @@ public class FloorPanel extends JPanel {
         //   to the right side
         JPanel directionalLampsSection = new JPanel();
         directionalLampsSection.setLayout(new BorderLayout());
-        directionalLampsSection.add(new JLabel("Directional Lamps", SwingConstants.CENTER), BorderLayout.NORTH);
+        directionalLampsSection.add(new JLabel(rm.get("floorframe.directional"), SwingConstants.CENTER), BorderLayout.NORTH);
         
         JPanel directionalLampsSubsection = new JPanel();
         directionalLampsSubsection.setLayout(new GridLayout());
@@ -109,7 +114,7 @@ public class FloorPanel extends JPanel {
         	JPanel subPanel = new JPanel();
         	subPanel.setLayout(new GridLayout(3, 1));
         	
-        	subPanel.add(new JLabel("Elevator#" + ViewCommon.elevatorIDToString(i)));
+        	subPanel.add(new JLabel(rm.get("floorframe.elevatortitle") + ViewCommon.elevatorIDToString(i)));
         	
             JPanel directionUpIcon = new JPanel();
             JLabel upLabel = new JLabel("⬆️");

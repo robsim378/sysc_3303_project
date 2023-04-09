@@ -21,6 +21,11 @@ import java.util.ArrayList;
 public class SystemFrame extends JFrame implements GuiView {
 	
 	/**
+	 * Reference to the resource manager for building stuff
+	 */
+	private static final ResourceManager rm = ResourceManager.get();
+	
+	/**
 	 * Default
 	 */
 	private static final long serialVersionUID = 1L;
@@ -58,7 +63,7 @@ public class SystemFrame extends JFrame implements GuiView {
         // Floors side
         JPanel floorsSection = new JPanel();
         floorsSection.setLayout(new BorderLayout());
-        floorsSection.add(new JLabel("Floors"), BorderLayout.NORTH);
+        floorsSection.add(new JLabel(rm.get("systemframe.floors")), BorderLayout.NORTH);
         
         JPanel floorsPanel = new JPanel();
         for (int i = 0; i < ResourceManager.get().getInt("count.floors"); i++) {
@@ -76,7 +81,7 @@ public class SystemFrame extends JFrame implements GuiView {
         // Elevators side
         JPanel elevatorsSection = new JPanel();
         elevatorsSection.setLayout(new BorderLayout());
-        elevatorsSection.add(new JLabel("Elevators"), BorderLayout.NORTH);
+        elevatorsSection.add(new JLabel(rm.get("systemframe.elevators")), BorderLayout.NORTH);
         
         JPanel elevatorsPanel = new JPanel();
         elevatorsPanel.setLayout(new GridBagLayout());
