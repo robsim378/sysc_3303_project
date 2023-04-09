@@ -7,6 +7,7 @@ import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.*;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -157,6 +158,8 @@ public abstract class ElevatorStateTest {
         testState = getState(testContext);
 
         ElevatorState newState = testState.handleElevatorButtonPressed(12);
+        
+        assertEquals(GuiEventType.ELEVATOR_LAMP_STATUS_CHANGE, testContext.getOutputBuffer().getEvent().getEventType());
 
         Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
 

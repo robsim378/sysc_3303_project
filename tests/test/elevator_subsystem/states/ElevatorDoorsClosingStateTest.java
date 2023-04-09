@@ -14,6 +14,7 @@ import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -102,6 +103,8 @@ public class ElevatorDoorsClosingStateTest extends ElevatorStateTest{
         ElevatorState testState = new ElevatorDoorsClosingState(testContext);
 
         ElevatorState newState = testState.handleElevatorButtonPressed(5);
+        
+        assertEquals(GuiEventType.ELEVATOR_LAMP_STATUS_CHANGE, testContext.getOutputBuffer().getEvent().getEventType());
 
         Event<Enum<?>> testEvent = testContext.getOutputBuffer().getEvent();
 
