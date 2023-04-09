@@ -13,6 +13,7 @@ import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.elevator_subsystem.states.*;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,8 +44,10 @@ public class ElevatorMovingStateTest extends ElevatorStateTest{
 
         ElevatorState newState = testState.travelThroughFloorsTimer();
 
+        assertEquals(GuiEventType.DIRECTIONAL_LAMP_STATUS_CHANGE, testContext.getOutputBuffer().getEvent().getEventType());
+        
         testEvent = testContext.getOutputBuffer().getEvent();
-
+        
         assertEquals(SchedulerEventType.ELEVATOR_APPROACHING_FLOOR, testEvent.getEventType());
         assertEquals(1, testEvent.getPayload());
         assertTrue(newState instanceof ElevatorApproachingFloorsState);

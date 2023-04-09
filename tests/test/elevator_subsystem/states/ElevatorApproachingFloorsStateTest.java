@@ -20,6 +20,7 @@ import sysc_3303_project.elevator_subsystem.states.ElevatorDoorsClosedState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorMovingState;
 import sysc_3303_project.elevator_subsystem.states.ElevatorState;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -50,6 +51,9 @@ public class ElevatorApproachingFloorsStateTest extends ElevatorStateTest{
         
         assertTrue(newState instanceof ElevatorDoorsClosedState);
         assertEquals(1, context.getFloor());
+        
+        assertEquals(GuiEventType.DIRECTIONAL_LAMP_STATUS_CHANGE, context.getOutputBuffer().getEvent().getEventType());
+        assertEquals(GuiEventType.ELEVATOR_AT_FLOOR, context.getOutputBuffer().getEvent().getEventType());
         
         Event<Enum<?>> suppliedEvent = schedulerBuffer.getEvent();
         

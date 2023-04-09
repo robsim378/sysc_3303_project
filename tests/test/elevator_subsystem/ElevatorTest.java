@@ -11,6 +11,7 @@ import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.Elevator;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,15 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ElevatorTest {
 
-	private EventBuffer<Enum<?>> schedulerBuffer;
+	private EventBuffer<Enum<?>> outputBuffer;
 	private EventBuffer<ElevatorEventType> eventBuffer;
 	private Elevator elevator;
 	@Before
 	public void setUp() {
 		// Initialize the scheduler and event buffers, and the elevator
-		schedulerBuffer = new EventBuffer<>();
+		outputBuffer = new EventBuffer<>();
 		eventBuffer = new EventBuffer<>();
-		elevator = new Elevator(schedulerBuffer, eventBuffer, 1);
+		elevator = new Elevator(outputBuffer, eventBuffer, 1);
 	}
 
 		/**
@@ -97,31 +98,33 @@ public class ElevatorTest {
 			// Close the elevator doors and ensure that the close doors event is generated
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.CLOSE_DOORS, null));
 			TimeUnit.MILLISECONDS.sleep(500);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_PING);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_CLOSED);
+			assertEquals(outputBuffer.getEvent().getEventType(), GuiEventType.ELEVATOR_DOOR_STATUS_CHANGE);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_PING);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_CLOSED);
 
 			// Start moving the elevator up and ensure that the moving timer event is generated,
 			// and that the elevator's direction is correctly set to UP
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.START_MOVING_IN_DIRECTION, Direction.UP));
 			TimeUnit.MILLISECONDS.sleep(500);
 			assertEquals(elevator.getDirection(), Direction.UP);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), FloorEventType.UPDATE_ELEVATOR_DIRECTION);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
+			assertEquals(outputBuffer.getEvent().getEventType(), GuiEventType.DIRECTIONAL_LAMP_STATUS_CHANGE);
+			assertEquals(outputBuffer.getEvent().getEventType(), FloorEventType.UPDATE_ELEVATOR_DIRECTION);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
 			
 			// Continue moving
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.CONTINUE_MOVING, null));
 			TimeUnit.MILLISECONDS.sleep(500);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_APPROACHING_FLOOR);
 			
 			// Stop the elevator at the next floor
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.STOP_AT_NEXT_FLOOR, null));
 			TimeUnit.MILLISECONDS.sleep(500);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_STOPPED);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_STOPPED);
 
 			// Open the elevator doors
 			eventBuffer.addEvent(new Event<>(Subsystem.ELEVATOR, 1, Subsystem.SCHEDULER, 0, ElevatorEventType.OPEN_DOORS, null));
 			TimeUnit.MILLISECONDS.sleep(500);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_PING);
-			assertEquals(schedulerBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_OPENED);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_PING);
+			assertEquals(outputBuffer.getEvent().getEventType(), SchedulerEventType.ELEVATOR_DOORS_OPENED);
 		}
 	}
