@@ -1,44 +1,28 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 5.0
+ */
 package sysc_3303_project.performance_tester;
 
 import java.io.Serializable;
 import java.time.LocalTime;
 
-public class PerformancePayload implements Serializable {
-
-    private final int sourceFloor;
-    private final int destinationFloor;
-    private final int elevatorID;
-
-    private final LocalTime requestTime;
+/**
+ * The payload for performance events.
+ *
+ * @author Ian Holmes, Robert Simionescu
+ */
+public record PerformancePayload(int sourceFloor, int destinationFloor, int elevatorID, LocalTime requestTime) implements Serializable {
 
     /**
      * Constructor
      *
-     * @param sourceFloor int, source floor number for the request
+     * @param sourceFloor      int, source floor number for the request
      * @param destinationFloor int, destination floor number for the request
-     * @param elevatorID  int, id of elevator for the request
-     * @param requestTime LocalTime, the time
+     * @param elevatorID       int, id of elevator for the request
+     * @param requestTime      LocalTime, the time
      */
-    public PerformancePayload(int sourceFloor, int destinationFloor, int elevatorID, LocalTime requestTime) {
-        this.sourceFloor = sourceFloor;
-        this.destinationFloor = destinationFloor;
-        this.elevatorID = elevatorID;
-        this.requestTime = requestTime;
-    }
-
-    public int getSourceFloor() {
-        return sourceFloor;
-    }
-
-    public int getDestinationFloor() {
-        return destinationFloor;
-    }
-
-    public int getElevatorID() {
-        return elevatorID;
-    }
-
-    public LocalTime getRequestTime() {
-        return requestTime;
+    public PerformancePayload {
     }
 }

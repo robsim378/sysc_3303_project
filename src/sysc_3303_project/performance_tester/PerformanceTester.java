@@ -1,3 +1,8 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 5.0
+ */
 package sysc_3303_project.performance_tester;
 
 import logging.Logger;
@@ -46,6 +51,8 @@ public class PerformanceTester implements Runnable {
         ongoingRequests = new ArrayList<>();
         pendingRequests = new ArrayList<>();
 
+        // Headers for output files, commented out for analysis
+        /*
         try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(SCHEDULED_TIME_FILEPATH, true)))) {
             out.println("srcFloor,destFloor,elevatorID,request made,request scheduled,time elapsed");
             Logger.getLogger().logNotification(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " created.");
@@ -60,27 +67,16 @@ public class PerformanceTester implements Runnable {
             Logger.getLogger().logError(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " creation failed.");
             e.printStackTrace();
         }
-
-//        try {
-//            FileWriter myWriter = new FileWriter(SCHEDULED_TIME_FILEPATH);
-//            myWriter.write("request made,request scheduled,time elapsed");
-//            myWriter.close();
-//            Logger.getLogger().logNotification(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " created.");
-//        } catch (IOException e) {
-//            Logger.getLogger().logError(getClass().getSimpleName(), SCHEDULED_TIME_FILEPATH + " creation failed.");
-//            e.printStackTrace();
-//        }
-//        try {
-//            FileWriter myWriter = new FileWriter(SERVICED_TIME_FILEPATH);
-//            myWriter.write("request scheduled,request serviced,time elapsed");
-//            myWriter.close();
-//            Logger.getLogger().logNotification(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " created.");
-//        } catch (IOException e) {
-//            Logger.getLogger().logError(getClass().getSimpleName(), SERVICED_TIME_FILEPATH + " creation failed.");
-//            e.printStackTrace();
-//        }
+         */
     }
 
+    /**
+     * Output the performance data to a file.
+     *
+     * @param filePath String, the filepath
+     * @param requestData PerformanceRequestData, the data
+     * @param endTime LocalTime, the completion time for the request
+     */
     private void outputToFile(String filePath, PerformanceRequestData requestData, LocalTime endTime) {
         String newLine = "";
         Logger.getLogger().logNotification(getClass().getSimpleName(), requestData.toString());
@@ -104,7 +100,6 @@ public class PerformanceTester implements Runnable {
 
     /**
      * Finds the first pending request to the specified destination floor
-     * @param destinationFloor  int, the destination floor of the request
      * @return  PerformanceRequestData, the first request made to that floor.
      */
     private PerformanceRequestData findPendingRequest(int sourceFloor) {
@@ -153,7 +148,6 @@ public class PerformanceTester implements Runnable {
         assert request != null;
         request.setElevatorID(elevatorID);
         ongoingRequests.add(request);
-        Logger.getLogger().logNotification("TRY TO WRITE", "SCHEDULED");
         outputToFile(SCHEDULED_TIME_FILEPATH, request, scheduledTime);
     }
 
@@ -168,43 +162,67 @@ public class PerformanceTester implements Runnable {
         PerformanceRequestData request = findOngoingRequest(destinationFloor, elevatorID);
         while (request != null) {
             ongoingRequests.remove(request);
-            Logger.getLogger().logNotification("TRY TO WRITE", "SERVICED");
             outputToFile(SERVICED_TIME_FILEPATH, request, servicedTime);
             Logger.getLogger().logNotification(getClass().getSimpleName(), "Request: " + request + " serviced.");
             request = findOngoingRequest(destinationFloor, elevatorID);
         }
     }
 
+    /**
+     * Handle the request read event.
+     *
+     * @param requestTime LocalTime, the time the request was made
+     * @param sourceFloor int, the floor the request came from
+     * @param destinationFloor int, the destination floor number
+     */
     private void handleRequestRead(LocalTime requestTime, int sourceFloor, int destinationFloor) {
-        Logger.getLogger().logDebug("handleRequestRead", "floor: " + destinationFloor);
-//        Logger.getLogger().logDebug("handleRequestRead", "ongoingRequests: " + ongoingRequests);
-//        Logger.getLogger().logDebug("handleRequestRead", "pendingRequests: " + pendingRequests);
+        Logger.getLogger().logNotification(getClass().getSimpleName(), "handleRequestRead: floor: " + destinationFloor);
+        Logger.getLogger().logDebug(getClass().getSimpleName(), "handleRequestRead: ongoingRequests: " + ongoingRequests);
+        Logger.getLogger().logDebug(getClass().getSimpleName(), "handleRequestRead: pendingRequests: " + pendingRequests);
         startRequest(requestTime, sourceFloor, destinationFloor);
     }
 
+    /**
+     * Handle the request scheduled event.
+     *
+     * @param scheduledTime LocalTime, the time the request was scheduled
+     * @param destinationFloor int, the destination floor number
+     * @param elevatorID int, the elevator associated with the request
+     */
     private void handleRequestScheduled(LocalTime scheduledTime, int destinationFloor, int elevatorID) {
-        Logger.getLogger().logDebug("handleRequestScheduled", "floor: " + destinationFloor + " elevatorID: " + elevatorID);
-//        Logger.getLogger().logDebug("handleRequestScheduled", "ongoingRequests: " + ongoingRequests);
-//        Logger.getLogger().logDebug("handleRequestScheduled", "pendingRequests: " + pendingRequests);
+        Logger.getLogger().logNotification(getClass().getSimpleName(), "handleRequestScheduled: floor: " + destinationFloor + " elevatorID: " + elevatorID);
+        Logger.getLogger().logDebug(getClass().getSimpleName(), "handleRequestScheduled: ongoingRequests: " + ongoingRequests);
+        Logger.getLogger().logDebug(getClass().getSimpleName(), "handleRequestScheduled: pendingRequests: " + pendingRequests);
         createOngoingRequest(destinationFloor, elevatorID, scheduledTime);
     }
 
+    /**
+     * Handle the request serviced event.
+     *
+     * @param servicedTime LocalTime, the time the request was serviced
+     * @param destinationFloor int, the destination floor number
+     * @param elevatorID int, the elevator associated with the request
+     */
     private void handleRequestServiced(LocalTime servicedTime, int destinationFloor, int elevatorID) {
-        Logger.getLogger().logDebug("handleRequestServiced", "floor: " + destinationFloor + " elevatorID: " + elevatorID);
-//        Logger.getLogger().logDebug("handleRequestServiced", "ongoingRequests: " + ongoingRequests);
-//        Logger.getLogger().logDebug("handleRequestServiced", "pendingRequests: " + pendingRequests);
+        Logger.getLogger().logNotification(getClass().getSimpleName(), "handleRequestServiced: floor: " + destinationFloor + " elevatorID: " + elevatorID);
+        Logger.getLogger().logDebug(getClass().getSimpleName(), "handleRequestServiced: ongoingRequests: " + ongoingRequests);
+        Logger.getLogger().logDebug(getClass().getSimpleName(), "handleRequestServiced: pendingRequests: " + pendingRequests);
         ongoingRequestServiced(destinationFloor, elevatorID, servicedTime);
     }
 
+    /**
+     * Run method for the Performance thread.
+     */
     @Override
     public void run() {
+        Logger.getLogger().logNotification(getClass().getSimpleName(), "Thread started.");
         while (true) {
             Event<PerformanceEventType> event = inputBuffer.getEvent();
             PerformancePayload payload = (PerformancePayload)event.getPayload();
             switch (event.getEventType()) {
-                case REQUEST_READ -> handleRequestRead(payload.getRequestTime(), payload.getSourceFloor(), payload.getDestinationFloor());
-                case REQUEST_SCHEDULED -> handleRequestScheduled(payload.getRequestTime(), payload.getDestinationFloor(), payload.getElevatorID());
-                case REQUEST_SERVICED -> handleRequestServiced(payload.getRequestTime(), payload.getDestinationFloor(), payload.getElevatorID());
+                case REQUEST_READ -> handleRequestRead(payload.requestTime(), payload.sourceFloor(), payload.destinationFloor());
+                case REQUEST_SCHEDULED -> handleRequestScheduled(payload.requestTime(), payload.destinationFloor(), payload.elevatorID());
+                case REQUEST_SERVICED -> handleRequestServiced(payload.requestTime(), payload.destinationFloor(), payload.elevatorID());
             }
         }
     }
