@@ -104,9 +104,9 @@ public class PerformanceTester implements Runnable {
      * @param destinationFloor  int, the destination floor of the request
      * @return  PerformanceRequestData, the first request made to that floor.
      */
-    private PerformanceRequestData findPendingRequest(int destinationFloor) {
+    private PerformanceRequestData findPendingRequest(int sourceFloor) {
         for (PerformanceRequestData requestData : pendingRequests) {
-            if (requestData.getDestinationFloor() == destinationFloor) {
+            if (requestData.getSourceFloor() == sourceFloor) {
                 return requestData;
             }
         }
@@ -133,8 +133,8 @@ public class PerformanceTester implements Runnable {
      * @param requestTime   LocalTime, the time the request was made
      * @param destinationFloor  int, the destination floor of the request
      */
-    private void startRequest(LocalTime requestTime, int destinationFloor) {
-        pendingRequests.add(new PerformanceRequestData(requestTime, destinationFloor));
+    private void startRequest(LocalTime requestTime, int sourceFloor, int destinationFloor) {
+        pendingRequests.add(new PerformanceRequestData(requestTime, sourceFloor, destinationFloor));
     }
 
     /**
@@ -172,11 +172,11 @@ public class PerformanceTester implements Runnable {
         }
     }
 
-    private void handleRequestRead(LocalTime requestTime, int destinationFloor) {
+    private void handleRequestRead(LocalTime requestTime, int sourceFloor, int destinationFloor) {
         Logger.getLogger().logDebug("handleRequestRead", "floor: " + destinationFloor);
 //        Logger.getLogger().logDebug("handleRequestRead", "ongoingRequests: " + ongoingRequests);
 //        Logger.getLogger().logDebug("handleRequestRead", "pendingRequests: " + pendingRequests);
-        startRequest(requestTime, destinationFloor);
+        startRequest(requestTime, sourceFloor, destinationFloor);
     }
 
     private void handleRequestScheduled(LocalTime scheduledTime, int destinationFloor, int elevatorID) {
@@ -199,9 +199,9 @@ public class PerformanceTester implements Runnable {
             Event<PerformanceEventType> event = inputBuffer.getEvent();
             PerformancePayload payload = (PerformancePayload)event.getPayload();
             switch (event.getEventType()) {
-                case REQUEST_READ -> handleRequestRead(payload.getRequestTime(), payload.getFloorNumber());
-                case REQUEST_SCHEDULED -> handleRequestScheduled(payload.getRequestTime(), payload.getFloorNumber(), payload.getElevatorID());
-                case REQUEST_SERVICED -> handleRequestServiced(payload.getRequestTime(), payload.getFloorNumber(), payload.getElevatorID());
+                case REQUEST_READ -> handleRequestRead(payload.getRequestTime(), payload.getSourceFloor(), payload.getDestinationFloor());
+                case REQUEST_SCHEDULED -> handleRequestScheduled(payload.getRequestTime(), payload.getDestinationFloor(), payload.getElevatorID());
+                case REQUEST_SERVICED -> handleRequestServiced(payload.getRequestTime(), payload.getDestinationFloor(), payload.getElevatorID());
             }
         }
     }

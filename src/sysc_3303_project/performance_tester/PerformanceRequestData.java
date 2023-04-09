@@ -14,6 +14,11 @@ public class PerformanceRequestData {
     private final LocalTime requestTime;
 
     /**
+     * The source floor of the request
+     */
+    private final int sourceFloor;
+
+    /**
      * The destination floor of the request
      */
     private final int destinationFloor;
@@ -28,9 +33,10 @@ public class PerformanceRequestData {
      * @param requestTime   LocalTime, the time the request was made
      * @param destinationFloor  int, the destination floor of the request.
      */
-    public PerformanceRequestData(LocalTime requestTime, int destinationFloor){
+    public PerformanceRequestData(LocalTime requestTime, int sourceFloor, int destinationFloor){
         this.requestTime = requestTime;
         this.destinationFloor = destinationFloor;
+        this.sourceFloor = sourceFloor;
     }
 
     /**
@@ -47,6 +53,14 @@ public class PerformanceRequestData {
      */
     public int getDestinationFloor() {
         return destinationFloor;
+    }
+
+    /**
+     * Getter for the source floor
+     * @return  int, the source floor of the request
+     */
+    public int getSourceFloor() {
+        return sourceFloor;
     }
 
     /**

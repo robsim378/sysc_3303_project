@@ -100,7 +100,7 @@ public class SchedulerProcessingState extends SchedulerState {
 				Subsystem.SCHEDULER,
 				0,
 				PerformanceEventType.REQUEST_SERVICED,
-				new PerformancePayload(floorNumber, elevatorId, LocalTime.now())
+				new PerformancePayload(-1, floorNumber, elevatorId, LocalTime.now())
 		);
 		context.getOutputBuffer().addEvent(performanceEvent);
 		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Sending event to PERFORMANCE: " + PerformanceEventType.REQUEST_SERVICED);
@@ -181,7 +181,7 @@ public class SchedulerProcessingState extends SchedulerState {
 				Subsystem.SCHEDULER,
 				0,
 				PerformanceEventType.REQUEST_SCHEDULED,
-				new PerformancePayload(floorNumber, assignedElevator, LocalTime.now())
+				new PerformancePayload(-1, floorNumber, assignedElevator, LocalTime.now())
 		);
 		context.getOutputBuffer().addEvent(performanceEvent);
 		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Sending event to PERFORMANCE: " + PerformanceEventType.REQUEST_SCHEDULED);

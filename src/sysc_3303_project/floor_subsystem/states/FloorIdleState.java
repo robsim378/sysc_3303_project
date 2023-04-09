@@ -53,7 +53,7 @@ public class FloorIdleState extends FloorState {
 				Subsystem.FLOOR,
 				requestData.getCurrentFloor(),
 				PerformanceEventType.REQUEST_READ,
-				new PerformancePayload(requestData.getDestinationFloor(), -1, LocalTime.now())
+				new PerformancePayload(requestData.getCurrentFloor(), requestData.getDestinationFloor(), -1, LocalTime.now())
 		);
 		context.getOutputBuffer().addEvent(performanceEvent);
 		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent request to scheduler: " + requestData);

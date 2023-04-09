@@ -5,7 +5,8 @@ import java.time.LocalTime;
 
 public class PerformancePayload implements Serializable {
 
-    private final int floorNumber;
+    private final int sourceFloor;
+    private final int destinationFloor;
     private final int elevatorID;
 
     private final LocalTime requestTime;
@@ -13,18 +14,24 @@ public class PerformancePayload implements Serializable {
     /**
      * Constructor
      *
-     * @param floorNumber int, floor number for the request
+     * @param sourceFloor int, source floor number for the request
+     * @param destinationFloor int, destination floor number for the request
      * @param elevatorID  int, id of elevator for the request
      * @param requestTime LocalTime, the time
      */
-    public PerformancePayload(int floorNumber, int elevatorID, LocalTime requestTime) {
-        this.floorNumber = floorNumber;
+    public PerformancePayload(int sourceFloor, int destinationFloor, int elevatorID, LocalTime requestTime) {
+        this.sourceFloor = sourceFloor;
+        this.destinationFloor = destinationFloor;
         this.elevatorID = elevatorID;
         this.requestTime = requestTime;
     }
 
-    public int getFloorNumber() {
-        return floorNumber;
+    public int getSourceFloor() {
+        return sourceFloor;
+    }
+
+    public int getDestinationFloor() {
+        return destinationFloor;
     }
 
     public int getElevatorID() {
