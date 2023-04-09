@@ -28,7 +28,7 @@ public class PerformanceRequestData {
      * @param requestTime   LocalTime, the time the request was made
      * @param destinationFloor  int, the destination floor of the request.
      */
-    PerformanceRequestData(LocalTime requestTime, int destinationFloor){
+    public PerformanceRequestData(LocalTime requestTime, int destinationFloor){
         this.requestTime = requestTime;
         this.destinationFloor = destinationFloor;
     }

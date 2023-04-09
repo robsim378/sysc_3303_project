@@ -19,6 +19,7 @@ import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
 import sysc_3303_project.performance_tester.PerformanceEventType;
+import sysc_3303_project.performance_tester.PerformancePayload;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -46,18 +47,16 @@ public class FloorIdleState extends FloorState {
 	 */
 	@Override
 	public FloorState handleButtonPressed(RequestData requestData) {
-
 		Event<Enum<?>> performanceEvent = new Event<>(
 				Subsystem.PERFORMANCE,
 				-1,
 				Subsystem.FLOOR,
 				requestData.getCurrentFloor(),
 				PerformanceEventType.REQUEST_READ,
-				LocalTime.now()
+				new PerformancePayload(requestData.getDestinationFloor(), -1, LocalTime.now())
 		);
 		context.getOutputBuffer().addEvent(performanceEvent);
-
-		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent request to scheduler: " + requestData.toString());
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent request to scheduler: " + requestData);
 
 		context.pressButton(requestData.getDirection());
 		context.lightButtonLamp(requestData.getDirection());

@@ -13,6 +13,7 @@ import java.util.TimerTask;
 
 import logging.Logger;
 import sysc_3303_project.performance_tester.PerformanceEventType;
+import sysc_3303_project.performance_tester.PerformancePayload;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -95,13 +96,14 @@ public class SchedulerProcessingState extends SchedulerState {
 
 		Event<Enum<?>> performanceEvent = new Event<>(
 				Subsystem.PERFORMANCE,
-				elevatorId,
+				0,
 				Subsystem.SCHEDULER,
-				floorNumber,
+				0,
 				PerformanceEventType.REQUEST_SERVICED,
-				LocalTime.now()
+				new PerformancePayload(floorNumber, elevatorId, LocalTime.now())
 		);
 		context.getOutputBuffer().addEvent(performanceEvent);
+		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Sending event to PERFORMANCE: " + PerformanceEventType.REQUEST_SERVICED);
 
 		if (loaded) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
@@ -173,17 +175,16 @@ public class SchedulerProcessingState extends SchedulerState {
 		LoadRequest request = new LoadRequest(floorNumber, direction);
 		int assignedElevator = context.assignLoadRequest(request);
 
-
 		Event<Enum<?>> performanceEvent = new Event<>(
 				Subsystem.PERFORMANCE,
-				assignedElevator,
+				0,
 				Subsystem.SCHEDULER,
-				floorNumber,
+				0,
 				PerformanceEventType.REQUEST_SCHEDULED,
-				LocalTime.now()
+				new PerformancePayload(floorNumber, assignedElevator, LocalTime.now())
 		);
 		context.getOutputBuffer().addEvent(performanceEvent);
-
+		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Sending event to PERFORMANCE: " + PerformanceEventType.REQUEST_SCHEDULED);
 
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {

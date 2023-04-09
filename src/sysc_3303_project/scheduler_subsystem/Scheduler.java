@@ -218,40 +218,42 @@ public class Scheduler implements Runnable {
 			int elevatorId;
 
 
-    		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Event: " + evt.getEventType() + ", State: " + state.getClass().getName());    		
+    		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Event: " + evt.getEventType() + ", State: " + state.getClass().getName());
 
-			
-			switch(evt.getEventType()) {
-				case ELEVATOR_DOORS_CLOSED:
+
+			switch (evt.getEventType()) {
+				case ELEVATOR_DOORS_CLOSED -> {
 					elevatorId = evt.getSourceID();
-					if (tracker.isActive(elevatorId)) newState = state.handleElevatorDoorsClosed(elevatorId, (int) evt.getPayload());
-					break;
-				case ELEVATOR_DOORS_OPENED:
+					if (tracker.isActive(elevatorId))
+						newState = state.handleElevatorDoorsClosed(elevatorId, (int) evt.getPayload());
+				}
+				case ELEVATOR_DOORS_OPENED -> {
 					elevatorId = evt.getSourceID();
-					if (tracker.isActive(elevatorId)) newState = state.handleElevatorDoorsOpened(elevatorId, (int) evt.getPayload());
-					break;
-				case ELEVATOR_APPROACHING_FLOOR:
+					if (tracker.isActive(elevatorId))
+						newState = state.handleElevatorDoorsOpened(elevatorId, (int) evt.getPayload());
+				}
+				case ELEVATOR_APPROACHING_FLOOR -> {
 					elevatorId = evt.getSourceID();
-					if (tracker.isActive(elevatorId)) newState = state.handleElevatorApproachingFloor(elevatorId, (int) evt.getPayload());
-					break;
-				case ELEVATOR_STOPPED:
+					if (tracker.isActive(elevatorId))
+						newState = state.handleElevatorApproachingFloor(elevatorId, (int) evt.getPayload());
+				}
+				case ELEVATOR_STOPPED -> {
 					elevatorId = evt.getSourceID();
-					if (tracker.isActive(elevatorId)) newState = state.handleElevatorStopped(elevatorId, (int) evt.getPayload());
-					break;
-				case FLOOR_BUTTON_PRESSED:
-					newState = state.handleFloorButtonPressed(evt.getSourceID(), (Direction) evt.getPayload());
-					break;
-				case ELEVATOR_BUTTON_PRESSED:
+					if (tracker.isActive(elevatorId))
+						newState = state.handleElevatorStopped(elevatorId, (int) evt.getPayload());
+				}
+				case FLOOR_BUTTON_PRESSED ->
+						newState = state.handleFloorButtonPressed(evt.getSourceID(), (Direction) evt.getPayload());
+				case ELEVATOR_BUTTON_PRESSED -> {
 					elevatorId = evt.getSourceID();
-					if (tracker.isActive(elevatorId)) newState = state.handleElevatorButtonPressed(elevatorId, (int) evt.getPayload());
-					break;
-				case ELEVATOR_BLOCKED:
-					newState = state.handleElevatorBlocked((int) evt.getPayload());
-					break;
-				case ELEVATOR_PING:
+					if (tracker.isActive(elevatorId))
+						newState = state.handleElevatorButtonPressed(elevatorId, (int) evt.getPayload());
+				}
+				case ELEVATOR_BLOCKED -> newState = state.handleElevatorBlocked((int) evt.getPayload());
+				case ELEVATOR_PING -> {
 					elevatorId = evt.getSourceID();
 					if (tracker.isActive(elevatorId)) newState = state.handleElevatorPing(elevatorId);
-					break;
+				}
 			}
 			
 			if (newState != null) {
