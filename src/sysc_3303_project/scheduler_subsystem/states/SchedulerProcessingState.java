@@ -8,8 +8,6 @@ package sysc_3303_project.scheduler_subsystem.states;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import logging.Logger;
 import sysc_3303_project.performance_tester.PerformanceEventType;
@@ -174,7 +172,6 @@ public class SchedulerProcessingState extends SchedulerState {
 	public SchedulerState handleFloorButtonPressed(int floorNumber, Direction direction) {
 		LoadRequest request = new LoadRequest(floorNumber, direction);
 		int assignedElevator = context.assignLoadRequest(request);
-
 		if (contextTracker.getElevatorDirection(assignedElevator) == null) {
 			if (contextTracker.getElevatorFloor(assignedElevator) == floorNumber) {
 				contextTracker.loadElevator(assignedElevator, floorNumber);
@@ -191,14 +188,7 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.CLOSE_DOORS, null));
 
 		}
-<<<<<<< HEAD
 		context.getFaultDetector().addTimer(assignedElevator, ResourceManager.get().getInt("timing.doors")); //doors close timer
-=======
-
-
-
-		context.getFaultDetector().addTimer(assignedElevator, 1000); //doors close timer
->>>>>>> a54dd2f (created the performance subsystem)
 		return null;
 	}
 
