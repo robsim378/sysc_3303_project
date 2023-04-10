@@ -11,6 +11,8 @@ import sysc_3303_project.gui_subsystem.model.SystemModel;
 
 import javax.swing.*;
 
+import logging.Logger;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -24,6 +26,12 @@ public class SystemFrame extends JFrame implements GuiView {
 	 * Reference to the resource manager for building stuff
 	 */
 	private static final ResourceManager rm = ResourceManager.get();
+	
+	/**
+	 * Static data
+	 */
+	private static final int WIDTH = 900;
+	private static final int HEIGHT = 800;
 	
 	/**
 	 * Default
@@ -46,6 +54,9 @@ public class SystemFrame extends JFrame implements GuiView {
      * @param model		GuiModel, backing moel for views
      */
     public SystemFrame(GuiContext model) {
+    	
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "System Frame Created");
+    	
     	this.model = model.getModel();
     	model.addView(this);
         elevatorPanels = new ArrayList<>();
@@ -55,12 +66,19 @@ public class SystemFrame extends JFrame implements GuiView {
 
         this.setMinimumSize(new Dimension(900, 800));
         this.setLayout(new GridLayout());
-        
+        this.setTitle(rm.get("systemframe.title"));
+    }
+    
+    public void buildSystemFrame() {
+    	
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Building System Frame");
+
         generateElevatorPanels();
         generateFloorPanels();
 
-        
         // Floors side
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Generating floors display");
+
         JPanel floorsSection = new JPanel();
         floorsSection.setLayout(new BorderLayout());
         floorsSection.add(new JLabel(rm.get("systemframe.floors")), BorderLayout.NORTH);
@@ -79,6 +97,8 @@ public class SystemFrame extends JFrame implements GuiView {
         this.add(floorsSection);
         
         // Elevators side
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Generating elevators display");
+
         JPanel elevatorsSection = new JPanel();
         elevatorsSection.setLayout(new BorderLayout());
         elevatorsSection.add(new JLabel(rm.get("systemframe.elevators")), BorderLayout.NORTH);
@@ -98,34 +118,62 @@ public class SystemFrame extends JFrame implements GuiView {
         JScrollPane scrollPaneElevators = new JScrollPane(elevatorsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         elevatorsSection.add(scrollPaneElevators, BorderLayout.CENTER);
         this.add(elevatorsSection);
-
-        // Make frame visible
-        setVisible(true);
     }
 
     /**
      * Generates all panels for the elevators
      */
-    private void generateElevatorPanels() {
+    public void generateElevatorPanels() {
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Building Elevator panels");
+
         for (int i = 0; i < ResourceManager.get().getInt("count.elevators"); i++) {
             elevatorPanels.add(new ElevatorPanel(i));
         }
     }
 
     /**
-     * Generates all floor panelsl for the floors
+     * Generates all floor panels for the floors
      */
-    private void generateFloorPanels() {
+    public void generateFloorPanels() {
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Building Floor panels");
+
         for (int i = 0; i < ResourceManager.get().getInt("count.floors"); i++) {
             floorPanels.add(new FloorPanel(i));
         }
     }
     
+    /**
+     * ------------------ Getters -------------------
+     */
+    
+    /**
+     * Getter
+     * @return	ArrayList<>, elevator panels
+     */
+    public ArrayList<ElevatorPanel> getElevatorPanels(){
+    	return elevatorPanels;
+    }
+
+    /**
+     * Getter
+     * @return	ArrayList<>, floor panels
+     */
+    public ArrayList<FloorPanel> getFloorPanels(){
+    	return floorPanels;
+    }
+
+    /**
+     * ------------------ Inherited ---------------------
+     */
     public void updateFloorPanel(int floorID) {
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Updating Floor panels");
+
         floorPanels.get(floorID).updatePanel(model);
     }
     
     public void updateElevatorDirectionalLamps(int elevatorID) {
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Updating Directional Lamps");
+
     	updateElevatorPanel(elevatorID);
     	for(FloorPanel p : floorPanels) {
     		p.updateDirectionalLamp(elevatorID, model);
@@ -133,6 +181,8 @@ public class SystemFrame extends JFrame implements GuiView {
     }
 
     public void updateElevatorPanel(int elevatorID) {
+    	Logger.getLogger().logDebug(SystemFrame.class.getSimpleName(), "Updating Elevator panels");
+
         elevatorPanels.get(elevatorID).updatePanel(model);
     }
     	

@@ -164,4 +164,34 @@ public class FloorPanel extends JPanel {
 		directionalLampsDown.get(elevator).setBackground(model.getElevatorDirection(elevator) == Direction.DOWN ? ViewCommon.ON : ViewCommon.OFF);
        	this.updateUI();
     }
+    
+    /**
+     * ----------------- Getters ----------------
+     */
+    
+    /**
+     * Getter
+     * @return int, ID
+     */
+    public int getID() {
+    	return floorID;
+    }
+    
+    public JPanel getFloorButtonUp() {
+    	return floorButtonUp;
+    }
+    
+    public JPanel getFloorButtonDown() {
+    	return floorButtonDown;
+    }
+
+    public ArrayList<JPanel> getDirectionalLampsUp(){
+    	return directionalLampsUp;
+    }
+
+    public ArrayList<JPanel> getDirectionalLampsDown(){
+    	return directionalLampsDown;
+    }
+
+
 }
