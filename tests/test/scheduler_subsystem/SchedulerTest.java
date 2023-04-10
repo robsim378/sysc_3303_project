@@ -16,6 +16,7 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.performance_tester.PerformanceEventType;
 import sysc_3303_project.scheduler_subsystem.ElevatorFaultDetector;
 import sysc_3303_project.scheduler_subsystem.ElevatorTracker;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
@@ -141,6 +142,7 @@ public class SchedulerTest {
         
     	schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 8, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.DOWN));
     	TimeUnit.MILLISECONDS.sleep(500);
+    	assertEquals(PerformanceEventType.REQUEST_SCHEDULED, outputBuffer.getEvent().getEventType());
     	evt = outputBuffer.getEvent();
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
@@ -174,9 +176,11 @@ public class SchedulerTest {
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 5, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.UP));
         TimeUnit.MILLISECONDS.sleep(500);
         assertFalse(tracker.hasRequests(1));
+        assertEquals(PerformanceEventType.REQUEST_SCHEDULED, outputBuffer.getEvent().getEventType());
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.FLOOR, 2, SchedulerEventType.FLOOR_BUTTON_PRESSED, Direction.UP));
     	TimeUnit.MILLISECONDS.sleep(500);
     	assertTrue(tracker.hasRequests(1));
+    	assertEquals(PerformanceEventType.REQUEST_SCHEDULED, outputBuffer.getEvent().getEventType());
     	evt = outputBuffer.getEvent();
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
@@ -205,6 +209,7 @@ public class SchedulerTest {
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 5));
         TimeUnit.MILLISECONDS.sleep(500);
+        assertEquals(PerformanceEventType.REQUEST_SERVICED, outputBuffer.getEvent().getEventType());
     	evt = outputBuffer.getEvent();
         assertTrue(evt.getEventType() instanceof FloorEventType);
         assertEquals(FloorEventType.PASSENGERS_LOADED, (FloorEventType) evt.getEventType());
@@ -260,6 +265,7 @@ public class SchedulerTest {
         assertEquals(0, evt.getDestinationID());
         assertEquals(6, (int) evt.getPayload());
         assertTrue(tracker.hasRequests(0));
+        assertEquals(PerformanceEventType.REQUEST_SERVICED, outputBuffer.getEvent().getEventType());
         evt = outputBuffer.getEvent();
         assertTrue(evt.getEventType() instanceof ElevatorEventType);
         assertEquals(ElevatorEventType.CLOSE_DOORS, (ElevatorEventType) evt.getEventType());
@@ -300,6 +306,7 @@ public class SchedulerTest {
         
         schedulerBuffer.addEvent(new Event<>(Subsystem.SCHEDULER, 0, Subsystem.ELEVATOR, 0, SchedulerEventType.ELEVATOR_DOORS_OPENED, 8));
         TimeUnit.MILLISECONDS.sleep(500);
+        assertEquals(PerformanceEventType.REQUEST_SERVICED, outputBuffer.getEvent().getEventType());
     	evt = outputBuffer.getEvent();
         assertTrue(evt.getEventType() instanceof FloorEventType);
         assertEquals(FloorEventType.PASSENGERS_LOADED, (FloorEventType) evt.getEventType());

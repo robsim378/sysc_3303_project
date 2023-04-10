@@ -12,6 +12,7 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorEventType;
+import sysc_3303_project.performance_tester.PerformanceEventType;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.states.SchedulerProcessingState;
@@ -63,7 +64,8 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
         SchedulerState testState = new SchedulerProcessingState(context);
 
         SchedulerState newState = testState.handleElevatorDoorsOpened(0, 0);
-
+        
+        assertEquals(PerformanceEventType.REQUEST_SERVICED, outputBuffer.getEvent().getEventType());
         Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
         assertEquals(0, testEvent.getDestinationID());
@@ -93,6 +95,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
         assertEquals(ElevatorEventType.PASSENGERS_UNLOADED, testEvent.getEventType());
         assertEquals(0, testEvent.getDestinationID());
         assertEquals(8, testEvent.getPayload());
+        assertEquals(PerformanceEventType.REQUEST_SERVICED, outputBuffer.getEvent().getEventType());
         assertTrue(newState instanceof SchedulerWaitingState); //all requests done and expect no more
     }
 	
@@ -110,6 +113,7 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
 
         SchedulerState newState = testState.handleElevatorDoorsOpened(0, 8);
         
+        assertEquals(PerformanceEventType.REQUEST_SERVICED, outputBuffer.getEvent().getEventType());
         Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(FloorEventType.PASSENGERS_LOADED, testEvent.getEventType());
         assertEquals(8, testEvent.getDestinationID());
@@ -222,7 +226,8 @@ public class SchedulerProcessingStateTest extends SchedulerStateTest {
         SchedulerState testState = new SchedulerProcessingState(context);
 
         SchedulerState newState = testState.handleFloorButtonPressed(8, Direction.DOWN);
-
+    	
+        assertEquals(PerformanceEventType.REQUEST_SCHEDULED, outputBuffer.getEvent().getEventType());
         Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
         assertEquals(0, testEvent.getDestinationID());

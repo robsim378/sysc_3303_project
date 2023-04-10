@@ -25,6 +25,7 @@ import sysc_3303_project.floor_subsystem.states.FloorIdleState;
 import sysc_3303_project.floor_subsystem.states.FloorState;
 import sysc_3303_project.gui_subsystem.GuiEventType;
 import sysc_3303_project.gui_subsystem.transfer_data.FloorLampStatus;
+import sysc_3303_project.performance_tester.PerformanceEventType;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,7 +75,8 @@ public class FloorIdleStateTest {
 		RequestData testInput = new RequestData(LocalTime.NOON, 2, Direction.UP, 4, 0);
 
 		FloorState newState = floor.getState().handleButtonPressed(testInput);
-
+		
+		assertEquals(PerformanceEventType.REQUEST_READ, floor.getOutputBuffer().getEvent().getEventType());
         assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
 		
 		Event<?> testOutput = floor.getOutputBuffer().getEvent();
@@ -105,6 +107,7 @@ public class FloorIdleStateTest {
 		//Normal elevator press
 		RequestData testInput = new RequestData(LocalTime.NOON, 0, Direction.UP, 4, 0);
 		floor.getState().handleButtonPressed(testInput);
+		assertEquals(PerformanceEventType.REQUEST_READ, floor.getOutputBuffer().getEvent().getEventType());
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
 		floor.getOutputBuffer().getEvent();
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
@@ -112,6 +115,7 @@ public class FloorIdleStateTest {
 		// Normal elevator press, does not get satisfied
 		testInput = new RequestData(LocalTime.NOON, 0, Direction.DOWN, -1, 0);
 		floor.getState().handleButtonPressed(testInput);
+		assertEquals(PerformanceEventType.REQUEST_READ, floor.getOutputBuffer().getEvent().getEventType());
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
 		floor.getOutputBuffer().getEvent();
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
@@ -119,6 +123,7 @@ public class FloorIdleStateTest {
 		// Error type 1
 		testInput = new RequestData(LocalTime.NOON, 0, Direction.UP, 4, 1);
 		floor.getState().handleButtonPressed(testInput);
+		assertEquals(PerformanceEventType.REQUEST_READ, floor.getOutputBuffer().getEvent().getEventType());
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
 		floor.getOutputBuffer().getEvent();
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
@@ -126,6 +131,7 @@ public class FloorIdleStateTest {
 		// Error type 2
 		testInput = new RequestData(LocalTime.NOON, 0, Direction.UP, 4, 2);
 		floor.getState().handleButtonPressed(testInput);
+		assertEquals(PerformanceEventType.REQUEST_READ, floor.getOutputBuffer().getEvent().getEventType());
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
 		floor.getOutputBuffer().getEvent();
 		assertEquals(GuiEventType.FLOOR_LAMP_STATUS_CHANGE, floor.getOutputBuffer().getEvent().getEventType());
