@@ -6,6 +6,7 @@
 
 package sysc_3303_project.floor_subsystem.states;
 
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +18,8 @@ import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.RequestData;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
 import sysc_3303_project.floor_subsystem.FloorSystem;
+import sysc_3303_project.performance_tester.PerformanceEventType;
+import sysc_3303_project.performance_tester.PerformancePayload;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
 
 /**
@@ -44,7 +47,16 @@ public class FloorIdleState extends FloorState {
 	 */
 	@Override
 	public FloorState handleButtonPressed(RequestData requestData) {
-		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent request to scheduler: " + requestData.toString());
+		Event<Enum<?>> performanceEvent = new Event<>(
+				Subsystem.PERFORMANCE,
+				-1,
+				Subsystem.FLOOR,
+				requestData.getCurrentFloor(),
+				PerformanceEventType.REQUEST_READ,
+				new PerformancePayload(requestData.getCurrentFloor(), requestData.getDestinationFloor(), -1, LocalTime.now())
+		);
+		context.getOutputBuffer().addEvent(performanceEvent);
+		Logger.getLogger().logNotification(this.getClass().getSimpleName(), "Sent request to scheduler: " + requestData);
 
 		context.pressButton(requestData.getDirection());
 		context.lightButtonLamp(requestData.getDirection());

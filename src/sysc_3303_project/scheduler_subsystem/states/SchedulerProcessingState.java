@@ -6,11 +6,12 @@
 
 package sysc_3303_project.scheduler_subsystem.states;
 
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import logging.Logger;
+import sysc_3303_project.performance_tester.PerformanceEventType;
+import sysc_3303_project.performance_tester.PerformancePayload;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -90,6 +91,18 @@ public class SchedulerProcessingState extends SchedulerState {
 					ElevatorEventType.PASSENGERS_UNLOADED, floorNumber));
 			Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Unloading passenger at floor " + floorNumber + " from elevator " + elevatorId);
 		}
+
+		Event<Enum<?>> performanceEvent = new Event<>(
+				Subsystem.PERFORMANCE,
+				0,
+				Subsystem.SCHEDULER,
+				0,
+				PerformanceEventType.REQUEST_SERVICED,
+				new PerformancePayload(-1, floorNumber, elevatorId, LocalTime.now())
+		);
+		context.getOutputBuffer().addEvent(performanceEvent);
+		Logger.getLogger().logNotification(context.getClass().getSimpleName(), "Sending event to PERFORMANCE: " + PerformanceEventType.REQUEST_SERVICED);
+
 		if (loaded) {
 			context.getOutputBuffer().addEvent(new Event<Enum<?>>(
 					Subsystem.FLOOR, floorNumber, 

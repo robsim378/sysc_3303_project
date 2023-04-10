@@ -15,5 +15,6 @@ public enum Subsystem {
 	FLOOR,
 	SCHEDULER,
 	ELEVATOR,
-	GUI
+	GUI,
+	PERFORMANCE
 }
