@@ -11,6 +11,7 @@ import sysc_3303_project.common.Direction;
 import sysc_3303_project.common.events.Event;
 import sysc_3303_project.common.events.EventBuffer;
 import sysc_3303_project.elevator_subsystem.ElevatorEventType;
+import sysc_3303_project.performance_tester.PerformanceEventType;
 import sysc_3303_project.scheduler_subsystem.LoadRequest;
 import sysc_3303_project.scheduler_subsystem.Scheduler;
 import sysc_3303_project.scheduler_subsystem.SchedulerEventType;
@@ -37,7 +38,8 @@ public class SchedulerWaitingStateTest extends SchedulerStateTest {
         SchedulerState testState = new SchedulerWaitingState(context);
 
         SchedulerState newState = testState.handleFloorButtonPressed(8, Direction.DOWN);
-
+        
+        assertEquals(PerformanceEventType.REQUEST_SCHEDULED, outputBuffer.getEvent().getEventType());
         Event<Enum<?>> testEvent = outputBuffer.getEvent();
         assertEquals(ElevatorEventType.CLOSE_DOORS, testEvent.getEventType());
         assertEquals(0, testEvent.getDestinationID());
