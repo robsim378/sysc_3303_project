@@ -249,6 +249,10 @@ public class ElevatorPanel extends JPanel {
     	return elevatorID;
     }
     
+    /**
+     * Get the floor text on the elevator
+     * @return	String, floor text on the JLabel
+     */
     public String getFloorText() {
     	return position.getText();
     }

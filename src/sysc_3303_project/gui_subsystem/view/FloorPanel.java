@@ -177,18 +177,34 @@ public class FloorPanel extends JPanel {
     	return floorID;
     }
     
+    /**
+     * Getter
+     * @return	JPanel, panel of floor button up
+     */
     public JPanel getFloorButtonUp() {
     	return floorButtonUp;
     }
     
+    /**
+     * Getter
+     * @return	JPanel, panel of floor button down
+     */
     public JPanel getFloorButtonDown() {
     	return floorButtonDown;
     }
 
+    /**
+     * Getter
+     * @return	ArrayList<JPanel>, directional lamps facing up
+     */
     public ArrayList<JPanel> getDirectionalLampsUp(){
     	return directionalLampsUp;
     }
 
+    /**
+     * Getter
+     * @return	ArrayList<JPanel>, directional lamps facing down
+     */
     public ArrayList<JPanel> getDirectionalLampsDown(){
     	return directionalLampsDown;
     }

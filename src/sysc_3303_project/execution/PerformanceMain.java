@@ -1,3 +1,9 @@
+/**
+ * SYSC3303 Project
+ * Group 1
+ * @version 5.0
+ */
+
 package sysc_3303_project.execution;
 
 import sysc_3303_project.common.configuration.Subsystem;
@@ -8,7 +14,17 @@ import sysc_3303_project.performance_tester.PerformanceTester;
 
 import java.util.LinkedList;
 
+/**
+ * The main execution starting point for the performance subsystem
+ * @author Robert, Ian
+ *
+ */
 public class PerformanceMain {
+	
+	/**
+	 * Runs the performance subsystem
+	 * @param args command line arguments
+	 */
     public static void main(String[] args) {
 
         EventBuffer<PerformanceEventType> inputBuffer = new EventBuffer<>();

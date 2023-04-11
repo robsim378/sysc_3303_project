@@ -32,6 +32,9 @@ public class ElevatorTracker {
 		public int floor;
 		public Direction direction = null;
 		
+		/**
+		 * Constructor
+		 */
 		public ElevatorInfo() {
 			loadRequests = new LinkedList<>();
 			unloadRequests = new LinkedList<>();

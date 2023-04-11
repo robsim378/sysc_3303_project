@@ -35,8 +35,6 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
     - manages system constants/values
 - Subsystem.java
     - enumeration for the type of subsystem
-- SystemProperties.java (DEPRECATED)
-    - the config values for the system
 
 ### ./common/events
 
@@ -74,9 +72,6 @@ In order to run the tests in Eclipse, you need to have both JUnit and the sysc_3
 - ElevatorEventType.java
      - an enumeration for the Elevator event types.
    
-- ElevatorMain.java
-    - the main method for running the subsystem.
-    
 - DoorFaultDetector.java
     - Detects faults in the elevator subsystem
     
@@ -108,18 +103,26 @@ contains all Elevator state classes
 - ElevatorState: Base abstract state 
 
 
+### ./execution
+- ElevatorMain.java
+    - the main method for running the elevator subsystem.
+- FloorMain.java
+    - the main method for running the floor subsystem.
+- FullExecution.java
+    - The main method for running all subsystems on the same computer
+- GUIMain.java
+    - The main method for running the gui subsystem
+- PerformanceMain.java
+    - The main method for running the performance subsystem 
+- SchedulerMain.java
+    - the main method for running the scheduler subsystem.
+
 ### ./scheduler_subsystem
 
-
 - Scheduler.java
-
     - the core of the Scheduler subsystem. It maintains a state machine, and is responsible for routing the elevator, including ordering it to open/close its doors, as well as whether to stop at a floor or not. It also keeps track of all pending and in-progress requests.
-
 - SchedulerEventType.java
     - contains an enumeration which defines the different kinds of events that the Scheduler subsystem is expected to act on.
-
-- SchedulerMain.java
-    - the main method for running the subsystem.
 - ElevatorTracker.java
     - manages elevators for the scheduler.
 - ElevatorFaultDetector.java
@@ -146,9 +149,6 @@ contains all Elevator state classes
 - FloorEventType.java
     - enum class for determining request types for the FloorSystem to process
 
-- FloorMain.java
-    - the main method for running the subsystem.
-
 - InputFileController.java
     - Reads the input file and sends its contents as events to their destinations.
 
@@ -160,6 +160,60 @@ contains all Elevator state classes
     - FloorIdleState: Floor is waiting for input state
     - FloorState: Abstract floor state
 
+### ./gui_subsystem
+
+- GuiContext.java
+    - Controller for the GUI subsystem
+- GuiEventType.java
+    - Events types that can be sent to the GUI subsystem, enum
+
+#### ./gui_subsystem/model
+- ElevatorInformation.java
+    - Information to store about the state of elevators within the system
+- FloorInformation.java
+    - Information to store about the state of floors within the system
+- SystemModel.java
+    - The central storage point of all system information for the GUI subsystem
+
+#### ./gui_subsystem/transfer_data
+- DoorStatus.java
+    - Door Status to send to be received by the GUI
+- ElevatorLampStatus
+    - The lamp status on a specific elevator's lamp to be received by the GUi 
+- FloorLampStatus
+    - The lamp status on a specific floor's directional button to be received by the GUI
+
+#### ./gui_subsystem/view
+- ElevatorPanel.java
+    - An extention of JPanel, a panel to be displayed representing an elevators information within the GUI
+- FloorPanel.java
+    - An extention of JPanel, a panel to be displayed representing a floor's information within the GUI
+- GuiView.java
+    - An interface to use to represent the view interactions
+- SystemFrame.java
+    - An extention of JFrame, a fram to display the subsystem information
+- ViewCommon.java
+    - Helper functions and data for the gui display data
+    
+### ./performance_tester
+- PerformanceEventType.java
+    - Event types to be handled
+- PerformancePayload.java
+    - Payloads to be received by the performance subsystem
+- PerformanceRequestData.java
+    - Format for keeping track of ongoing requests
+- PerformanceTester.java
+    - System for measuring the performance of the system. Measures the time taken to service a request.
+
+## Additional Resources
+- config.properties
+    - Properties file containing system information for execution
+- labels.properties
+    - Properties file containing labels to use in the GUI
+- test0, test1, ... , test10
+    - test files to use for executing the system
+- testing_examples
+    - The file to execute when initiating the system
 
 ## Set Up Instructions
 1. Open the Eclipse IDE.
@@ -169,12 +223,14 @@ contains all Elevator state classes
 5. Click "Finish".
 6. If you want to adjust the hosts running each procedure, navigate to resources -> config.properties and enter for each "XXX.hostname=" the host running that process. If this step is not done, all processes must be run on the same machine.
 7. Copy the contents of a test file in `resources` (ex: `test6`) except the first two lines, into `testing_examples` in the resource folder.
-8. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> scheduler_subsystem.
-9. Right click on "SchedulerMain.java" and select "Run As" -> "Java Application".
-10. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> elevator_subsystem.
-11. Right click on "ElevatorMain.java" and select "Run As" -> "Java Application".
-12. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_3 -> src -> sysc_3303_project -> floor_subsystem.
-13. Right click on "FloorMain.java" and select "Run As" -> "Java Application".
+8. In the Package Explorer view in Eclipse, navigate through LA2G1_milestone_5 -> src -> sysc_3303_project -> execution.
+9. If all subsystems are running on the same computer, right click on "FullExecution.java" and select "Run As -> Java Application".
+10. If the subsystems are not running on the same computer, execute the subsystems in the following order by right-clicking them and select "Run As -> Java Application": 
+- ElevatorMain.java
+- SchedulerMain.java
+- PerformanceMain.java
+- GUIMain.java
+- FloorMain.java
 
 ## Testing
 
@@ -213,6 +269,10 @@ Iteration 4:
 - Helped design the flow for errors in the system
 - Implemented the main floor subsystem code for implementing and reading injected errors
 
+Iteration 5:
+- Took part in the development of the GUI frames and panels
+- Iteration planning
+
 ### Ian Holmes
 
 Iteration 1:
@@ -237,12 +297,16 @@ Iteration 4:
 - Added fault detection and handling to Elevator subsystem
 - Helped with functional testing and debugging
 
+Iteration 5:
+- Contributed to GUI implementation
+- Contributed to Performance subsystem design and implementation
+
 ### Khalid Merai
 Iteration 1:
  - created the JUnit test classes for the Scheduler,requestData and Elevator
  - The testing section of the README.md 
  
- Iteration 2: 
+Iteration 2: 
  - Adjusted the test classes for the Scheduler,requestData and Elevator
  - Created two new junit test cases which are EventBufferTest and DelayTimerThreadTest
  - Helped in designing the state machine diagram of the elevator
@@ -278,6 +342,11 @@ Iteration 4:
 - Updated class and state diagrams
 - Designed integration/acceptance test scenarios
 
+Iteration 5:
+- Added GUIContext class and messages sent to it from other subsystems
+- Added configuration options for timings and implemented load times
+- Updated existing tests to account for GUI- and performance-related messages.
+
 ### Robert Simionescu
 
 Iteration 1:
@@ -295,4 +364,7 @@ Iteration 3:
 - Separated input parsing into InputFileController class
 
 Iteration 4:
-- timing diagrams
+- Timing diagrams
+
+Iteration 5:
+- Made the performance testing system
