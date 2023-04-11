@@ -1,7 +1,7 @@
 /**
  * SYSC3303 Project
  * Group 1
- * @version 3.0
+ * @version 5.0
  */
 package sysc_3303_project.common.configuration;
 
@@ -33,7 +33,7 @@ public class ResourceManager {
 	private final String configPath = "resources/config.properties";
 
 	/**
-	 * A path that has the configuration properties file
+	 * A path that has the labels properties file
 	 */
 	private final String labelsPath = "resources/labels.properties";
 
