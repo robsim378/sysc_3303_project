@@ -300,6 +300,7 @@ Iteration 4:
 Iteration 5:
 - Contributed to GUI implementation
 - Contributed to Performance subsystem design and implementation
+- Contributed to performance analysis
 
 ### Khalid Merai
 Iteration 1:
@@ -370,4 +371,5 @@ Iteration 4:
 - Timing diagrams
 
 Iteration 5:
-- Made the performance testing system
+- Designed and implemented the performance testing subsystem
+- Contributed to performance analysis
