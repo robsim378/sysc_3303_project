@@ -136,7 +136,7 @@ public class GuiContext implements Runnable{
 	 * @param elevatorId	int, ID of elevator to update
 	 * @param status		DoorStatus, status to change elevator to
 	 */
-	private void handleDoorStatusChange(int elevatorId, DoorStatus status) {
+	public void handleDoorStatusChange(int elevatorId, DoorStatus status) {
 		model.getElevators()[elevatorId].setDoorStatus(status);
 		for (GuiView view: registeredViews) view.updateElevatorPanel(elevatorId);
 	}
