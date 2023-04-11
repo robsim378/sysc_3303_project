@@ -144,8 +144,12 @@ public class PerformanceTester implements Runnable {
     private void createOngoingRequest(int destinationFloor, int elevatorID, LocalTime scheduledTime) {
 
         PerformanceRequestData request = findPendingRequest(destinationFloor);
+        
+        // Handles when an elevator is destroyed
+        if(request == null)
+        	return;
+        
         pendingRequests.remove(request);
-        assert request != null;
         request.setElevatorID(elevatorID);
         ongoingRequests.add(request);
         outputToFile(SCHEDULED_TIME_FILEPATH, request, scheduledTime);
