@@ -72,7 +72,6 @@ public class GuiContext implements Runnable{
 	 * @param lampStatus	FloorLampStatus, button to change to value
 	 */
 	public void handleFloorLampStatusChange(int floor, FloorLampStatus lampStatus) {
-    	System.out.println("Doing shit");
 		if (lampStatus.getDirection() == Direction.UP) {
 			model.getFloors()[floor].setUpButton(lampStatus.getStatus());
 		} else {
